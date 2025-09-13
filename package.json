@@ -1,0 +1,21 @@
+{
+  "name": "event-management-ticketing-system",
+  "version": "1.0.0",
+  "description": "A demo project for learning Git workflow with multiple teams",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "event-management",
+    "ticketing",
+    "demo",
+    "git-workflow"
+  ],
+  "author": "Demo Teams",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.0"
+  }
+}
