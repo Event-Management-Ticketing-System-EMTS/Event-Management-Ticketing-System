@@ -110,6 +110,20 @@
                             </span>
                         </li>
                     </ul>
+                    
+                    @guest
+                    <!-- Event Management Registration Call-to-Action -->
+                    <div class="bg-[#fff2f2] dark:bg-[#1D0002] p-4 rounded-md border border-[#f53003] dark:border-[#FF4433] mb-4 lg:mb-6">
+                        <h3 class="font-medium text-[#f53003] dark:text-[#FF4433] mb-2">🎟️ Event Management System</h3>
+                        <p class="text-[#706f6c] dark:text-[#A1A09A] text-sm mb-3">
+                            Ready to manage your events? Create an account to start organizing and selling tickets for your events.
+                        </p>
+                        <a href="{{ route('register') }}" class="inline-block bg-[#f53003] dark:bg-[#FF4433] text-white px-4 py-2 rounded-sm text-sm font-medium hover:bg-[#d42a00] dark:hover:bg-[#e63920] transition-all">
+                            Create Account →
+                        </a>
+                    </div>
+                    @endguest
+                    
                     <ul class="flex gap-3 text-sm leading-normal">
                         <li>
                             <a href="https://cloud.laravel.com" target="_blank" class="inline-block dark:bg-[#eeeeec] dark:border-[#eeeeec] dark:text-[#1C1C1A] dark:hover:bg-white dark:hover:border-white hover:bg-black hover:border-black px-5 py-1.5 bg-[#1b1b18] rounded-sm border border-black text-white text-sm leading-normal">

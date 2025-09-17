@@ -34,6 +34,25 @@
 
             <!-- Registration Form -->
             <div class="bg-white dark:bg-[#161615] rounded-lg shadow-md p-8">
+                <!-- Flash Messages -->
+                @if (session('success'))
+                    <div class="mb-4 p-3 bg-green-100 dark:bg-green-900 border border-green-300 dark:border-green-700 rounded-md">
+                        <p class="text-green-800 dark:text-green-200 text-sm">{{ session('success') }}</p>
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="mb-4 p-3 bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-700 rounded-md">
+                        <p class="text-red-800 dark:text-red-200 text-sm">{{ session('error') }}</p>
+                    </div>
+                @endif
+
+                @if (session('info'))
+                    <div class="mb-4 p-3 bg-blue-100 dark:bg-blue-900 border border-blue-300 dark:border-blue-700 rounded-md">
+                        <p class="text-blue-800 dark:text-blue-200 text-sm">{{ session('info') }}</p>
+                    </div>
+                @endif
+
                 <form method="POST" action="{{ route('register.submit') }}">
                     @csrf
 
