@@ -118,9 +118,14 @@
                         <p class="text-[#706f6c] dark:text-[#A1A09A] text-sm mb-3">
                             Ready to manage your events? Create an account to start organizing and selling tickets for your events.
                         </p>
-                        <a href="{{ route('register') }}" class="inline-block bg-[#f53003] dark:bg-[#FF4433] text-white px-4 py-2 rounded-sm text-sm font-medium hover:bg-[#d42a00] dark:hover:bg-[#e63920] transition-all">
-                            Create Account →
-                        </a>
+                        <div class="flex gap-2 flex-wrap">
+                            <a href="{{ route('register') }}" class="inline-block bg-[#f53003] dark:bg-[#FF4433] text-white px-4 py-2 rounded-sm text-sm font-medium hover:bg-[#d42a00] dark:hover:bg-[#e63920] transition-all">
+                                Create Account →
+                            </a>
+                            <a href="{{ route('password.request') }}" class="inline-block bg-transparent border border-[#f53003] dark:border-[#FF4433] text-[#f53003] dark:text-[#FF4433] px-4 py-2 rounded-sm text-sm font-medium hover:bg-[#f53003] hover:text-white dark:hover:bg-[#FF4433] dark:hover:text-white transition-all">
+                                Forgot Password?
+                            </a>
+                        </div>
                     </div>
                     @endguest
                     
