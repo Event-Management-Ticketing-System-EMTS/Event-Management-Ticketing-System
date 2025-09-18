@@ -21,19 +21,19 @@ class UserFactory implements UserFactoryInterface
     {
         // Validate the user data
         $validationRules = $this->validateUserData($userData, $role);
-        
+
         $validator = Validator::make($userData, $validationRules);
-        
+
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
 
         // Hash the password
         $userData['password'] = Hash::make($userData['password']);
-        
+
         // Set the role
         $userData['role'] = $role;
-        
+
         // Set default email verification status
         $userData['email_verified'] = false;
 
@@ -62,11 +62,11 @@ class UserFactory implements UserFactoryInterface
                 $baseRules['organization'] = 'nullable|string|max:255';
                 $baseRules['phone'] = 'nullable|string|max:20';
                 break;
-                
+
             case User::ROLE_ADMIN:
                 $baseRules['admin_code'] = 'required|string'; // Special code for admin registration
                 break;
-                
+
             case User::ROLE_USER:
             default:
                 // Default user rules (already covered in base rules)

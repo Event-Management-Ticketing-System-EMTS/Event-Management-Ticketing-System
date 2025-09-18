@@ -33,7 +33,7 @@ class RegisterController extends Controller
         try {
             // Get the selected role (default to 'user' if not provided)
             $role = $request->input('role', User::ROLE_USER);
-            
+
             // Validate that the role is allowed
             $allowedRoles = [User::ROLE_USER, User::ROLE_ORGANIZER];
             if (!in_array($role, $allowedRoles)) {
@@ -49,7 +49,6 @@ class RegisterController extends Controller
             // Redirect to home page with success message
             $roleDisplay = ucfirst($role);
             return redirect('/')->with('success', "Registration successful! Welcome to Event Management System as a {$roleDisplay}.");
-            
         } catch (ValidationException $e) {
             return back()->withErrors($e->validator)->withInput();
         } catch (\Exception $e) {
