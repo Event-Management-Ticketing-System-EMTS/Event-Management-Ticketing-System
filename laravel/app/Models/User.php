@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'email_verified',
     ];
 
     /**
@@ -43,6 +45,56 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'email_verified' => 'boolean',
         ];
+    }
+
+    // Role constants
+    public const ROLE_USER = 'user';
+    public const ROLE_ORGANIZER = 'organizer';
+    public const ROLE_ADMIN = 'admin';
+
+    /**
+     * Get all available roles
+     */
+    public static function getRoles(): array
+    {
+        return [
+            self::ROLE_USER => 'User',
+            self::ROLE_ORGANIZER => 'Organizer',
+            self::ROLE_ADMIN => 'Admin',
+        ];
+    }
+
+    /**
+     * Check if user has a specific role
+     */
+    public function hasRole(string $role): bool
+    {
+        return $this->role === $role;
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(self::ROLE_ADMIN);
+    }
+
+    /**
+     * Check if user is organizer
+     */
+    public function isOrganizer(): bool
+    {
+        return $this->hasRole(self::ROLE_ORGANIZER);
+    }
+
+    /**
+     * Check if user is regular user
+     */
+    public function isUser(): bool
+    {
+        return $this->hasRole(self::ROLE_USER);
     }
 }

@@ -95,6 +95,27 @@
                         @enderror
                     </div>
 
+                    <!-- Account Type -->
+                    <div class="mb-4">
+                        <label for="role" class="block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC] mb-2">
+                            Account Type
+                        </label>
+                        <select 
+                            id="role" 
+                            name="role" 
+                            class="w-full px-3 py-2 border border-[#19140035] dark:border-[#3E3E3A] rounded-md focus:outline-none focus:border-[#1915014a] dark:focus:border-[#62605b] bg-white dark:bg-[#3E3E3A] text-[#1b1b18] dark:text-[#EDEDEC] transition-all"
+                        >
+                            <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>Regular User</option>
+                            <option value="organizer" {{ old('role') == 'organizer' ? 'selected' : '' }}>Event Organizer</option>
+                        </select>
+                        @error('role')
+                            <p class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                        <p class="text-[#706f6c] dark:text-[#A1A09A] text-xs mt-1">
+                            Choose "Event Organizer" if you plan to create and manage events
+                        </p>
+                    </div>
+
                     <!-- Password -->
                     <div class="mb-4">
                         <label for="password" class="block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC] mb-2">

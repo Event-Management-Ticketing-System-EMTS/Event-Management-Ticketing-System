@@ -4,11 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
+use App\Services\UserCreation\UserFactory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
 
 class RegisterController extends Controller
 {
+    protected $userFactory;
+
+    public function __construct(UserFactory $userFactory)
+    {
+        $this->userFactory = $userFactory;
+    }
+
     /**
      * Show the registration form
      */
@@ -22,24 +30,29 @@ class RegisterController extends Controller
      */
     public function register(Request $request)
     {
-        // Validate the request
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-        ]);
+        try {
+            // Get the selected role (default to 'user' if not provided)
+            $role = $request->input('role', User::ROLE_USER);
 
-        // Create the user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+            // Validate that the role is allowed
+            $allowedRoles = [User::ROLE_USER, User::ROLE_ORGANIZER];
+            if (!in_array($role, $allowedRoles)) {
+                $role = User::ROLE_USER; // Default to user for invalid roles
+            }
 
-        // Log the user in
-        Auth::login($user);
+            // Create the user using the factory
+            $user = $this->userFactory->createUser($request->all(), $role);
 
-        // Redirect to home page with success message
-        return redirect('/')->with('success', 'Registration successful! Welcome to Event Management System.');
+            // Log the user in
+            Auth::login($user);
+
+            // Redirect to home page with success message
+            $roleDisplay = ucfirst($role);
+            return redirect('/')->with('success', "Registration successful! Welcome to Event Management System as a {$roleDisplay}.");
+        } catch (ValidationException $e) {
+            return back()->withErrors($e->validator)->withInput();
+        } catch (\Exception $e) {
+            return back()->with('error', 'Registration failed. Please try again.')->withInput();
+        }
     }
 }
