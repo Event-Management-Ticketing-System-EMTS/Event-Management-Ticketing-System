@@ -1,15 +1,57 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html     <body class="bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 min-h-screen">
+        <!-- Modern Background Pattern -->
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23f1f5f9" fill-opacity="0.3"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] dark:bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23334155" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+        
+        <!-- Modern Header -->
+        <header class="relative z-10 backdrop-blur-sm bg-white/80 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <a href="{{ url('/') }}" class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <h1 class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            EventHub
+                        </h1>
+                    </a>
+                    
+                    <div class="text-sm text-slate-600 dark:text-slate-400">
+                        Already have an account? 
+                        <a href="{{ route('login') }}" class="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">
+                            Sign in
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="relative z-10 flex items-center justify-center min-h-[calc(100vh-4rem)] px-4 sm:px-6 lg:px-8 py-12">
+            <div class="w-full max-w-md">
+                <!-- Modern Card -->
+                <div class="bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-700 p-8 space-y-6">
+                    <!-- Header Section -->
+                    <div class="text-center space-y-2">
+                        <h2 class="text-3xl font-bold text-slate-900 dark:text-white">
+                            Create Account
+                        </h2>
+                        <p class="text-slate-600 dark:text-slate-400">
+                            Join EventHub to start creating amazing events
+                        </p>
+                    </div>eplace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>Register - {{ config('app.name', 'Laravel') }}</title>
+        <title>Create Account - {{ config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
 
         <!-- Styles / Scripts -->
         @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
@@ -34,150 +76,282 @@
 
             <!-- Registration Form -->
             <div class="bg-white dark:bg-[#161615] rounded-lg shadow-md p-8">
-                <!-- Flash Messages -->
-                @if (session('success'))
-                    <div class="mb-4 p-3 bg-green-100 dark:bg-green-900 border border-green-300 dark:border-green-700 rounded-md">
-                        <p class="text-green-800 dark:text-green-200 text-sm">{{ session('success') }}</p>
-                    </div>
-                @endif
+                    <!-- Flash Messages -->
+                    @if (session('success'))
+                        <div class="p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                <p class="text-emerald-800 dark:text-emerald-200 font-medium">{{ session('success') }}</p>
+                            </div>
+                        </div>
+                    @endif
 
-                @if (session('error'))
-                    <div class="mb-4 p-3 bg-red-100 dark:bg-red-900 border border-red-300 dark:border-red-700 rounded-md">
-                        <p class="text-red-800 dark:text-red-200 text-sm">{{ session('error') }}</p>
-                    </div>
-                @endif
+                    @if (session('error'))
+                        <div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-red-600 dark:text-red-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                                <p class="text-red-800 dark:text-red-200 font-medium">{{ session('error') }}</p>
+                            </div>
+                        </div>
+                    @endif
 
-                @if (session('info'))
-                    <div class="mb-4 p-3 bg-blue-100 dark:bg-blue-900 border border-blue-300 dark:border-blue-700 rounded-md">
-                        <p class="text-blue-800 dark:text-blue-200 text-sm">{{ session('info') }}</p>
-                    </div>
-                @endif
+                    @if (session('info'))
+                        <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                <p class="text-blue-800 dark:text-blue-200 font-medium">{{ session('info') }}</p>
+                            </div>
+                        </div>
+                    @endif
 
-                <form method="POST" action="{{ route('register.submit') }}">
-                    @csrf
+                    <form method="POST" action="{{ route('register.submit') }}" class="space-y-6">
+                        @csrf
 
-                    <!-- Name -->
-                    <div class="mb-4">
-                        <label for="name" class="block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC] mb-2">
-                            Full Name
-                        </label>
-                        <input 
-                            type="text" 
-                            id="name" 
-                            name="name" 
-                            value="{{ old('name') }}"
-                            required 
-                            autofocus
-                            class="w-full px-3 py-2 border border-[#19140035] dark:border-[#3E3E3A] rounded-md focus:outline-none focus:border-[#1915014a] dark:focus:border-[#62605b] bg-white dark:bg-[#3E3E3A] text-[#1b1b18] dark:text-[#EDEDEC] transition-all"
-                            placeholder="Enter your full name"
-                        >
-                        @error('name')
-                            <p class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                        <!-- Name Field -->
+                        <div class="space-y-2">
+                            <label for="name" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                                Full Name *
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    type="text" 
+                                    id="name" 
+                                    name="name" 
+                                    value="{{ old('name') }}"
+                                    required 
+                                    autofocus
+                                    class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('name') border-red-500 focus:ring-red-500 @enderror"
+                                    placeholder="Enter your full name"
+                                >
+                                @error('name')
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                @enderror
+                            </div>
+                            @error('name')
+                                <p class="text-red-600 dark:text-red-400 text-sm flex items-center mt-1">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
 
-                    <!-- Email -->
-                    <div class="mb-4">
-                        <label for="email" class="block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC] mb-2">
-                            Email Address
-                        </label>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            name="email" 
-                            value="{{ old('email') }}"
-                            required
-                            class="w-full px-3 py-2 border border-[#19140035] dark:border-[#3E3E3A] rounded-md focus:outline-none focus:border-[#1915014a] dark:focus:border-[#62605b] bg-white dark:bg-[#3E3E3A] text-[#1b1b18] dark:text-[#EDEDEC] transition-all"
-                            placeholder="Enter your email address"
-                        >
-                        @error('email')
-                            <p class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                        <!-- Email Field -->
+                        <div class="space-y-2">
+                            <label for="email" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                                Email Address *
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    type="email" 
+                                    id="email" 
+                                    name="email" 
+                                    value="{{ old('email') }}"
+                                    required
+                                    class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('email') border-red-500 focus:ring-red-500 @enderror"
+                                    placeholder="Enter your email address"
+                                >
+                                @error('email')
+                                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                        <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                        </svg>
+                                    </div>
+                                @enderror
+                            </div>
+                            @error('email')
+                                <p class="text-red-600 dark:text-red-400 text-sm flex items-center mt-1">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
 
-                    <!-- Account Type -->
-                    <div class="mb-4">
-                        <label for="role" class="block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC] mb-2">
-                            Account Type
-                        </label>
-                        <select 
-                            id="role" 
-                            name="role" 
-                            class="w-full px-3 py-2 border border-[#19140035] dark:border-[#3E3E3A] rounded-md focus:outline-none focus:border-[#1915014a] dark:focus:border-[#62605b] bg-white dark:bg-[#3E3E3A] text-[#1b1b18] dark:text-[#EDEDEC] transition-all"
-                        >
-                            <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>Regular User</option>
-                            <option value="organizer" {{ old('role') == 'organizer' ? 'selected' : '' }}>Event Organizer</option>
-                        </select>
-                        @error('role')
-                            <p class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                        <p class="text-[#706f6c] dark:text-[#A1A09A] text-xs mt-1">
-                            Choose "Event Organizer" if you plan to create and manage events
+                        <!-- Account Type Field -->
+                        <div class="space-y-2">
+                            <label for="role" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                                Account Type *
+                            </label>
+                            <div class="relative">
+                                <select 
+                                    id="role" 
+                                    name="role" 
+                                    class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('role') border-red-500 focus:ring-red-500 @enderror appearance-none cursor-pointer"
+                                >
+                                    <option value="user" {{ old('role') == 'user' ? 'selected' : '' }}>Regular User</option>
+                                    <option value="organizer" {{ old('role') == 'organizer' ? 'selected' : '' }}>Event Organizer</option>
+                                </select>
+                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                </div>
+                            </div>
+                            @error('role')
+                                <p class="text-red-600 dark:text-red-400 text-sm flex items-center mt-1">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                            <p class="text-slate-500 dark:text-slate-400 text-sm flex items-center">
+                                <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                </svg>
+                                Choose "Event Organizer" if you plan to create and manage events
+                            </p>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="space-y-2">
+                            <label for="password" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                                Password *
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    type="password" 
+                                    id="password" 
+                                    name="password" 
+                                    required
+                                    class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('password') border-red-500 focus:ring-red-500 @enderror pr-12"
+                                    placeholder="Create a secure password"
+                                >
+                                <button 
+                                    type="button" 
+                                    onclick="togglePassword('password')"
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors duration-200"
+                                >
+                                    <svg id="password-eye" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            @error('password')
+                                <p class="text-red-600 dark:text-red-400 text-sm flex items-center mt-1">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                            <div class="text-slate-500 dark:text-slate-400 text-sm space-y-1">
+                                <p class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                                    </svg>
+                                    Password must be at least 8 characters long
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Confirm Password Field -->
+                        <div class="space-y-2">
+                            <label for="password_confirmation" class="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                                Confirm Password *
+                            </label>
+                            <div class="relative">
+                                <input 
+                                    type="password" 
+                                    id="password_confirmation" 
+                                    name="password_confirmation" 
+                                    required
+                                    class="w-full px-4 py-3 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 @error('password_confirmation') border-red-500 focus:ring-red-500 @enderror pr-12"
+                                    placeholder="Confirm your password"
+                                >
+                                <button 
+                                    type="button" 
+                                    onclick="togglePassword('password_confirmation')"
+                                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors duration-200"
+                                >
+                                    <svg id="password_confirmation-eye" class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            @error('password_confirmation')
+                                <p class="text-red-600 dark:text-red-400 text-sm flex items-center mt-1">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="pt-4">
+                            <button 
+                                type="submit"
+                                class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-slate-900"
+                            >
+                                <span class="flex items-center justify-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                                    </svg>
+                                    Create Account
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Login Link -->
+                    <div class="mt-8 text-center">
+                        <p class="text-slate-600 dark:text-slate-400">
+                            Already have an account? 
+                            <a href="{{ route('login') }}" class="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
+                                Sign in here
+                            </a>
                         </p>
                     </div>
 
-                    <!-- Password -->
-                    <div class="mb-4">
-                        <label for="password" class="block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC] mb-2">
-                            Password
-                        </label>
-                        <input 
-                            type="password" 
-                            id="password" 
-                            name="password" 
-                            required
-                            class="w-full px-3 py-2 border border-[#19140035] dark:border-[#3E3E3A] rounded-md focus:outline-none focus:border-[#1915014a] dark:focus:border-[#62605b] bg-white dark:bg-[#3E3E3A] text-[#1b1b18] dark:text-[#EDEDEC] transition-all"
-                            placeholder="Create a secure password"
-                        >
-                        @error('password')
-                            <p class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Confirm Password -->
-                    <div class="mb-6">
-                        <label for="password_confirmation" class="block text-sm font-medium text-[#1b1b18] dark:text-[#EDEDEC] mb-2">
-                            Confirm Password
-                        </label>
-                        <input 
-                            type="password" 
-                            id="password_confirmation" 
-                            name="password_confirmation" 
-                            required
-                            class="w-full px-3 py-2 border border-[#19140035] dark:border-[#3E3E3A] rounded-md focus:outline-none focus:border-[#1915014a] dark:focus:border-[#62605b] bg-white dark:bg-[#3E3E3A] text-[#1b1b18] dark:text-[#EDEDEC] transition-all"
-                            placeholder="Confirm your password"
-                        >
-                        @error('password_confirmation')
-                            <p class="text-red-600 dark:text-red-400 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <!-- Submit Button -->
-                    <button 
-                        type="submit"
-                        class="w-full bg-[#1b1b18] dark:bg-[#eeeeec] text-white dark:text-[#1C1C1A] py-3 px-4 rounded-md font-medium hover:bg-[#161615] dark:hover:bg-white transition-all focus:outline-none focus:ring-2 focus:ring-[#1915014a] dark:focus:ring-[#62605b] focus:ring-offset-2"
-                    >
-                        Create Account
-                    </button>
-                </form>
-
-                <!-- Login Link -->
-                <div class="text-center mt-6">
-                    <p class="text-[#706f6c] dark:text-[#A1A09A] text-sm">
-                        Already have an account? 
-                        <a href="{{ route('login') }}" class="text-[#F53003] dark:text-[#FF4433] hover:underline font-medium">
-                            Sign in here
+                    <!-- Back to Home -->
+                    <div class="text-center mt-4">
+                        <a href="{{ url('/') }}" class="text-slate-500 dark:text-slate-400 text-sm hover:text-slate-600 dark:hover:text-slate-300 transition-colors duration-200 flex items-center justify-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                            </svg>
+                            Back to Home
                         </a>
-                    </p>
-                </div>
-
-                <!-- Back to Home -->
-                <div class="text-center mt-4">
-                    <a href="{{ url('/') }}" class="text-[#706f6c] dark:text-[#A1A09A] text-sm hover:underline">
-                        ← Back to Home
-                    </a>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- JavaScript for Password Toggle -->
+        <script>
+            function togglePassword(fieldId) {
+                const field = document.getElementById(fieldId);
+                const eyeIcon = document.getElementById(fieldId + '-eye');
+                
+                if (field.type === 'password') {
+                    field.type = 'text';
+                    eyeIcon.innerHTML = `
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21"/>
+                    `;
+                } else {
+                    field.type = 'password';
+                    eyeIcon.innerHTML = `
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    `;
+                }
+            }
+        </script>
     </body>
 </html>
