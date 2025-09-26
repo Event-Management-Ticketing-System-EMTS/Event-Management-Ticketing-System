@@ -1,4 +1,4 @@
-{{-- Login page setup finished --}}
+{{-- Login page setup finished  and database is also connected--}}
 
 <!DOCTYPE html>
 <html lang="en">
