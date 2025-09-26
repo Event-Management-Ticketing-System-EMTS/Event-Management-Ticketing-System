@@ -1,36 +1,59 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>Register</title>
   @vite('resources/css/app.css')
 </head>
-<body class="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center">
-  <form method="POST" action="{{ route('register.store') }}" class="w-full max-w-sm bg-slate-800 p-6 rounded-2xl">
-    @csrf
-    <h1 class="text-xl font-semibold mb-4">Register</h1>
+<body class="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4">
+  <div class="w-full max-w-md bg-slate-900/60 rounded-2xl p-6 border border-fuchsia-400/20">
+    <h1 class="text-2xl font-semibold mb-4 text-fuchsia-400">Create an account</h1>
 
-    @error('name') <p class="text-red-400 text-sm mb-2">{{ $message }}</p> @enderror
-    @error('email') <p class="text-red-400 text-sm mb-2">{{ $message }}</p> @enderror
-    @error('password') <p class="text-red-400 text-sm mb-2">{{ $message }}</p> @enderror
+    @if ($errors->any())
+      <div class="mb-4 text-sm bg-red-500/10 border border-red-500/40 text-red-300 rounded p-3">
+        <ul class="list-disc ml-4">
+          @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
+    @endif
 
-    <label class="block mb-2 text-sm">Name</label>
-    <input name="name" type="text" value="{{ old('name') }}" required class="w-full mb-4 px-3 py-2 rounded bg-slate-700 outline-none">
+    @if (session('success'))
+      <div class="mb-4 text-sm bg-emerald-500/10 border border-emerald-500/40 text-emerald-300 rounded p-3">
+        {{ session('success') }}
+      </div>
+    @endif
 
-    <label class="block mb-2 text-sm">Email</label>
-    <input name="email" type="email" value="{{ old('email') }}" required class="w-full mb-4 px-3 py-2 rounded bg-slate-700 outline-none">
+    <form method="POST" action="{{ route('register.perform') }}" class="space-y-4">
+      @csrf
+      <div>
+        <label class="block mb-1 text-sm">Name</label>
+        <input name="name" value="{{ old('name') }}" required
+               class="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+      </div>
+      <div>
+        <label class="block mb-1 text-sm">Email</label>
+        <input type="email" name="email" value="{{ old('email') }}" required
+               class="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+      </div>
+      <div>
+        <label class="block mb-1 text-sm">Password</label>
+        <input type="password" name="password" required
+               class="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+      </div>
+      <div>
+        <label class="block mb-1 text-sm">Confirm Password</label>
+        <input type="password" name="password_confirmation" required
+               class="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+      </div>
+      <button class="w-full py-2 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500">Register</button>
+    </form>
 
-    <label class="block mb-2 text-sm">Password</label>
-    <input name="password" type="password" required class="w-full mb-4 px-3 py-2 rounded bg-slate-700 outline-none">
-
-    <label class="block mb-2 text-sm">Confirm Password</label>
-    <input name="password_confirmation" type="password" required class="w-full mb-6 px-3 py-2 rounded bg-slate-700 outline-none">
-
-    <button class="w-full py-2 rounded bg-fuchsia-600 hover:bg-fuchsia-500 font-medium">Register</button>
-
-    <p class="mt-3 text-sm">
-      Already have an account? <a href="{{ route('login.show') }}" class="text-fuchsia-400 underline">Login</a>
+    <p class="mt-4 text-sm">
+      Already have an account?
+      <a href="{{ route('login.show') }}" class="text-fuchsia-400 hover:underline">Log in</a>
     </p>
-  </form>
+  </div>
 </body>
 </html>

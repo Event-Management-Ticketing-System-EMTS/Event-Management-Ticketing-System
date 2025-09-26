@@ -1,34 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>Login</title>
   @vite('resources/css/app.css')
 </head>
-<body class="min-h-screen bg-slate-900 text-slate-100 flex items-center justify-center">
-  <form method="POST" action="{{ route('login.perform') }}" class="w-full max-w-sm bg-slate-800 p-6 rounded-2xl">
-    @csrf
-    <h1 class="text-xl font-semibold mb-4">Login</h1>
+<body class="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4">
+  <div class="w-full max-w-md bg-slate-900/60 rounded-2xl p-6 border border-fuchsia-400/20">
+    <h1 class="text-2xl font-semibold mb-4 text-fuchsia-400">Welcome back</h1>
 
-    @if(session('error'))
-      <p class="text-red-400 text-sm mb-2">{{ session('error') }}</p>
+    @if (session('success'))
+      <div class="mb-4 text-sm bg-emerald-500/10 border border-emerald-500/40 text-emerald-300 rounded p-3">
+        {{ session('success') }}
+      </div>
     @endif
-    @if(session('success'))
-      <p class="text-green-400 text-sm mb-2">{{ session('success') }}</p>
+
+    @if ($errors->any())
+      <div class="mb-4 text-sm bg-red-500/10 border border-red-500/40 text-red-300 rounded p-3">
+        <ul class="list-disc ml-4">
+          @foreach ($errors->all() as $error)
+            <li>{{ $error }}</li>
+          @endforeach
+        </ul>
+      </div>
     @endif
-    @error('email') <p class="text-red-400 text-sm mb-2">{{ $message }}</p> @enderror
 
-    <label class="block mb-2 text-sm">Email</label>
-    <input name="email" type="email" value="{{ old('email') }}" required class="w-full mb-4 px-3 py-2 rounded bg-slate-700 outline-none">
+    <form method="POST" action="{{ route('login.perform') }}" class="space-y-4">
+      @csrf
+      <div>
+        <label class="block mb-1 text-sm">Email</label>
+        <input type="email" name="email" value="{{ old('email') }}" required
+               class="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+      </div>
+      <div>
+        <label class="block mb-1 text-sm">Password</label>
+        <input type="password" name="password" required
+               class="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+      </div>
+      <button class="w-full py-2 rounded-xl bg-fuchsia-600 hover:bg-fuchsia-500">Login</button>
+    </form>
 
-    <label class="block mb-2 text-sm">Password</label>
-    <input name="password" type="password" required class="w-full mb-6 px-3 py-2 rounded bg-slate-700 outline-none">
-
-    <button class="w-full py-2 rounded bg-fuchsia-600 hover:bg-fuchsia-500 font-medium">Sign in</button>
-
-    <p class="mt-3 text-sm">
-      No account? <a href="{{ route('register.show') }}" class="text-fuchsia-400 underline">Register</a>
+    <p class="mt-4 text-sm">
+      New here?
+      <a href="{{ route('register.show') }}" class="text-fuchsia-400 hover:underline">Create an account</a>
     </p>
-  </form>
+  </div>
 </body>
 </html>
