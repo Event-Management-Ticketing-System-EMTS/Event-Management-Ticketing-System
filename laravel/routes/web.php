@@ -22,3 +22,5 @@ Route::post('/reset-password', [PasswordResetController::class, 'resetPassword']
 Route::get('/login', function () {
     return redirect()->route('register')->with('info', 'Please create an account to get started!');
 })->name('login');
+
+Route::view('/tailwind-demo', 'tailwind-demo')->name('tailwind.demo');
