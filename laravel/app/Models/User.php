@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -36,7 +35,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
      * @return array<string, string>
      */
@@ -49,7 +48,9 @@ class User extends Authenticatable
         ];
     }
 
-    // Role constants
+    // ------------------------------
+    // Role constants and helpers
+    // ------------------------------
     public const ROLE_USER = 'user';
     public const ROLE_ORGANIZER = 'organizer';
     public const ROLE_ADMIN = 'admin';
@@ -66,35 +67,35 @@ class User extends Authenticatable
         ];
     }
 
-    /**
-     * Check if user has a specific role
-     */
     public function hasRole(string $role): bool
     {
         return $this->role === $role;
     }
 
-    /**
-     * Check if user is admin
-     */
     public function isAdmin(): bool
     {
         return $this->hasRole(self::ROLE_ADMIN);
     }
 
-    /**
-     * Check if user is organizer
-     */
     public function isOrganizer(): bool
     {
         return $this->hasRole(self::ROLE_ORGANIZER);
     }
 
-    /**
-     * Check if user is regular user
-     */
     public function isUser(): bool
     {
         return $this->hasRole(self::ROLE_USER);
+    }
+
+    // ------------------------------
+    // Relationships
+    // ------------------------------
+
+    /**
+     * A user can have many login logs
+     */
+    public function loginLogs()
+    {
+        return $this->hasMany(LoginLog::class);
     }
 }

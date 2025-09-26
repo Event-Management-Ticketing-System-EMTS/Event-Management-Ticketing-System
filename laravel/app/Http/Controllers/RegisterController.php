@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\LoginLog;
 use App\Services\UserCreation\UserFactory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
@@ -43,8 +44,16 @@ class RegisterController extends Controller
             // Create the user using the factory
             $user = $this->userFactory->createUser($request->all(), $role);
 
-            // Log the user in
+            // Log the user in immediately after registration
             Auth::login($user);
+
+            // Record this login in login_logs table
+            LoginLog::create([
+                'user_id'    => $user->id,
+                'ip'         => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'success'    => true,
+            ]);
 
             // Redirect to home page with success message
             $roleDisplay = ucfirst($role);
