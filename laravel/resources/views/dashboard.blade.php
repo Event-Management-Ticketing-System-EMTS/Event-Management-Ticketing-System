@@ -1,3 +1,4 @@
+{{-- Dashboard page added--}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
