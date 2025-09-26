@@ -1,3 +1,5 @@
+{{-- Login page setup finished --}}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +16,7 @@
         {{ session('success') }}
       </div>
     @endif
-
+  
     @if ($errors->any())
       <div class="mb-4 text-sm bg-red-500/10 border border-red-500/40 text-red-300 rounded p-3">
         <ul class="list-disc ml-4">
