@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,6 +21,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Force "remember me" cookies to expire in 10 minutes (instead of default ~5 years)
+        Auth::viaRemember();
+
+        $recallerName = Auth::getRecallerName(); // default: remember_web_xxxxx
+
+        // If Laravel sets a remember cookie, reset its lifetime to 10 minutes
+        if (Cookie::has($recallerName)) {
+            $value = Cookie::get($recallerName);
+
+            // Re-queue it with 10 minutes expiration
+            Cookie::queue($recallerName, $value, 10);
+        }
     }
 }

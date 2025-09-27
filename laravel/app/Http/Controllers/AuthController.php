@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\LoginLog; // optional if you want to log
+use App\Models\LoginLog;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -17,43 +16,56 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $data = $request->validate([
+        // Validate input
+        $credentials = $request->validate([
             'email'    => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        $user = User::where('email', $data['email'])->first();
+        // Get "remember me" checkbox value
+        $remember = $request->boolean('remember');
 
-        $ok = $user && Hash::check($data['password'], $user->password);
+        // Attempt login with remember me
+        if (Auth::attempt($credentials, $remember)) {
+            $request->session()->regenerate(); // Prevent session fixation
 
-        // (Optional) save a login log row if you created the login_logs table
+            // (Optional) Save login log if table exists
+            if (class_exists(LoginLog::class)) {
+                LoginLog::create([
+                    'user_id'    => Auth::id(),
+                    'email'      => $credentials['email'],
+                    'success'    => true,
+                    'ip'         => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                ]);
+            }
+
+            return redirect()->route('dashboard')->with('success', 'Logged in successfully!');
+        }
+
+        // Log failed attempt
         if (class_exists(LoginLog::class)) {
             LoginLog::create([
-                'user_id'   => $user?->id,
-                'email'     => $data['email'],
-                'success'   => $ok,
-                'ip'        => $request->ip(),
-                'user_agent'=> $request->userAgent(),
+                'user_id'    => null,
+                'email'      => $credentials['email'],
+                'success'    => false,
+                'ip'         => $request->ip(),
+                'user_agent' => $request->userAgent(),
             ]);
         }
 
-        if (!$ok) {
-            return back()
-                ->withErrors(['email' => 'Invalid email or password.'])
-                ->withInput();
-        }
-
-        // Simple session-based login
-        Session::put('user_id', $user->id);
-        Session::put('user_name', $user->name);
-
-        return redirect()->route('dashboard')->with('success', 'Logged in successfully!');
-
+        return back()
+            ->withErrors(['email' => 'Invalid email or password.'])
+            ->withInput();
     }
 
     public function logout(Request $request)
     {
-        $request->session()->flush();
+        Auth::logout(); // Logs out + clears remember-me cookie
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect()->route('login.show')->with('success', 'Logged out.');
     }
 }
