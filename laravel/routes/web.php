@@ -26,10 +26,10 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Admin Dashboard
-    Route::view('/dashboard', 'dashboard')->name('dashboard'); // resources/views/dashboard.blade.php
+    // Admin Dashboard → resources/views/admin/dashboard.blade.php
+    Route::view('/dashboard', 'admin.dashboard')->name('dashboard');
 
-    // User Dashboard  ✅ point to resources/views/user/dashboard.blade.php
+    // User Dashboard → resources/views/user/dashboard.blade.php
     Route::view('/user-dashboard', 'user.dashboard')->name('user.dashboard');
 
     // Shared demo page (optional)
