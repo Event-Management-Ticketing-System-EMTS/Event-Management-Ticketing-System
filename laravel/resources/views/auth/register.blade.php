@@ -1,4 +1,4 @@
-{{-- Professional Registration (matches new Login) --}}
+{{-- Professional Registration (small entrance animation, no Alpine) --}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Register</title>
   @vite('resources/css/app.css')
-  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
 <body class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 antialiased">
@@ -28,8 +27,11 @@
 
   <main class="flex items-center justify-center p-6">
     <div class="w-full max-w-md">
-      <div class="mb-8 text-center">
-        <div class="mx-auto mb-4 h-12 w-12 rounded-2xl bg-cyan-500/20 ring-1 ring-cyan-400/40 grid place-items-center">
+      {{-- Header --}}
+      <div id="reg-header"
+           class="mb-8 text-center opacity-0 translate-y-2 transition-all duration-500">
+        <div class="mx-auto mb-4 h-12 w-12 rounded-2xl bg-cyan-500/20 ring-1 ring-cyan-400/40 grid place-items-center
+                    scale-95 transition-transform duration-500">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cyan-400" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 3l9 4.5v9L12 21 3 16.5v-9L12 3zM5 8l7 3 7-3-7-3-7 3zm7 5l7-3v5l-7 3-7-3v-5l7 3z"/>
           </svg>
@@ -53,20 +55,12 @@
         <div class="mb-4 text-sm bg-emerald-500/10 border border-emerald-500/40 text-emerald-300 rounded-lg p-3">
           {{ session('success') }}
         </div>
-      @endif>
+      @endif
 
       {{-- Card --}}
-      <div x-data="{showPass:false, showConf:false, pwd:'', strength:0}"
-           x-effect="
-             // simple strength score: length + diversity
-             strength = 0;
-             if (pwd.length >= 8) strength += 1;
-             if (/[A-Z]/.test(pwd)) strength += 1;
-             if (/[a-z]/.test(pwd)) strength += 1;
-             if (/\d/.test(pwd)) strength += 1;
-             if (/[^A-Za-z0-9]/.test(pwd)) strength += 1;
-           "
-           class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md shadow-xl shadow-cyan-900/20">
+      <div id="reg-card"
+           class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md shadow-xl shadow-cyan-900/20
+                  opacity-0 translate-y-4 scale-[.98] transition-all duration-500">
 
         <form method="POST" action="{{ route('register.perform') }}" class="p-6 space-y-5">
           @csrf
@@ -100,57 +94,25 @@
           {{-- Password --}}
           <div>
             <label for="password" class="block text-sm mb-1 text-slate-300">Password</label>
-            <div class="relative">
-              <input :type="showPass ? 'text' : 'password'"
-                     id="password" name="password" required autocomplete="new-password"
-                     x-model="pwd"
-                     class="w-full rounded-lg bg-slate-800/70 border border-cyan-400/20 pr-10 px-3 py-2.5
-                            focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                     placeholder="Create a password" />
-              <button type="button" x-on:click="showPass = !showPass"
-                      class="absolute inset-y-0 right-0 pr-3 flex items-center text-cyan-400 hover:text-cyan-200">
-                <svg x-show="!showPass" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12a4.5 4.5 0 110-9 4.5 4.5 0 010 9z"/>
-                </svg>
-                <svg x-show="showPass" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M3.28 2.22L2.22 3.28 5.2 6.27A12.72 12.72 0 001 12c1.73 4.39 6 7.5 11 7.5 2.1 0 4.06-.53 5.8-1.47l2.92 2.92 1.06-1.06-18.5-18.5zM12 17.5c-3.97 0-7.35-2.48-8.88-5.5A10.73 10.73 0 016.3 8.04l2.2 2.2A4.5 4.5 0 0012 16.5c.63 0 1.23-.12 1.78-.34l1.66 1.66c-.86.43-1.8.68-2.78.68z"/>
-                </svg>
-              </button>
-            </div>
-
-            {{-- Strength meter --}}
+            <input id="password" name="password" type="password" required autocomplete="new-password"
+                   class="w-full rounded-lg bg-slate-800/70 border border-cyan-400/20 px-3 py-2.5
+                          focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                   placeholder="Create a password" />
             <div class="mt-2">
               <div class="h-2 w-full rounded bg-slate-800/70 overflow-hidden">
-                <div class="h-2 transition-all"
-                     :class="[
-                       strength <= 1 ? 'bg-red-400 w-1/5' :
-                       strength == 2 ? 'bg-orange-400 w-2/5' :
-                       strength == 3 ? 'bg-yellow-400 w-3/5' :
-                       strength == 4 ? 'bg-lime-400 w-4/5' :
-                                       'bg-cyan-400 w-full'
-                     ]"></div>
+                <div class="h-2 w-3/5 bg-cyan-400"></div>
               </div>
-              <p class="mt-1 text-xs text-slate-400">
-                Use 8+ chars with upper/lowercase, a number, and a symbol.
-              </p>
+              <p class="mt-1 text-xs text-slate-400">Use 8+ chars with upper/lowercase, a number, and a symbol.</p>
             </div>
           </div>
 
           {{-- Confirm Password --}}
           <div>
             <label for="password_confirmation" class="block text-sm mb-1 text-slate-300">Confirm password</label>
-            <div class="relative">
-              <input :type="showConf ? 'text' : 'password'"
-                     id="password_confirmation" name="password_confirmation" required autocomplete="new-password"
-                     class="w-full rounded-lg bg-slate-800/70 border border-cyan-400/20 pr-10 px-3 py-2.5
-                            focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                     placeholder="Re-type your password" />
-              <button type="button" x-on:click="showConf = !showConf"
-                      class="absolute inset-y-0 right-0 pr-3 flex items-center text-cyan-400 hover:text-cyan-200">
-                <svg x-show="!showConf" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12a4.5 4.5 0 110-9 4.5 4.5 0 010 9z"/></svg>
-                <svg x-show="showConf" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path d="M3.28 2.22L2.22 3.28 5.2 6.27A12.72 12.72 0 001 12c1.73 4.39 6 7.5 11 7.5 2.1 0 4.06-.53 5.8-1.47l2.92 2.92 1.06-1.06-18.5-18.5zM12 17.5c-3.97 0-7.35-2.48-8.88-5.5A10.73 10.73 0 016.3 8.04l2.2 2.2A4.5 4.5 0 0012 16.5c.63 0 1.23-.12 1.78-.34l1.66 1.66c-.86.43-1.8.68-2.78.68z"/></svg>
-              </button>
-            </div>
+            <input id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password"
+                   class="w-full rounded-lg bg-slate-800/70 border border-cyan-400/20 px-3 py-2.5
+                          focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                   placeholder="Re-type your password" />
           </div>
 
           {{-- Submit --}}
@@ -168,5 +130,20 @@
       </div>
     </div>
   </main>
+
+  {{-- tiny script to reveal with animation --}}
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const header = document.getElementById('reg-header');
+      const card = document.getElementById('reg-card');
+      // trigger the transitions
+      requestAnimationFrame(() => {
+        header.classList.remove('opacity-0','translate-y-2');
+        const icon = header.querySelector('div'); // the logo block
+        icon && icon.classList.remove('scale-95');
+        card.classList.remove('opacity-0','translate-y-4','scale-[.98]');
+      });
+    });
+  </script>
 </body>
 </html>
