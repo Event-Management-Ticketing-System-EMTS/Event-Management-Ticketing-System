@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
 
 // ---------- Public (guest-only) ----------
 Route::middleware('guest')->group(function () {
@@ -31,6 +32,10 @@ Route::middleware('auth')->group(function () {
 
     // User Dashboard → resources/views/user/dashboard.blade.php
     Route::view('/user-dashboard', 'user.dashboard')->name('user.dashboard');
+
+    // Profile (view + update)
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Shared demo page (optional)
     Route::view('/tailwind-demo', 'tailwind-demo')->name('tailwind.demo');
