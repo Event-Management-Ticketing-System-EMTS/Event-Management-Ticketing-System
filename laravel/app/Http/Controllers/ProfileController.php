@@ -22,29 +22,36 @@ class ProfileController extends Controller
             'name'              => ['required', 'string', 'max:255'],
             'email'             => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
             'avatar'            => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
-            'current_password'  => ['nullable', 'current_password'],
+            // password change is optional, but if provided current_password must match
+            'current_password'  => ['nullable', 'required_with:password', 'current_password'],
             'password'          => ['nullable', 'confirmed', 'min:8'],
         ]);
 
-        // Basic fields
-        $user->name  = $validated['name'];
-        $user->email = $validated['email'];
-
-        // Avatar upload (optional)
+        // --- Avatar handling ---
+        $avatarPath = $user->avatar_path;
         if ($request->hasFile('avatar')) {
-            if ($user->avatar_path) {
-                Storage::disk('public')->delete($user->avatar_path);
+            if ($avatarPath) {
+                Storage::disk('public')->delete($avatarPath);
             }
-            $user->avatar_path = $request->file('avatar')->store('avatars', 'public');
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
         }
 
-        // Password change (optional)
+        // --- Build update payload ---
+        $data = [
+            'name'         => $validated['name'],
+            'email'        => $validated['email'],
+            'avatar_path'  => $avatarPath,
+        ];
+
         if (!empty($validated['password'])) {
-            $user->password = Hash::make($validated['password']);
+            $data['password'] = Hash::make($validated['password']);
         }
 
-        $user->save();
+        // One-shot persist (no ->save())
+        $user->update($data);
 
-        return redirect()->route('profile.edit')->with('success', 'Profile updated successfully.');
+        return redirect()
+            ->route('profile.edit')
+            ->with('success', 'Profile updated successfully.');
     }
 }
