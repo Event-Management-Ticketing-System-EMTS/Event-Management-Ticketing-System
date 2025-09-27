@@ -12,7 +12,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * Mass assignable attributes.
      *
      * @var list<string>
      */
@@ -20,12 +20,12 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
-        'email_verified',
+        'role',            // 'user' | 'admin'
+        'email_verified',  // if you use this boolean flag
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Hidden attributes for arrays / JSON.
      *
      * @var list<string>
      */
@@ -35,7 +35,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
+     * Casts.
      *
      * @return array<string, string>
      */
@@ -43,26 +43,22 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'email_verified' => 'boolean',
+            'password'          => 'hashed',
+            'email_verified'    => 'boolean',
         ];
     }
 
     // ------------------------------
-    // Role constants and helpers
+    // Role constants & helpers
     // ------------------------------
-    public const ROLE_USER = 'user';
-    public const ROLE_ORGANIZER = 'organizer';
+    public const ROLE_USER  = 'user';
     public const ROLE_ADMIN = 'admin';
 
-    /**
-     * Get all available roles
-     */
+    /** All available roles (for UIs/dropdowns) */
     public static function getRoles(): array
     {
         return [
-            self::ROLE_USER => 'User',
-            self::ROLE_ORGANIZER => 'Organizer',
+            self::ROLE_USER  => 'User',
             self::ROLE_ADMIN => 'Admin',
         ];
     }
@@ -77,11 +73,6 @@ class User extends Authenticatable
         return $this->hasRole(self::ROLE_ADMIN);
     }
 
-    public function isOrganizer(): bool
-    {
-        return $this->hasRole(self::ROLE_ORGANIZER);
-    }
-
     public function isUser(): bool
     {
         return $this->hasRole(self::ROLE_USER);
@@ -91,9 +82,7 @@ class User extends Authenticatable
     // Relationships
     // ------------------------------
 
-    /**
-     * A user can have many login logs
-     */
+    /** A user can have many login logs */
     public function loginLogs()
     {
         return $this->hasMany(LoginLog::class);

@@ -91,6 +91,18 @@
             </div>
           </div>
 
+          {{-- Role --}}
+          <div>
+            <label for="role" class="block text-sm mb-1 text-slate-300">Role</label>
+            <select id="role" name="role" required
+                    class="w-full rounded-lg bg-slate-800/70 border border-cyan-400/20 px-3 py-2.5
+                           focus:outline-none focus:ring-2 focus:ring-cyan-400">
+              <option value="user"  {{ old('role','user')==='user' ? 'selected' : '' }}>User</option>
+              <option value="admin" {{ old('role')==='admin' ? 'selected' : '' }}>Admin</option>
+            </select>
+            <p class="mt-1 text-xs text-slate-400">Admins can create/update events. Users can browse and book.</p>
+          </div>
+
           {{-- Password --}}
           <div>
             <label for="password" class="block text-sm mb-1 text-slate-300">Password</label>
@@ -136,7 +148,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       const header = document.getElementById('reg-header');
       const card = document.getElementById('reg-card');
-      // trigger the transitions
       requestAnimationFrame(() => {
         header.classList.remove('opacity-0','translate-y-2');
         const icon = header.querySelector('div'); // the logo block
