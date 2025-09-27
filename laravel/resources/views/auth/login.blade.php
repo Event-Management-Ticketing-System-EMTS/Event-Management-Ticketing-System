@@ -1,4 +1,4 @@
-{{-- Professional Login with Premium Colors --}}
+{{-- Professional Login with Premium Colors + subtle entrance --}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,9 +28,10 @@
 
   <main class="flex items-center justify-center p-6">
     <div class="w-full max-w-md">
-      <div class="mb-8 text-center">
+      <div id="login-header" class="mb-8 text-center opacity-0 translate-y-2 transition-all duration-500">
         {{-- Logo / Brand mark --}}
-        <div class="mx-auto mb-4 h-12 w-12 rounded-2xl bg-cyan-500/20 ring-1 ring-cyan-400/40 grid place-items-center">
+        <div class="mx-auto mb-4 h-12 w-12 rounded-2xl bg-cyan-500/20 ring-1 ring-cyan-400/40 grid place-items-center
+                    scale-95 transition-transform duration-500">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-cyan-400" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 3l9 4.5v9L12 21 3 16.5v-9L12 3zM5 8l7 3 7-3-7-3-7 3zm7 5l7-3v5l-7 3-7-3v-5l7 3z"/>
           </svg>
@@ -57,9 +58,10 @@
       @endif
 
       {{-- Card --}}
-      <div
+      <div id="login-card"
         x-data="{loading:false, show:false}"
-        class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md shadow-xl shadow-cyan-900/20"
+        class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md shadow-xl shadow-cyan-900/20
+               opacity-0 translate-y-4 scale-[.98] transition-all duration-500"
       >
         <form method="POST" action="{{ route('login.perform') }}" class="p-6 space-y-5" x-on:submit="loading=true">
           @csrf
@@ -150,5 +152,19 @@
       </div>
     </div>
   </main>
+
+  {{-- tiny script to trigger entrance --}}
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const header = document.getElementById('login-header');
+      const card = document.getElementById('login-card');
+      requestAnimationFrame(() => {
+        header.classList.remove('opacity-0','translate-y-2');
+        const icon = header.querySelector('div'); // logo block
+        icon && icon.classList.remove('scale-95');
+        card.classList.remove('opacity-0','translate-y-4','scale-[.98]');
+      });
+    });
+  </script>
 </body>
 </html>
