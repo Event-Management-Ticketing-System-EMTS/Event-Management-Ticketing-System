@@ -11,6 +11,14 @@ class AuthController extends Controller
 {
     public function showLogin()
     {
+        // If already authenticated, send to the right place
+        if (Auth::check()) {
+            $user = Auth::user();
+            return $user->role === User::ROLE_ADMIN
+                ? redirect()->route('dashboard')
+                : redirect()->route('user.dashboard');
+        }
+
         return view('auth.login');
     }
 
@@ -40,7 +48,11 @@ class AuthController extends Controller
                 ]);
             }
 
-            return redirect()->route('dashboard')->with('success', 'Logged in successfully!');
+            // Redirect by role
+            $user = Auth::user();
+            return $user->role === User::ROLE_ADMIN
+                ? redirect()->route('dashboard')->with('success', 'Welcome Admin!')
+                : redirect()->route('user.dashboard')->with('success', 'Welcome User!');
         }
 
         // Log failed attempt

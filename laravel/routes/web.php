@@ -26,10 +26,15 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Protected pages
-    Route::view('/dashboard', 'dashboard')->name('dashboard');
+    // Admin Dashboard
+    Route::view('/dashboard', 'dashboard')->name('dashboard'); // resources/views/dashboard.blade.php
+
+    // User Dashboard  ✅ point to resources/views/user/dashboard.blade.php
+    Route::view('/user-dashboard', 'user.dashboard')->name('user.dashboard');
+
+    // Shared demo page (optional)
     Route::view('/tailwind-demo', 'tailwind-demo')->name('tailwind.demo');
 });
 
-// (Optional) Public demo or landing
+// ---------- Public Landing ----------
 Route::view('/welcome', 'welcome')->name('welcome');
