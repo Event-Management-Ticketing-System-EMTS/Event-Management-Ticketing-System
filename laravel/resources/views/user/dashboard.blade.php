@@ -88,9 +88,11 @@
             <button class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20">
               My Tickets
             </button>
-            <button class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20">
-              Profile Settings
-            </button>
+            <a href="{{ route('profile.edit') }}"
+   class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20 text-center">
+  Profile Settings
+</a>
+
             <button class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20">
               Support
             </button>
