@@ -17,13 +17,8 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role',            // 'user' | 'admin'
-        'email_verified',  // if you use this boolean flag
-    ];
-
+    'name', 'email', 'password', 'role', 'email_verified', 'avatar_path',
+];
     /**
      * Hidden attributes for arrays / JSON.
      *
