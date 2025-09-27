@@ -40,18 +40,32 @@
 
   {{-- Main Content --}}
   <main class="max-w-6xl mx-auto p-6">
+    @php($user = auth()->user())
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
       {{-- Profile Card --}}
       <div class="md:col-span-1 rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md shadow-lg p-6">
         <div class="flex flex-col items-center">
-          <div class="h-20 w-20 rounded-full bg-gradient-to-br from-cyan-500 to-sky-500 flex items-center justify-center text-white text-2xl font-bold">
-            {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+
+          {{-- Avatar with fallback initial (cache-busted by updated_at) --}}
+          <div class="h-20 w-20 rounded-full overflow-hidden ring-2 ring-cyan-400/30 bg-slate-800">
+            @if($user->avatar_path)
+              <img
+                src="{{ asset('storage/'.$user->avatar_path) }}?v={{ optional($user->updated_at)->timestamp }}"
+                alt="Avatar"
+                class="h-full w-full object-cover"
+              >
+            @else
+              <div class="h-full w-full grid place-items-center bg-gradient-to-br from-cyan-500 to-sky-500 text-white text-2xl font-bold">
+                {{ strtoupper(substr($user->name, 0, 1)) }}
+              </div>
+            @endif
           </div>
-          <h2 class="mt-4 text-lg font-semibold text-cyan-300">{{ auth()->user()->name }}</h2>
-          <p class="text-sm text-slate-400">{{ auth()->user()->email }}</p>
+
+          <h2 class="mt-4 text-lg font-semibold text-cyan-300">{{ $user->name }}</h2>
+          <p class="text-sm text-slate-400">{{ $user->email }}</p>
           <span class="mt-2 text-xs px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300">
-            Role: {{ ucfirst(auth()->user()->role) }}
+            Role: {{ ucfirst($user->role) }}
           </span>
         </div>
       </div>
@@ -89,10 +103,9 @@
               My Tickets
             </button>
             <a href="{{ route('profile.edit') }}"
-   class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20 text-center">
-  Profile Settings
-</a>
-
+               class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20 text-center">
+              Profile Settings
+            </a>
             <button class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20">
               Support
             </button>
