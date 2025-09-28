@@ -21,6 +21,13 @@ class AppServiceProvider extends ServiceProvider
             }
         );
 
+        $this->app->bind(
+            \App\Repositories\UserRepository::class,
+            function ($app) {
+                return new \App\Repositories\UserRepository($app->make(\App\Models\User::class));
+            }
+        );
+
         // Register Service bindings
         $this->app->singleton(\App\Services\SortingService::class);
     }
