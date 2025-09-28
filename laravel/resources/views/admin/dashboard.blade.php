@@ -53,20 +53,31 @@
     {{-- KPI cards --}}
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       @php
-        // placeholders; replace with real counts from controller if needed
-        $kpis = [
-          ['label'=>'Active Events','value'=>12],
-          ['label'=>'Tickets Sold (Today)','value'=>148],
-          ['label'=>'Revenue (Today)','value'=>'$2,340'],
-          ['label'=>'Pending Approvals','value'=>3],
-        ];
+        $activeEventsCount = \App\Models\Event::where('status', 'published')->count();
+        $totalTicketsSold = \App\Models\Event::sum('tickets_sold');
+        $totalRevenue = \App\Models\Event::sum(\DB::raw('tickets_sold * price'));
+        $pendingEvents = \App\Models\Event::where('status', 'draft')->count();
       @endphp
-      @foreach ($kpis as $kpi)
-        <div class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-5 shadow-lg">
-          <p class="text-sm text-slate-400">{{ $kpi['label'] }}</p>
-          <p class="mt-2 text-2xl font-semibold text-cyan-300">{{ $kpi['value'] }}</p>
-        </div>
-      @endforeach
+
+      <div class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-5 shadow-lg">
+        <p class="text-sm text-slate-400">Active Events</p>
+        <p class="mt-2 text-2xl font-semibold text-cyan-300">{{ $activeEventsCount }}</p>
+      </div>
+
+      <div class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-5 shadow-lg">
+        <p class="text-sm text-slate-400">Tickets Sold</p>
+        <p class="mt-2 text-2xl font-semibold text-cyan-300">{{ $totalTicketsSold }}</p>
+      </div>
+
+      <div class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-5 shadow-lg">
+        <p class="text-sm text-slate-400">Total Revenue</p>
+        <p class="mt-2 text-2xl font-semibold text-cyan-300">${{ number_format($totalRevenue, 2) }}</p>
+      </div>
+
+      <div class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-5 shadow-lg">
+        <p class="text-sm text-slate-400">Draft Events</p>
+        <p class="mt-2 text-2xl font-semibold text-cyan-300">{{ $pendingEvents }}</p>
+      </div>
     </section>
 
     {{-- Quick Actions --}}
@@ -81,13 +92,13 @@
            class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">
           Manage Events
         </a>
+        <a href="{{ route('events.statistics') }}"
+           class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">
+          Event Statistics
+        </a>
         <a href="{{ url('/bookings') }}"
            class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">
           View Bookings
-        </a>
-        <a href="{{ url('/reports') }}"
-           class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">
-          Reports
         </a>
       </div>
     </section>
@@ -110,28 +121,33 @@
           </tr>
         </thead>
         <tbody class="text-slate-200">
-          @foreach ([
-            ['Music Concert','12 Oct 2025','City Hall', '340/500','Published'],
-            ['Tech Conf','20 Nov 2025','Expo Center','120/300','Draft'],
-            ['Sports Meetup','05 Dec 2025','Arena A','78/200','Published'],
-          ] as $row)
+          @php
+            $dashboardEvents = \App\Models\Event::orderBy('created_at', 'desc')->take(3)->get();
+        @endphp
+
+        @forelse ($dashboardEvents as $event)
           <tr class="border-b border-white/5">
-            <td class="py-3 pr-4">{{ $row[0] }}</td>
-            <td class="py-3 pr-4">{{ $row[1] }}</td>
-            <td class="py-3 pr-4">{{ $row[2] }}</td>
-            <td class="py-3 pr-4">{{ $row[3] }}</td>
+            <td class="py-3 pr-4">{{ $event->title }}</td>
+            <td class="py-3 pr-4">{{ \Carbon\Carbon::parse($event->event_date)->format('d M Y') }}</td>
+            <td class="py-3 pr-4">{{ $event->venue }}</td>
+            <td class="py-3 pr-4">{{ $event->tickets_sold }}/{{ $event->total_tickets }}</td>
             <td class="py-3 pr-4">
               <span class="px-2 py-1 text-xs rounded-full
-                {{ $row[4]==='Published' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-yellow-500/20 text-yellow-300' }}">
-                {{ $row[4] }}
+                {{ $event->status === 'published' ? 'bg-emerald-500/20 text-emerald-300' :
+                  ($event->status === 'cancelled' ? 'bg-red-500/20 text-red-300' : 'bg-yellow-500/20 text-yellow-300') }}">
+                {{ ucfirst($event->status) }}
               </span>
             </td>
             <td class="py-3 flex gap-2">
-              <a href="{{ url('/events/1/edit') }}" class="text-cyan-300 hover:text-cyan-200">Edit</a>
-              <a href="{{ url('/events/1') }}" class="text-slate-300 hover:text-slate-100">View</a>
+              <a href="{{ route('events.edit', $event->id) }}" class="text-cyan-300 hover:text-cyan-200">Edit</a>
+              <a href="{{ route('events.show', $event->id) }}" class="text-slate-300 hover:text-slate-100">View</a>
             </td>
           </tr>
-          @endforeach
+        @empty
+          <tr>
+            <td colspan="6" class="py-6 text-center text-slate-400">No events found. <a href="{{ route('events.create') }}" class="text-cyan-300 hover:underline">Create your first event</a>.</td>
+          </tr>
+        @endforelse
         </tbody>
       </table>
     </section>

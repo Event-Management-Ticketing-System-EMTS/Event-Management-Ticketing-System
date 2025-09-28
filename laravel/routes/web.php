@@ -37,6 +37,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
+    // Event management
+    Route::resource('events', \App\Http\Controllers\EventController::class);
+
+    // Event statistics
+    Route::get('/event-statistics', [\App\Http\Controllers\EventStatisticsController::class, 'index'])->name('events.statistics');
+
     // Shared demo page (optional)
     Route::view('/tailwind-demo', 'tailwind-demo')->name('tailwind.demo');
 });
