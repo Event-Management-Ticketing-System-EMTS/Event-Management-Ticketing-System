@@ -29,6 +29,9 @@
     </div>
 
     <div class="flex items-center gap-4">
+      <a href="{{ route('events.statistics') }}" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-sm transition">
+        View Statistics
+      </a>
       <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-sm transition">
         Back to Dashboard
       </a>

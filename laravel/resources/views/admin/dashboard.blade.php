@@ -92,13 +92,13 @@
            class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">
           Manage Events
         </a>
+        <a href="{{ route('events.statistics') }}"
+           class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">
+          Event Statistics
+        </a>
         <a href="{{ url('/bookings') }}"
            class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">
           View Bookings
-        </a>
-        <a href="{{ url('/reports') }}"
-           class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">
-          Reports
         </a>
       </div>
     </section>
