@@ -219,3 +219,58 @@ classDiagram
     EventController --> SortingControlsComponent : passes data to
     SortingService --> EventRepository : validates parameters for
 ```
+
+## Role Management System Architecture
+
+```mermaid
+classDiagram
+    class RoleManagementService {
+        +ROLE_TRANSITIONS: array
+        +canManageRoles() bool
+        +canChangeRole(fromRole, toRole) bool
+        +changeUserRole(user, newRole) array
+        +getAvailableRoles() array
+        +getRoleBadgeClass(role) string
+        +getRoleIcon(role) string
+    }
+    
+    class UserController {
+        -userRepository: UserRepository
+        -sortingService: SortingService
+        -roleManagementService: RoleManagementService
+        +index(request) View
+        +show(id) View
+        +updateRole(request, id) JsonResponse
+    }
+    
+    class UserRepository {
+        -model: User
+        +getAllWithSorting(sortBy, direction) Collection
+        +getByRoleWithSorting(role, sortBy, direction) Collection
+        +findById(id) User
+    }
+    
+    class RoleSelectorComponent {
+        +user: User
+        +currentUserId: int
+        +availableRoles: array
+        +disabled: bool
+        +render() View
+    }
+    
+    class User {
+        +ROLE_ADMIN: string
+        +ROLE_USER: string
+        +role: string
+        +hasRole(role) bool
+        +isAdmin() bool
+        +isUser() bool
+        +getRoles() array
+    }
+    
+    UserController --> RoleManagementService : uses
+    UserController --> UserRepository : uses
+    UserController --> RoleSelectorComponent : passes data to
+    RoleManagementService --> User : validates roles for
+    RoleSelectorComponent --> RoleManagementService : uses for UI styling
+```

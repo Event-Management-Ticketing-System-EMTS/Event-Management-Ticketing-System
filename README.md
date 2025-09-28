@@ -1,4 +1,11 @@
-# Event Management & Ticketing System (EMTS)
+# Event Management & Ticket### Core Features
+- 🔐 **Multi-role Authentication** (Admin, Organizer, User)
+- 🎪 **Event Management** (CRUD operations with sorting/filtering)
+- 🎫 **Ticket Management** (Sales tracking, inventory management)
+- 📊 **Analytics Dashboard** (Event statistics and insights)
+- 👥 **Admin User Management** (View all users, statistics, sorting & filtering)
+- 👑 **Role Management** (Dynamic role assignment with security controls)
+- 🔄 **Real-time Sorting** (Dynamic event organization)em (EMTS)
 
 ## 🏗️ System Design Lifecycle & Architecture Documentation
 
@@ -31,7 +38,8 @@ The Event Management & Ticketing System (EMTS) is a full-stack web application t
 - 🎫 **Ticket Management** (Sales tracking, inventory management)
 - 📊 **Analytics Dashboard** (Event statistics and insights)
 - 👥 **User Management** (Profile management, role-based access)
-- 🔄 **Real-time Sorting** (Dynamic event organization)
+- � **Role Management** (Dynamic role assignment with security controls)
+- �🔄 **Real-time Sorting** (Dynamic event organization)
 
 ---
 
@@ -345,6 +353,197 @@ class EventController extends Controller
     }
 }
 ```
+
+### 5. **Strategy Pattern** - Role Management Service
+
+**Location**: `app/Services/RoleManagementService.php`
+
+**Purpose**: Centralized role transition logic and permission management using strategy pattern principles.
+
+```php
+// app/Services/RoleManagementService.php
+class RoleManagementService
+{
+    // Strategy: Define valid role transitions
+    public const ROLE_TRANSITIONS = [
+        User::ROLE_USER => [User::ROLE_ADMIN],
+        User::ROLE_ADMIN => [User::ROLE_USER],
+    ];
+
+    // Strategy implementation for role changes
+    public function changeUserRole(User $user, string $newRole): array
+    {
+        // Permission strategy
+        if (!$this->canManageRoles()) {
+            return ['success' => false, 'message' => 'Access denied.'];
+        }
+
+        // Self-protection strategy
+        if ($user->id === Auth::id()) {
+            return ['success' => false, 'message' => 'Cannot change your own role.'];
+        }
+
+        // Transition validation strategy
+        if (!$this->canChangeRole($user->role, $newRole)) {
+            return ['success' => false, 'message' => 'Invalid role transition.'];
+        }
+
+        // Execute role change
+        $user->role = $newRole;
+        $user->save();
+
+        return ['success' => true, 'message' => 'Role updated successfully.'];
+    }
+
+    // UI Strategy: Role-specific styling
+    public function getRoleBadgeClass(string $role): string
+    {
+        return match($role) {
+            User::ROLE_ADMIN => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+            User::ROLE_USER => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+            default => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+        };
+    }
+}
+```
+
+**Strategy Pattern Benefits**:
+- **Encapsulated Logic**: Role change rules are centralized and easily maintainable
+- **Strategy Selection**: Different behaviors based on user roles and permissions
+- **UI Consistency**: Role-specific styling strategies ensure consistent appearance
+- **Security**: Built-in permission checks prevent unauthorized role changes
+
+### 6. **Component Pattern** - Role Selector UI
+
+**Location**: `resources/views/components/role-selector.blade.php`
+
+**Purpose**: Reusable component for role management UI with consistent behavior.
+
+```php
+// resources/views/components/role-selector.blade.php
+@props(['user', 'currentUserId' => null, 'availableRoles' => [], 'disabled' => false])
+
+@php
+    $isCurrentUser = $currentUserId && $user->id === $currentUserId;
+    $roleService = app(\App\Services\RoleManagementService::class);
+@endphp
+
+@if($isCurrentUser)
+    <!-- Strategy: Current user protection -->
+    <span class="inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-medium {{ $roleService->getRoleBadgeClass($user->role) }}">
+        {{ $roleService->getRoleIcon($user->role) }} {{ ucfirst($user->role) }} (You)
+    </span>
+@else
+    <!-- Strategy: Interactive role management -->
+    <select onchange="changeUserRole({{ $user->id }}, this.value, this)" 
+            data-original="{{ $user->role }}"
+            class="bg-slate-800 border border-slate-600 text-white text-xs rounded px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        @foreach($availableRoles as $roleKey => $roleName)
+            <option value="{{ $roleKey }}" {{ $user->role === $roleKey ? 'selected' : '' }}>
+                {{ $roleService->getRoleIcon($roleKey) }} {{ $roleName }}
+            </option>
+        @endforeach
+    </select>
+@endif
+```
+
+**Component Pattern Benefits**:
+- **Reusability**: Can be used across different admin interfaces
+- **Consistency**: Ensures uniform role management behavior
+- **Maintainability**: Centralized component logic for easy updates
+- **Security**: Built-in protection against self-role changes
+
+### 7. **Repository + Service Pattern** - Admin User Management
+
+**Location**: `app/Http/Controllers/UserController.php`, `app/Repositories/UserRepository.php`
+
+**Purpose**: Allow administrators to view and manage all system users with sorting and filtering capabilities.
+
+```php
+// app/Http/Controllers/UserController.php
+class UserController extends Controller
+{
+    protected $userRepository;
+    protected $sortingService;
+    protected $roleManagementService;
+
+    public function index(Request $request)
+    {
+        // Admin access control
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            abort(403, 'Access denied. Admin privileges required.');
+        }
+
+        // Apply Repository + Service patterns for data retrieval
+        $sortParams = $this->sortingService->validateUserSortParameters(
+            $request->get('sort'),
+            $request->get('direction')
+        );
+
+        $users = $this->userRepository->getAllWithSorting(
+            $sortParams['sort_by'],
+            $sortParams['direction']
+        );
+
+        // Calculate user statistics
+        $stats = [
+            'total' => $users->count(),
+            'admins' => $users->where('role', 'admin')->count(),
+            'users' => $users->where('role', 'user')->count(),
+            'verified' => $users->where('email_verified', true)->count(),
+            'unverified' => $users->where('email_verified', false)->count(),
+            'new_this_week' => $users->filter(function($user) {
+                return $user->created_at >= now()->subWeek();
+            })->count()
+        ];
+
+        return view('admin.users.index', compact(
+            'users', 'stats', 'sortBy', 'sortDirection', 'sortOptions', 'availableRoles'
+        ));
+    }
+}
+```
+
+```php
+// app/Repositories/UserRepository.php
+class UserRepository
+{
+    public function getAllWithSorting(string $sortBy = 'created_at', string $direction = 'desc'): Collection
+    {
+        return $this->model
+            ->orderBy($sortBy, $direction)
+            ->get();
+    }
+
+    public function getByRoleWithSorting(string $role, string $sortBy = 'created_at', string $direction = 'desc'): Collection
+    {
+        return $this->model
+            ->where('role', $role)
+            ->orderBy($sortBy, $direction)
+            ->get();
+    }
+
+    public function countByRole(string $role): int
+    {
+        return $this->model->where('role', $role)->count();
+    }
+}
+```
+
+**Admin User Management Features**:
+- **User Listing**: Display all system users with pagination support
+- **Real-time Sorting**: Sort by name, email, role, join date, verification status
+- **User Statistics**: Dashboard cards showing user counts by role and status
+- **Role Management**: Dynamic role assignment with security controls
+- **Access Control**: Admin-only access with proper permission checks
+- **Responsive Design**: Consistent dark theme UI matching login page design
+
+**Repository Pattern Benefits for User Management**:
+- **Data Abstraction**: Clean separation between data access and business logic
+- **Query Optimization**: Centralized and optimized database queries
+- **Testability**: Easy to mock repository for unit testing
+- **Consistency**: Uniform data access patterns across the application
+- **Sorting Integration**: Seamless integration with SortingService for flexible data ordering
 
 ---
 

@@ -240,13 +240,11 @@
               </td>
               <td class="px-4 py-3 text-slate-300">{{ $user->email }}</td>
               <td class="px-4 py-3">
-                @if($user->role === 'admin')
-                  <span class="inline-flex rounded-full bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/30">👑 Admin</span>
-                @elseif($user->role === 'organizer')
-                  <span class="inline-flex rounded-full bg-yellow-500/10 px-2 py-1 text-xs font-medium text-yellow-400 ring-1 ring-inset ring-yellow-500/30">🎪 Organizer</span>
-                @else
-                  <span class="inline-flex rounded-full bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400 ring-1 ring-inset ring-green-500/30">👤 User</span>
-                @endif
+                <x-role-selector
+                    :user="$user"
+                    :currentUserId="Auth::id()"
+                    :availableRoles="$availableRoles"
+                />
               </td>
               <td class="px-4 py-3">
                 @if($user->email_verified)
@@ -269,4 +267,62 @@
     </div>
   </main>
 </div>
+
+<script>
+async function changeUserRole(userId, newRole, selectElement) {
+  const originalValue = selectElement.getAttribute('data-original');
+
+  if (newRole === originalValue) return; // No change
+
+  // Show loading state
+  selectElement.disabled = true;
+
+  try {
+    const response = await fetch(`/users/${userId}/role`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify({ role: newRole })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      // Update the select element
+      selectElement.setAttribute('data-original', newRole);
+
+      // Show success message
+      showNotification(result.message, 'success');
+    } else {
+      // Revert selection
+      selectElement.value = originalValue;
+      showNotification(result.message, 'error');
+    }
+  } catch (error) {
+    // Revert selection
+    selectElement.value = originalValue;
+    showNotification('Failed to update user role. Please try again.', 'error');
+  } finally {
+    selectElement.disabled = false;
+  }
+}
+
+function showNotification(message, type) {
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = `fixed top-4 right-4 px-4 py-3 rounded-lg shadow-lg z-50 text-white ${
+    type === 'success' ? 'bg-green-600' : 'bg-red-600'
+  }`;
+  notification.textContent = message;
+
+  document.body.appendChild(notification);
+
+  // Remove after 3 seconds
+  setTimeout(() => {
+    notification.remove();
+  }, 3000);
+}
+</script>
 @endsection
