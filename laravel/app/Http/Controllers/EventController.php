@@ -11,11 +11,27 @@ class EventController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Only show real events, not dummy ones
-        $events = \App\Models\Event::orderBy('created_at', 'desc')->get();
-        return view('events.index', compact('events'));
+        $sortBy = $request->get('sort', 'created_at');
+        $sortDirection = $request->get('direction', 'desc');
+
+        // Validate sort parameters
+        $allowedSorts = ['created_at', 'title', 'event_date', 'price', 'total_tickets', 'tickets_sold', 'status'];
+        $allowedDirections = ['asc', 'desc'];
+
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'created_at';
+        }
+
+        if (!in_array($sortDirection, $allowedDirections)) {
+            $sortDirection = 'desc';
+        }
+
+        // Build the query with sorting
+        $events = \App\Models\Event::orderBy($sortBy, $sortDirection)->get();
+
+        return view('events.index', compact('events', 'sortBy', 'sortDirection'));
     }
 
     /**
