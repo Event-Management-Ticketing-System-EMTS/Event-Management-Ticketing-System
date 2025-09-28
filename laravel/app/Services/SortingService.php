@@ -17,6 +17,17 @@ class SortingService
         'status' => '⭐ Status'
     ];
 
+    /**
+     * Available sorting options for users
+     */
+    public const USER_SORT_OPTIONS = [
+        'created_at' => '📅 Date Joined',
+        'name' => '👤 Name',
+        'email' => '📧 Email',
+        'role' => '🏷️ Role',
+        'email_verified' => '✅ Verified Status'
+    ];
+
     public const ALLOWED_DIRECTIONS = ['asc', 'desc'];
 
     /**
@@ -36,6 +47,25 @@ class SortingService
     public function getEventSortOptions(): array
     {
         return self::EVENT_SORT_OPTIONS;
+    }
+
+    /**
+     * Validate and clean user sorting parameters
+     */
+    public function validateUserSortParameters(?string $sortBy, ?string $direction): array
+    {
+        return [
+            'sort_by' => $this->validateSortBy($sortBy, array_keys(self::USER_SORT_OPTIONS)),
+            'direction' => $this->validateDirection($direction),
+        ];
+    }
+
+    /**
+     * Get user sorting options
+     */
+    public function getUserSortOptions(): array
+    {
+        return self::USER_SORT_OPTIONS;
     }
 
     /**

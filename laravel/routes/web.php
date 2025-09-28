@@ -43,6 +43,10 @@ Route::middleware('auth')->group(function () {
     // Event statistics
     Route::get('/event-statistics', [\App\Http\Controllers\EventStatisticsController::class, 'index'])->name('events.statistics');
 
+    // User management (Admin only)
+    Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{id}', [\App\Http\Controllers\UserController::class, 'show'])->name('users.show');
+
     // Shared demo page (optional)
     Route::view('/tailwind-demo', 'tailwind-demo')->name('tailwind.demo');
 });
