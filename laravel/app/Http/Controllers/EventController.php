@@ -3,19 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Repositories\EventRepository;
+use App\Services\SortingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
+    protected $eventRepository;
+    protected $sortingService;
+
+    public function __construct(EventRepository $eventRepository, SortingService $sortingService)
+    {
+        $this->eventRepository = $eventRepository;
+        $this->sortingService = $sortingService;
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Only show real events, not dummy ones
-        $events = \App\Models\Event::orderBy('created_at', 'desc')->get();
-        return view('events.index', compact('events'));
+        // Validate and clean sorting parameters
+        $sortParams = $this->sortingService->validateEventSortParameters(
+            $request->get('sort'),
+            $request->get('direction')
+        );
+
+        // Get events with sorting
+        $events = $this->eventRepository->getAllWithSorting(
+            $sortParams['sort_by'],
+            $sortParams['direction']
+        );
+
+        return view('events.index', [
+            'events' => $events,
+            'sortBy' => $sortParams['sort_by'],
+            'sortDirection' => $sortParams['direction'],
+            'sortOptions' => $this->sortingService->getEventSortOptions(),
+            'isDefaultSort' => $this->sortingService->isDefaultSort($sortParams['sort_by'], $sortParams['direction'])
+        ]);
     }
 
     /**

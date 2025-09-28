@@ -13,7 +13,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Register Repository bindings
+        $this->app->bind(
+            \App\Repositories\EventRepository::class,
+            function ($app) {
+                return new \App\Repositories\EventRepository($app->make(\App\Models\Event::class));
+            }
+        );
+
+        // Register Service bindings
+        $this->app->singleton(\App\Services\SortingService::class);
     }
 
     /**

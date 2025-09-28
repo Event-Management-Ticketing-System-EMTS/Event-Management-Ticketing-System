@@ -47,6 +47,16 @@
       </a>
     </div>
 
+    {{-- Sorting Controls --}}
+    <x-sorting-controls
+        :action="route('events.index')"
+        :sort-options="$sortOptions"
+        :current-sort="$sortBy"
+        :current-direction="$sortDirection"
+        :total-count="$events->count()"
+        :show-reset="!$isDefaultSort"
+    />
+
     {{-- Status messages --}}
     @if (session('success'))
     <div class="rounded-xl border border-green-400/30 bg-green-400/10 p-4">
@@ -69,14 +79,95 @@
           </a>
         </div>
       @else
-        <table class="w-full">
+        <table class="w-full" id="eventsTable">
           <thead>
             <tr class="border-b border-slate-800">
-              <th class="px-4 py-3 text-left text-sm font-semibold text-cyan-300">Event</th>
-              <th class="px-4 py-3 text-left text-sm font-semibold text-cyan-300">Date</th>
+              <th class="px-4 py-3 text-left">
+                <a href="{{ route('events.index', ['sort' => 'title', 'direction' => $sortBy === 'title' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
+                   class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
+                  Event
+                  @if($sortBy === 'title')
+                    @if($sortDirection === 'asc')
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                      </svg>
+                    @else
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    @endif
+                  @endif
+                </a>
+              </th>
+              <th class="px-4 py-3 text-left">
+                <a href="{{ route('events.index', ['sort' => 'event_date', 'direction' => $sortBy === 'event_date' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
+                   class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
+                  Date
+                  @if($sortBy === 'event_date')
+                    @if($sortDirection === 'asc')
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                      </svg>
+                    @else
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    @endif
+                  @endif
+                </a>
+              </th>
               <th class="px-4 py-3 text-left text-sm font-semibold text-cyan-300">Venue</th>
-              <th class="px-4 py-3 text-left text-sm font-semibold text-cyan-300">Tickets</th>
-              <th class="px-4 py-3 text-left text-sm font-semibold text-cyan-300">Status</th>
+              <th class="px-4 py-3 text-left">
+                <a href="{{ route('events.index', ['sort' => 'price', 'direction' => $sortBy === 'price' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
+                   class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
+                  Price
+                  @if($sortBy === 'price')
+                    @if($sortDirection === 'asc')
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                      </svg>
+                    @else
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    @endif
+                  @endif
+                </a>
+              </th>
+              <th class="px-4 py-3 text-left">
+                <a href="{{ route('events.index', ['sort' => 'tickets_sold', 'direction' => $sortBy === 'tickets_sold' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
+                   class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
+                  Tickets
+                  @if($sortBy === 'tickets_sold')
+                    @if($sortDirection === 'asc')
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                      </svg>
+                    @else
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    @endif
+                  @endif
+                </a>
+              </th>
+              <th class="px-4 py-3 text-left">
+                <a href="{{ route('events.index', ['sort' => 'status', 'direction' => $sortBy === 'status' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
+                   class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
+                  Status
+                  @if($sortBy === 'status')
+                    @if($sortDirection === 'asc')
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                      </svg>
+                    @else
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                      </svg>
+                    @endif
+                  @endif
+                </a>
+              </th>
               <th class="px-4 py-3 text-right text-sm font-semibold text-cyan-300">Actions</th>
             </tr>
           </thead>
@@ -89,6 +180,7 @@
               </td>
               <td class="px-4 py-3 whitespace-nowrap">{{ $event->event_date->format('M d, Y') }}</td>
               <td class="px-4 py-3">{{ $event->venue }}</td>
+              <td class="px-4 py-3 whitespace-nowrap">${{ number_format($event->price, 2) }}</td>
               <td class="px-4 py-3">{{ $event->tickets_sold }}/{{ $event->total_tickets }}</td>
               <td class="px-4 py-3">
                 @if($event->status === 'published')
