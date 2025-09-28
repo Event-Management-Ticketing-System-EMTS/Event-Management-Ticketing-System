@@ -83,23 +83,23 @@
           <span class="text-cyan-400">📋</span>
           Account Information
         </h2>
-        
+
         <div class="space-y-4">
           <div class="flex justify-between items-center py-2 border-b border-slate-800">
             <span class="text-slate-400">User ID</span>
             <span class="text-white font-mono">#{{ $user->id }}</span>
           </div>
-          
+
           <div class="flex justify-between items-center py-2 border-b border-slate-800">
             <span class="text-slate-400">Full Name</span>
             <span class="text-white">{{ $user->name }}</span>
           </div>
-          
+
           <div class="flex justify-between items-center py-2 border-b border-slate-800">
             <span class="text-slate-400">Email Address</span>
             <span class="text-white">{{ $user->email }}</span>
           </div>
-          
+
           <div class="flex justify-between items-center py-2 border-b border-slate-800">
             <span class="text-slate-400">Account Role</span>
             <span class="text-white capitalize">{{ ucfirst($user->role) }}</span>
@@ -124,18 +124,18 @@
           <span class="text-cyan-400">⏰</span>
           Account Timeline
         </h2>
-        
+
         <div class="space-y-4">
           <div class="flex justify-between items-center py-2 border-b border-slate-800">
             <span class="text-slate-400">Joined</span>
             <span class="text-white">{{ $user->created_at->format('M d, Y \a\t H:i') }}</span>
           </div>
-          
+
           <div class="flex justify-between items-center py-2 border-b border-slate-800">
             <span class="text-slate-400">Last Updated</span>
             <span class="text-white">{{ $user->updated_at->format('M d, Y \a\t H:i') }}</span>
           </div>
-          
+
           <div class="flex justify-between items-center py-2 border-b border-slate-800">
             <span class="text-slate-400">Account Age</span>
             <span class="text-white">{{ $user->created_at->diffForHumans() }}</span>
@@ -162,18 +162,18 @@
         <span class="text-yellow-400">🎪</span>
         Organizer Statistics
       </h2>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="text-center">
           <div class="text-2xl font-bold text-yellow-400">{{ $user->events->count() ?? 0 }}</div>
           <div class="text-slate-400 text-sm">Total Events</div>
         </div>
-        
+
         <div class="text-center">
           <div class="text-2xl font-bold text-green-400">{{ $user->events->where('status', 'published')->count() ?? 0 }}</div>
           <div class="text-slate-400 text-sm">Published Events</div>
         </div>
-        
+
         <div class="text-center">
           <div class="text-2xl font-bold text-cyan-400">{{ $user->events->sum('tickets_sold') ?? 0 }}</div>
           <div class="text-slate-400 text-sm">Tickets Sold</div>
@@ -190,7 +190,7 @@
         Administrator Account
       </h2>
       <p class="text-red-300 text-sm">
-        This user has administrative privileges and can access all system features including user management, 
+        This user has administrative privileges and can access all system features including user management,
         event oversight, and system configuration. Exercise caution when modifying admin accounts.
       </p>
     </div>

@@ -108,7 +108,7 @@
     </div>
 
     {{-- Sorting Controls --}}
-    <x-sorting-controls 
+    <x-sorting-controls
         :action="route('users.index')"
         :sort-options="$sortOptions"
         :current-sort="$sortBy"
@@ -140,7 +140,7 @@
           <thead>
             <tr class="border-b border-slate-800">
               <th class="px-4 py-3 text-left">
-                <a href="{{ route('users.index', ['sort' => 'name', 'direction' => $sortBy === 'name' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}" 
+                <a href="{{ route('users.index', ['sort' => 'name', 'direction' => $sortBy === 'name' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
                    class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
                   User
                   @if($sortBy === 'name')
@@ -157,7 +157,7 @@
                 </a>
               </th>
               <th class="px-4 py-3 text-left">
-                <a href="{{ route('users.index', ['sort' => 'email', 'direction' => $sortBy === 'email' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}" 
+                <a href="{{ route('users.index', ['sort' => 'email', 'direction' => $sortBy === 'email' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
                    class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
                   Email
                   @if($sortBy === 'email')
@@ -174,7 +174,7 @@
                 </a>
               </th>
               <th class="px-4 py-3 text-left">
-                <a href="{{ route('users.index', ['sort' => 'role', 'direction' => $sortBy === 'role' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}" 
+                <a href="{{ route('users.index', ['sort' => 'role', 'direction' => $sortBy === 'role' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
                    class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
                   Role
                   @if($sortBy === 'role')
@@ -191,7 +191,7 @@
                 </a>
               </th>
               <th class="px-4 py-3 text-left">
-                <a href="{{ route('users.index', ['sort' => 'email_verified', 'direction' => $sortBy === 'email_verified' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}" 
+                <a href="{{ route('users.index', ['sort' => 'email_verified', 'direction' => $sortBy === 'email_verified' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
                    class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
                   Status
                   @if($sortBy === 'email_verified')
@@ -208,7 +208,7 @@
                 </a>
               </th>
               <th class="px-4 py-3 text-left">
-                <a href="{{ route('users.index', ['sort' => 'created_at', 'direction' => $sortBy === 'created_at' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}" 
+                <a href="{{ route('users.index', ['sort' => 'created_at', 'direction' => $sortBy === 'created_at' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
                    class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
                   Joined
                   @if($sortBy === 'created_at')
