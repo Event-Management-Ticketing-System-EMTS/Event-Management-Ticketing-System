@@ -10,11 +10,17 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::factory(10)->create();
+        // Comment out the factory calls to avoid creating random users
+        // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+
+        // Call our test users seeder
+        $this->call([
+            TestUsersSeeder::class,
         ]);
     }
 }
