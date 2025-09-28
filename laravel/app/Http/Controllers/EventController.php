@@ -3,35 +3,46 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Repositories\EventRepository;
+use App\Services\SortingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
+    protected $eventRepository;
+    protected $sortingService;
+
+    public function __construct(EventRepository $eventRepository, SortingService $sortingService)
+    {
+        $this->eventRepository = $eventRepository;
+        $this->sortingService = $sortingService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $sortBy = $request->get('sort', 'created_at');
-        $sortDirection = $request->get('direction', 'desc');
+        // Validate and clean sorting parameters
+        $sortParams = $this->sortingService->validateEventSortParameters(
+            $request->get('sort'),
+            $request->get('direction')
+        );
 
-        // Validate sort parameters
-        $allowedSorts = ['created_at', 'title', 'event_date', 'price', 'total_tickets', 'tickets_sold', 'status'];
-        $allowedDirections = ['asc', 'desc'];
+        // Get events with sorting
+        $events = $this->eventRepository->getAllWithSorting(
+            $sortParams['sort_by'],
+            $sortParams['direction']
+        );
 
-        if (!in_array($sortBy, $allowedSorts)) {
-            $sortBy = 'created_at';
-        }
-
-        if (!in_array($sortDirection, $allowedDirections)) {
-            $sortDirection = 'desc';
-        }
-
-        // Build the query with sorting
-        $events = \App\Models\Event::orderBy($sortBy, $sortDirection)->get();
-
-        return view('events.index', compact('events', 'sortBy', 'sortDirection'));
+        return view('events.index', [
+            'events' => $events,
+            'sortBy' => $sortParams['sort_by'],
+            'sortDirection' => $sortParams['direction'],
+            'sortOptions' => $this->sortingService->getEventSortOptions(),
+            'isDefaultSort' => $this->sortingService->isDefaultSort($sortParams['sort_by'], $sortParams['direction'])
+        ]);
     }
 
     /**
