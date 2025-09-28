@@ -93,12 +93,14 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label for="start_time" class="block text-sm font-medium text-slate-300 mb-1">Start Time <span class="text-red-500">*</span></label>
-                            <input type="time" name="start_time" id="start_time" value="{{ old('start_time', $event->start_time) }}"
+                            <input type="time" name="start_time" id="start_time"
+                              value="{{ old('start_time', $event->start_time ? \Carbon\Carbon::parse($event->start_time)->format('H:i') : '') }}"
                               class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500" required>
                         </div>
                         <div>
                             <label for="end_time" class="block text-sm font-medium text-slate-300 mb-1">End Time</label>
-                            <input type="time" name="end_time" id="end_time" value="{{ old('end_time', $event->end_time) }}"
+                            <input type="time" name="end_time" id="end_time"
+                              value="{{ old('end_time', $event->end_time ? \Carbon\Carbon::parse($event->end_time)->format('H:i') : '') }}"
                               class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500">
                         </div>
                     </div>

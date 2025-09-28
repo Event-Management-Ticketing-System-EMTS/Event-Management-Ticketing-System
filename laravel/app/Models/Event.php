@@ -40,6 +40,8 @@ class Event extends Model
         'start_time' => 'datetime',
         'end_time' => 'datetime',
         'price' => 'decimal:2',
+        'tickets_sold' => 'integer',
+        'total_tickets' => 'integer',
     ];
 
     /**

@@ -81,7 +81,8 @@
                         <h2 class="text-xl font-semibold text-cyan-300 mb-2">Event Details</h2>
                         <div class="space-y-2 text-slate-300">
                             <p><span class="font-medium">Date:</span> {{ \Carbon\Carbon::parse($event->event_date)->format('F j, Y') }}</p>
-                            <p><span class="font-medium">Time:</span> {{ \Carbon\Carbon::parse($event->start_time)->format('g:i A') }}
+                            <p><span class="font-medium">Time:</span>
+                                {{ $event->start_time ? \Carbon\Carbon::parse($event->start_time)->format('g:i A') : 'TBA' }}
                                 @if($event->end_time)
                                     - {{ \Carbon\Carbon::parse($event->end_time)->format('g:i A') }}
                                 @endif

@@ -13,6 +13,7 @@ class EventController extends Controller
      */
     public function index()
     {
+        // Only show real events, not dummy ones
         $events = \App\Models\Event::orderBy('created_at', 'desc')->get();
         return view('events.index', compact('events'));
     }
@@ -30,32 +31,48 @@ class EventController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'event_date' => 'required|date|after:today',
-            'start_time' => 'required',
-            'end_time' => 'nullable|after:start_time',
-            'venue' => 'required|string|max:255',
-            'address' => 'nullable|string|max:255',
-            'city' => 'nullable|string|max:255',
-            'total_tickets' => 'required|integer|min:1',
-            'price' => 'required|numeric|min:0',
-            'status' => 'required|in:draft,published',
-            'image' => 'nullable|image|max:2048',
-        ]);
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string',
+                'event_date' => 'required|date|after:today',
+                'start_time' => 'required',
+                'end_time' => 'nullable',
+                'venue' => 'required|string|max:255',
+                'address' => 'nullable|string|max:255',
+                'city' => 'nullable|string|max:255',
+                'total_tickets' => 'required|integer|min:1',
+                'price' => 'required|numeric|min:0',
+                'status' => 'required|in:draft,published',
+                'image' => 'nullable|image|max:2048',
+            ]);
 
-        // Set organizer_id to current user
-        $validated['organizer_id'] = Auth::id();
+            // Format time inputs
+            if (!empty($request->start_time)) {
+                $validated['start_time'] = date('Y-m-d') . ' ' . $request->start_time . ':00';
+            }
 
-        // Handle image upload if provided
-        if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('events', 'public');
-            $validated['image_path'] = $imagePath;
+            if (!empty($request->end_time)) {
+                $validated['end_time'] = date('Y-m-d') . ' ' . $request->end_time . ':00';
+            }
+
+            // Set organizer_id to current user
+            $validated['organizer_id'] = Auth::id();
+
+            // Initialize tickets_sold to 0
+            $validated['tickets_sold'] = 0;
+
+            // Handle image upload if provided
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('events', 'public');
+                $validated['image_path'] = $imagePath;
+            }
+
+            // Create the event
+            $event = \App\Models\Event::create($validated);
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->withErrors(['error' => 'Failed to create event: ' . $e->getMessage()]);
         }
-
-        // Create the event
-        $event = \App\Models\Event::create($validated);
 
         return redirect()->route('events.index')
             ->with('success', 'Event created successfully!');
@@ -86,12 +103,18 @@ class EventController extends Controller
     {
         $event = Event::findOrFail($id);
 
+        // Special rule for event date to allow editing events that might be in the past
+        $dateRule = 'required|date';
+        if ($event->event_date > now()) {
+            $dateRule = 'required|date|after:today';
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'event_date' => 'required|date',
+            'event_date' => $dateRule,
             'start_time' => 'required',
-            'end_time' => 'nullable|after:start_time',
+            'end_time' => 'nullable',
             'venue' => 'required|string|max:255',
             'address' => 'nullable|string|max:255',
             'city' => 'nullable|string|max:255',
@@ -100,6 +123,15 @@ class EventController extends Controller
             'status' => 'required|in:draft,published,cancelled',
             'image' => 'nullable|image|max:2048',
         ]);
+
+        // Format time inputs
+        if (!empty($request->start_time)) {
+            $validated['start_time'] = date('Y-m-d') . ' ' . $request->start_time . ':00';
+        }
+
+        if (!empty($request->end_time)) {
+            $validated['end_time'] = date('Y-m-d') . ' ' . $request->end_time . ':00';
+        }
 
         // Handle image upload if provided
         if ($request->hasFile('image')) {
