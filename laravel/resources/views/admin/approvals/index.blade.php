@@ -147,7 +147,7 @@
                                     </td>
                                     <td class="py-4 px-4">
                                         <div class="flex space-x-2">
-                                            <a href="{{ route('admin.approvals.show', $event) }}" 
+                                            <a href="{{ route('admin.approvals.show', $event) }}"
                                                class="px-3 py-1 bg-blue-500/20 text-blue-300 rounded hover:bg-blue-500/30 transition-colors text-sm">
                                                 Review
                                             </a>

@@ -16,7 +16,7 @@
                         Review Event
                     </h1>
                     <span class="px-3 py-1 rounded-full text-sm font-medium
-                        {{ $event->isPending() ? 'bg-yellow-500/20 text-yellow-300' : 
+                        {{ $event->isPending() ? 'bg-yellow-500/20 text-yellow-300' :
                            ($event->isApproved() ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300') }}">
                         {{ ucfirst($event->approval_status) }}
                     </span>
@@ -56,7 +56,7 @@
                             <label class="text-sm text-gray-400">Description</label>
                             <p class="text-gray-300">{{ $event->description }}</p>
                         </div>
-                        
+
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="text-sm text-gray-400">Event Date</label>
@@ -168,14 +168,14 @@
                             <label for="approve_comments" class="block text-sm text-gray-400 mb-2">
                                 Comments (Optional)
                             </label>
-                            <textarea 
-                                name="comments" 
+                            <textarea
+                                name="comments"
                                 id="approve_comments"
-                                rows="4" 
+                                rows="4"
                                 class="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:border-green-500 focus:ring-1 focus:ring-green-500 outline-none transition-colors"
                                 placeholder="Add approval comments or notes..."></textarea>
                         </div>
-                        <button type="submit" 
+                        <button type="submit"
                                 class="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105">
                             ✓ Approve Event
                         </button>
@@ -191,10 +191,10 @@
                             <label for="reject_comments" class="block text-sm text-gray-400 mb-2">
                                 Rejection Reason <span class="text-red-400">*</span>
                             </label>
-                            <textarea 
-                                name="comments" 
+                            <textarea
+                                name="comments"
                                 id="reject_comments"
-                                rows="4" 
+                                rows="4"
                                 required
                                 class="w-full bg-black/20 border border-gray-600 rounded-lg px-3 py-2 text-white placeholder-gray-500 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none transition-colors"
                                 placeholder="Please provide a clear reason for rejection..."></textarea>
@@ -202,7 +202,7 @@
                                 <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                             @enderror
                         </div>
-                        <button type="submit" 
+                        <button type="submit"
                                 class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 transform hover:scale-105">
                             ✗ Reject Event
                         </button>

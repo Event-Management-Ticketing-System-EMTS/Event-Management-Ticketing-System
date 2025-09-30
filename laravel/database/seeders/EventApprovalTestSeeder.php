@@ -15,7 +15,7 @@ class EventApprovalTestSeeder extends Seeder
     {
         // Get an organizer user
         $organizer = User::where('role', 'organizer')->first();
-        
+
         if (!$organizer) {
             // Create an organizer if none exists
             $organizer = User::create([
