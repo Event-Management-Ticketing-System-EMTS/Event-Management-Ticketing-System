@@ -3,18 +3,33 @@
 @section('title', 'View Bookings')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+<div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100 antialiased">
+  {{-- Subtle grid + glow overlay to match login page --}}
+  <div class="fixed inset-0 -z-10">
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(6,182,212,0.15),transparent_60%)]"></div>
+    <div class="absolute inset-0 opacity-[0.06] [mask-image:linear-gradient(to_bottom,black,transparent)]">
+      <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="0.5"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#grid)"/>
+      </svg>
+    </div>
+  </div>
+
   {{-- Header --}}
   <header class="bg-slate-900/80 backdrop-blur-md border-b border-white/10 px-6 py-4">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="p-2 rounded-lg bg-cyan-500/20">
+        <div class="p-2 rounded-2xl bg-cyan-500/20 ring-1 ring-cyan-400/40">
           <svg class="w-6 h-6 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
           </svg>
         </div>
         <div>
-          <h1 class="text-xl font-bold text-white">View Bookings</h1>
+          <h1 class="text-xl font-bold text-cyan-300 tracking-tight">View Bookings</h1>
           <p class="text-sm text-slate-400">Manage all ticket bookings</p>
         </div>
       </div>
@@ -22,15 +37,15 @@
       {{-- Quick Actions --}}
       <div class="flex items-center gap-3">
         <button onclick="refreshBookings()"
-                class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-sm text-cyan-300 transition">
+                class="px-4 py-2 rounded-lg bg-slate-800/70 hover:bg-slate-700 border border-cyan-400/20 text-sm text-cyan-300 transition-all duration-200 shadow-lg">
           🔄 Refresh
         </button>
         <a href="{{ route('bookings.export', request()->query()) }}"
-           class="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white text-sm transition">
+           class="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-white text-sm transition-all duration-200 shadow-lg shadow-cyan-900/30">
           📊 Export CSV
         </a>
         <a href="{{ route('dashboard') }}"
-           class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-sm text-cyan-300 transition">
+           class="px-4 py-2 rounded-lg bg-slate-800/70 hover:bg-slate-700 border border-cyan-400/20 text-sm text-cyan-300 transition-all duration-200 shadow-lg">
           ← Back to Dashboard
         </a>
       </div>
@@ -40,35 +55,35 @@
   <main class="max-w-7xl mx-auto p-6 space-y-6">
     {{-- Stats Cards --}}
     <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-5 shadow-lg">
+      <div class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-5 shadow-xl shadow-cyan-900/20">
         <p class="text-sm text-slate-400">Total Bookings</p>
         <p class="mt-2 text-2xl font-semibold text-cyan-300">{{ number_format($stats['total_bookings']) }}</p>
       </div>
 
-      <div class="rounded-2xl border border-emerald-400/20 bg-slate-900/80 backdrop-blur-md p-5 shadow-lg">
+      <div class="rounded-2xl border border-emerald-400/20 bg-slate-900/80 backdrop-blur-md p-5 shadow-xl shadow-emerald-900/20">
         <p class="text-sm text-slate-400">Confirmed</p>
         <p class="mt-2 text-2xl font-semibold text-emerald-300">{{ number_format($stats['confirmed_bookings']) }}</p>
       </div>
 
-      <div class="rounded-2xl border border-yellow-400/20 bg-slate-900/80 backdrop-blur-md p-5 shadow-lg">
+      <div class="rounded-2xl border border-yellow-400/20 bg-slate-900/80 backdrop-blur-md p-5 shadow-xl shadow-yellow-900/20">
         <p class="text-sm text-slate-400">Pending</p>
         <p class="mt-2 text-2xl font-semibold text-yellow-300">{{ number_format($stats['pending_bookings']) }}</p>
       </div>
 
-      <div class="rounded-2xl border border-red-400/20 bg-slate-900/80 backdrop-blur-md p-5 shadow-lg">
+      <div class="rounded-2xl border border-red-400/20 bg-slate-900/80 backdrop-blur-md p-5 shadow-xl shadow-red-900/20">
         <p class="text-sm text-slate-400">Cancelled</p>
         <p class="mt-2 text-2xl font-semibold text-red-300">{{ number_format($stats['cancelled_bookings']) }}</p>
       </div>
     </section>
 
     {{-- Revenue Card --}}
-    <section class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-6 shadow-lg">
+    <section class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-6 shadow-xl shadow-cyan-900/20">
       <div class="flex items-center justify-between">
         <div>
-          <h2 class="text-lg font-semibold text-cyan-300">Total Revenue</h2>
+          <h2 class="text-lg font-semibold text-cyan-300 tracking-tight">Total Revenue</h2>
           <p class="text-3xl font-bold text-white mt-2">${{ number_format($stats['total_revenue'], 2) }}</p>
         </div>
-        <div class="p-3 rounded-lg bg-green-500/20">
+        <div class="p-3 rounded-2xl bg-green-500/20 ring-1 ring-green-400/40">
           <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
           </svg>
@@ -77,14 +92,14 @@
     </section>
 
     {{-- Filters --}}
-    <section class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-6 shadow-lg">
-      <h2 class="text-lg font-semibold text-cyan-300 mb-4">Filter Bookings</h2>
+    <section class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-6 shadow-xl shadow-cyan-900/20">
+      <h2 class="text-lg font-semibold text-cyan-300 mb-4 tracking-tight">Filter Bookings</h2>
 
       <form method="GET" action="{{ route('bookings.index') }}" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {{-- Status Filter --}}
         <div>
           <label class="block text-sm font-medium text-slate-300 mb-1">Status</label>
-          <select name="status" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 focus:border-cyan-500">
+          <select name="status" class="w-full rounded-lg border border-cyan-400/20 bg-slate-800/70 px-3 py-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-400">
             <option value="">All Statuses</option>
             @foreach($filterOptions['statuses'] as $value => $label)
               @if($value !== 'all')
@@ -99,7 +114,7 @@
         {{-- Event Filter --}}
         <div>
           <label class="block text-sm font-medium text-slate-300 mb-1">Event</label>
-          <select name="event_id" class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 focus:border-cyan-500">
+          <select name="event_id" class="w-full rounded-lg border border-cyan-400/20 bg-slate-800/70 px-3 py-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-400">
             <option value="">All Events</option>
             @foreach($filterOptions['recent_events'] as $id => $title)
               <option value="{{ $id }}" {{ (request('event_id') == $id) ? 'selected' : '' }}>
@@ -113,24 +128,24 @@
         <div>
           <label class="block text-sm font-medium text-slate-300 mb-1">From Date</label>
           <input type="date" name="date_from" value="{{ request('date_from') }}"
-                 class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 focus:border-cyan-500">
+                 class="w-full rounded-lg border border-cyan-400/20 bg-slate-800/70 px-3 py-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-400">
         </div>
 
         {{-- Date To --}}
         <div>
           <label class="block text-sm font-medium text-slate-300 mb-1">To Date</label>
           <input type="date" name="date_to" value="{{ request('date_to') }}"
-                 class="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-slate-100 focus:border-cyan-500">
+                 class="w-full rounded-lg border border-cyan-400/20 bg-slate-800/70 px-3 py-2 text-slate-100 focus:outline-none focus:ring-2 focus:ring-cyan-400">
         </div>
 
         {{-- Filter Actions --}}
         <div class="flex flex-col gap-2">
           <button type="submit"
-                  class="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-700 text-white text-sm transition">
+                  class="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-white text-sm transition-all duration-200 shadow-lg shadow-cyan-900/30">
             🔍 Filter
           </button>
           <a href="{{ route('bookings.index') }}"
-             class="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 text-center text-slate-300 text-sm transition">
+             class="px-4 py-2 rounded-lg bg-slate-700/70 hover:bg-slate-600 text-center text-slate-300 text-sm transition-all duration-200 border border-slate-600/50">
             ✨ Clear
           </a>
         </div>
@@ -138,17 +153,17 @@
     </section>
 
     {{-- Bookings Table --}}
-    <section class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md shadow-lg overflow-hidden">
+    <section class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md shadow-xl shadow-cyan-900/20 overflow-hidden">
       <div class="p-6 border-b border-white/10">
         <div class="flex items-center justify-between">
-          <h2 class="text-lg font-semibold text-cyan-300">
+          <h2 class="text-lg font-semibold text-cyan-300 tracking-tight">
             All Bookings
             <span class="text-sm text-slate-400">({{ $bookings->total() }} total)</span>
           </h2>
 
           @if(count($filters) > 0)
             <div class="text-sm text-slate-400">
-              <span class="px-2 py-1 rounded bg-cyan-500/20 text-cyan-300">
+              <span class="px-2 py-1 rounded bg-cyan-500/20 text-cyan-300 ring-1 ring-cyan-400/40">
                 {{ count($filters) }} filter(s) applied
               </span>
             </div>
