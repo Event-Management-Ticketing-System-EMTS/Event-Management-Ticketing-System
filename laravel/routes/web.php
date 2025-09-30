@@ -49,6 +49,25 @@ Route::middleware('auth')->group(function () {
         Route::post('/{event}/purchase', [\App\Http\Controllers\SimpleTicketController::class, 'purchaseTickets']);
     });
 
+    // Simple notification routes
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [\App\Http\Controllers\SimpleNotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/unread', [\App\Http\Controllers\SimpleNotificationController::class, 'getUnread'])->name('notifications.unread');
+        Route::post('/{id}/read', [\App\Http\Controllers\SimpleNotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::get('/count', [\App\Http\Controllers\SimpleNotificationController::class, 'getCount'])->name('notifications.count');
+    });
+
+    // Simple ticket management
+    Route::prefix('api/tickets')->group(function () {
+        Route::post('/{ticket}/cancel', [\App\Http\Controllers\SimpleTicketController::class, 'cancelTicket'])->name('tickets.cancel');
+    });
+
+    // Test routes (remove these later!)
+    Route::prefix('test')->group(function () {
+        Route::get('/cancel-ticket', [\App\Http\Controllers\TestNotificationController::class, 'testCancellation']);
+        Route::get('/notifications', [\App\Http\Controllers\TestNotificationController::class, 'showNotifications']);
+    });
+
     // User management (Admin only)
     Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
     Route::get('/users/{id}', [\App\Http\Controllers\UserController::class, 'show'])->name('users.show');

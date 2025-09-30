@@ -30,14 +30,15 @@ The Event Management & Ticketing System (EMTS) is a full-stack web application t
 - 👥 **Advanced User Management** (Admin-only access with role transitions)
 - 🔄 **Dynamic Role Management** (Real-time role changes with validation)
 - 🎪 **Event Management** (CRUD operations with sorting/filtering)
-- 🎫 **Advanced Ticket System** (Real-time availability with purchase management)
+- 🎫 **Real-time Ticket System** (Live availability with automatic updates)
+- 📬 **Smart Notification System** (Automatic organizer notifications via Observer Pattern)
 - ⚡ **Real-time Updates** (Live ticket availability and inventory tracking)
 - 📊 **Analytics Dashboard** (Event statistics and insights)
 - 🎛️ **Admin Control Panel** (User oversight and system management)
 - 🔄 **Smart Sorting** (Dynamic content organization)
 - 🎨 **Component-based UI** (Reusable interface components)
 - 🛡️ **Security Features** (Login tracking, role-based access control)
-- 🏗️ **Design Patterns** (Observer, Strategy, Service Layer, Component patterns)
+- 🏗️ **Design Patterns** (Observer Pattern for tickets & notifications, Service Layer, Component patterns)
 
 ---
 
@@ -553,7 +554,103 @@ sequenceDiagram
     Cache->>User: Show updated availability
 ```
 
-### 8. **Simple Real-time UI Component** ⭐ **BEGINNER FRIENDLY**
+### 8. **Observer Pattern Extended - Smart Notification System** ⭐ **BEGINNER FRIENDLY**
+
+**Location**: `app/Services/SimpleNotificationService.php` + `app/Models/Notification.php`
+
+**Purpose**: Automatically notify organizers when important events happen with their tickets using the same Observer Pattern you already know!
+
+**How it works**: 
+1. When a ticket is cancelled → Observer notices the change
+2. Observer calls NotificationService → Creates notification for organizer
+3. Organizer sees notification → Gets informed instantly about the cancellation
+4. Notification includes details → Customer name, quantity, refund amount
+
+```php
+// app/Services/SimpleNotificationService.php
+class SimpleNotificationService
+{
+    /**
+     * Notify organizer when their event's ticket is cancelled
+     */
+    public function notifyTicketCancellation(Ticket $ticket): void
+    {
+        $event = $ticket->event;
+        $organizer = $event->organizer;
+        $customer = $ticket->user;
+
+        // Create a simple, clear notification
+        Notification::create([
+            'user_id' => $organizer->id,
+            'title' => 'Ticket Cancelled',
+            'message' => "Customer {$customer->name} cancelled {$ticket->quantity} ticket(s) for your event '{$event->title}'",
+            'type' => Notification::TYPE_TICKET_CANCELLED,
+            'is_read' => false,
+            'data' => [
+                'ticket_id' => $ticket->id,
+                'event_id' => $event->id,
+                'customer_name' => $customer->name,
+                'quantity' => $ticket->quantity,
+                'refund_amount' => $ticket->total_price
+            ]
+        ]);
+    }
+}
+```
+
+```php
+// Updated app/Observers/TicketObserver.php
+class TicketObserver
+{
+    public function updated(Ticket $ticket): void
+    {
+        // 1. Update availability (existing functionality)
+        $this->ticketService->updateAvailability($ticket->event_id);
+        
+        // 2. Check if ticket was cancelled and notify organizer (NEW!)
+        if ($ticket->wasChanged('status') && $ticket->status === Ticket::STATUS_CANCELLED) {
+            $this->notificationService->notifyTicketCancellation($ticket);
+        }
+    }
+}
+```
+
+**Why Observer Pattern for Notifications?**
+- ✅ **Automatic**: No need to remember to send notifications manually
+- ✅ **Real-time**: Organizers get notified instantly when tickets are cancelled
+- ✅ **Consistent**: Uses the same pattern as ticket availability updates
+- ✅ **Extensible**: Easy to add more notification types (purchases, updates, etc.)
+- ✅ **Beginner-friendly**: Same "when X happens, do Y" logic you already understand
+
+**Notification System Features**:
+- 📬 **Smart Notifications**: Beautiful notifications page with icons and colors
+- 🔔 **Unread Badges**: Shows count of new notifications in header
+- 📱 **Mobile Responsive**: Works perfectly on all devices
+- 💾 **Persistent Storage**: Notifications saved in database for history
+- 🎨 **Rich Content**: Includes customer details, amounts, and context
+- ⚡ **AJAX Updates**: Mark as read without page refresh
+
+**Complete Observer Pattern Flow with Notifications**:
+```mermaid
+sequenceDiagram
+    Customer->>Controller: Cancel Ticket
+    Controller->>Ticket: Update status to 'cancelled'
+    Ticket->>Observer: Ticket updated event
+    
+    Note over Observer: Observer handles two things automatically:
+    Observer->>TicketService: updateAvailability(eventId)
+    Observer->>NotificationService: notifyTicketCancellation(ticket)
+    
+    TicketService->>Cache: Clear availability cache
+    NotificationService->>Database: Create notification for organizer
+    
+    Note over Database: Next time organizer visits:
+    Organizer->>NotificationController: View notifications
+    NotificationController->>Database: Get unread notifications
+    Database->>Organizer: Show: "Customer John cancelled 2 tickets"
+```
+
+### 9. **Simple Real-time UI Component** ⭐ **BEGINNER FRIENDLY**
 
 **Location**: `resources/views/components/simple-ticket-availability.blade.php`
 
@@ -713,74 +810,126 @@ setInterval(() => {
 
 ## 🗄️ Database Schema
 
-### Core Tables
+### Simple & Clean Database Design
 
-```sql
--- Users table with role-based structure
-CREATE TABLE users (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role ENUM('admin', 'organizer', 'user') DEFAULT 'user',
-    email_verified BOOLEAN DEFAULT FALSE,
-    avatar_path VARCHAR(255),
-    remember_token VARCHAR(100),
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
-);
+Our simplified ticketing system with notifications uses 5 main tables:
 
--- Events table with comprehensive event data
-CREATE TABLE events (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    event_date DATE NOT NULL,
-    start_time TIME,
-    end_time TIME,
-    venue VARCHAR(255) NOT NULL,
-    address VARCHAR(255),
-    city VARCHAR(255),
-    total_tickets INT NOT NULL,
-    tickets_sold INT DEFAULT 0,
-    price DECIMAL(8,2) NOT NULL,
-    status ENUM('draft', 'published', 'cancelled') DEFAULT 'draft',
-    organizer_id BIGINT,
-    image_path VARCHAR(255),
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    FOREIGN KEY (organizer_id) REFERENCES users(id)
-);
+```mermaid
+erDiagram
+    USERS {
+        bigint id PK
+        string name
+        string email UK
+        string password
+        enum role
+        boolean email_verified
+        string avatar_path
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    EVENTS {
+        bigint id PK
+        string title
+        text description
+        date event_date
+        time start_time
+        time end_time
+        string venue
+        string address
+        string city
+        int capacity
+        decimal price
+        enum status
+        bigint organizer_id FK
+        string image_path
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    TICKETS {
+        bigint id PK
+        bigint event_id FK
+        bigint user_id FK
+        int quantity
+        decimal total_price
+        timestamp purchase_date
+        enum status
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    NOTIFICATIONS {
+        bigint id PK
+        bigint user_id FK
+        string title
+        text message
+        string type
+        boolean is_read
+        json data
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    LOGIN_LOGS {
+        bigint id PK
+        bigint user_id FK
+        string email
+        boolean success
+        string ip_address
+        text user_agent
+        timestamp created_at
+    }
+    
+    USERS ||--o{ EVENTS : organizes
+    USERS ||--o{ LOGIN_LOGS : generates
+    USERS ||--o{ TICKETS : purchases
+    USERS ||--o{ NOTIFICATIONS : receives
+    EVENTS ||--o{ TICKETS : "has bookings"
+```
 
--- Login logs for security tracking
-CREATE TABLE login_logs (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT,
-    email VARCHAR(255),
-    success BOOLEAN,
-    ip VARCHAR(45),
-    user_agent TEXT,
-    created_at TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
+### Key Relationships & Observer Pattern Flow
 
--- Tickets table for real-time availability tracking
-CREATE TABLE tickets (
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    event_id BIGINT NOT NULL,
-    user_id BIGINT NOT NULL,
-    quantity INTEGER DEFAULT 1,
-    total_price DECIMAL(8,2) NOT NULL,
-    purchase_date TIMESTAMP NOT NULL,
-    status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP,
-    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_event_status (event_id, status),
-    INDEX idx_user_status (user_id, status),
-    INDEX idx_created_status (created_at, status)
-);
+- **Users** can organize multiple **Events** (organizer role)
+- **Users** can purchase multiple **Tickets** for different events
+- **Users** receive **Notifications** about their events (organizers) or purchases (customers)
+- **Events** can have multiple **Tickets** (bookings) from different users
+- **When tickets change** → **Observer automatically creates notifications** for organizers
+- **Login Logs** track all login attempts for security
+
+### Notification Types
+
+The system supports different notification types with rich data:
+
+```php
+// Ticket Cancellation Notification
+{
+    "title": "Ticket Cancelled",
+    "message": "Customer John Doe cancelled 2 tickets for your event 'Summer Concert'",
+    "type": "ticket_cancelled",
+    "data": {
+        "customer_name": "John Doe",
+        "quantity": 2,
+        "refund_amount": "50.00",
+        "event_id": 123,
+        "ticket_id": 456
+    }
+}
+
+// Ticket Purchase Notification  
+{
+    "title": "New Ticket Purchase",
+    "message": "Great news! Jane Smith just bought 3 tickets for your event 'Summer Concert'",
+    "type": "ticket_purchased",
+    "data": {
+        "customer_name": "Jane Smith",
+        "quantity": 3,
+        "revenue": "75.00",
+        "event_id": 123,
+        "ticket_id": 789
+    }
+}
+```
 ```
 
 ### Entity Relationship Diagram
@@ -951,6 +1100,12 @@ Our design system follows a **dark theme with cyan accents** approach, emphasizi
   - Real-time event inventory synchronization
   - Observer-triggered database updates
   - Event-driven architecture
+- ✅ **Smart Notification System**
+  - Automatic organizer notifications via Observer Pattern
+  - Real-time cancellation alerts with customer details
+  - Beautiful notifications interface with icons and badges
+  - Persistent notification storage and read status tracking
+  - AJAX-powered notification management
 - ✅ **Strategy Pattern for Ticket Management**
   - Simple vs Advanced calculation strategies
   - Flexible business rule implementation
@@ -981,40 +1136,45 @@ Our design system follows a **dark theme with cyan accents** approach, emphasizi
 app/
 ├── Http/
 │   ├── Controllers/
-│   │   ├── AuthController.php          # Authentication logic
-│   │   ├── EventController.php         # Event CRUD with DI
-│   │   ├── TicketController.php        # Ticket purchase & availability
-│   │   ├── UserController.php          # User management & roles
-│   │   ├── RegisterController.php      # User registration
-│   │   └── ProfileController.php       # Profile management
-│   └── Middleware/                     # Custom middleware
+│   │   ├── AuthController.php               # Authentication logic
+│   │   ├── EventController.php              # Event CRUD with DI
+│   │   ├── SimpleTicketController.php       # Simple ticket purchase & availability
+│   │   ├── SimpleNotificationController.php # Notification management
+│   │   ├── UserController.php               # User management & roles
+│   │   ├── RegisterController.php           # User registration
+│   │   └── ProfileController.php            # Profile management
+│   └── Middleware/                          # Custom middleware
 ├── Models/
-│   ├── User.php                        # User model with roles
-│   ├── Event.php                       # Event model with tickets
-│   ├── Ticket.php                      # Ticket model with relationships
-│   └── LoginLog.php                    # Security logging
+│   ├── User.php                             # User model with roles & notifications
+│   ├── Event.php                            # Event model with tickets & organizer
+│   ├── Ticket.php                           # Ticket model with relationships
+│   ├── Notification.php                     # Notification model for organizers
+│   └── LoginLog.php                         # Security logging
 ├── Observers/
-│   └── TicketObserver.php              # Observer pattern for tickets
+│   └── TicketObserver.php                   # Observer pattern: tickets & notifications
 ├── Repositories/
-│   ├── EventRepository.php             # Event data access
-│   └── UserRepository.php              # User data access
+│   ├── EventRepository.php                  # Event data access
+│   └── UserRepository.php                   # User data access
 ├── Services/
-│   ├── SortingService.php              # Sorting logic
-│   ├── RoleManagementService.php       # Role transition strategy
-│   ├── SimpleTicketService.php         # Simple ticket availability (Observer pattern)
+│   ├── SortingService.php                   # Sorting logic
+│   ├── RoleManagementService.php            # Role transition strategy
+│   ├── SimpleTicketService.php              # Simple ticket availability (Observer pattern)
+│   ├── SimpleNotificationService.php        # Notification creation & management
 │   └── UserCreation/
-│       ├── UserFactory.php             # Factory pattern
-│       └── UserFactoryInterface.php    # Factory contract
+│       ├── UserFactory.php                  # Factory pattern
+│       └── UserFactoryInterface.php         # Factory contract
 └── Providers/
-    └── AppServiceProvider.php          # DI container setup
+    └── AppServiceProvider.php               # DI container setup
 
 resources/
 ├── views/
-│   ├── auth/                           # Authentication views
-│   ├── events/                         # Event management views
+│   ├── auth/                                # Authentication views
+│   ├── events/                              # Event management views
+│   ├── notifications/
+│   │   └── index.blade.php                  # Beautiful notifications page
 │   ├── admin/
-│   │   └── users/                      # User management interface
-│   │       ├── index.blade.php         # User listing
+│   │   └── users/                           # User management interface
+│   │       ├── index.blade.php              # User listing
 │   │       └── show.blade.php          # User details
 │   ├── components/
 │   │   ├── sorting-controls.blade.php  # Reusable sorting

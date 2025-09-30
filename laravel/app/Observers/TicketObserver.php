@@ -4,22 +4,28 @@ namespace App\Observers;
 
 use App\Models\Ticket;
 use App\Services\SimpleTicketService;
+use App\Services\SimpleNotificationService;
 
 /**
- * Simple Ticket Observer - Observer Pattern
+ * Simple Ticket Observer - Observer Pattern ⭐ BEGINNER FRIENDLY
  *
- * This automatically updates ticket availability whenever:
- * - A new ticket is created (someone buys tickets)
- * - A ticket is updated (status changes)
- * - A ticket is deleted (refund/cancellation)
+ * This automatically handles ticket events:
+ * - Updates ticket availability (existing feature)
+ * - Sends notifications to organizers (new feature!)
+ *
+ * Perfect example of Observer Pattern: "When something happens, automatically do multiple things"
  */
 class TicketObserver
 {
     protected $ticketService;
+    protected $notificationService;
 
-    public function __construct(SimpleTicketService $ticketService)
-    {
+    public function __construct(
+        SimpleTicketService $ticketService,
+        SimpleNotificationService $notificationService
+    ) {
         $this->ticketService = $ticketService;
+        $this->notificationService = $notificationService;
     }
 
     /**
@@ -27,8 +33,13 @@ class TicketObserver
      */
     public function created(Ticket $ticket): void
     {
-        // Automatically update availability when ticket is created
+        // 1. Update availability (existing functionality)
         $this->ticketService->updateAvailability($ticket->event_id);
+
+        // 2. Notify organizer about new purchase (new functionality!)
+        if ($ticket->status === Ticket::STATUS_CONFIRMED) {
+            $this->notificationService->notifyTicketPurchase($ticket);
+        }
     }
 
     /**
@@ -36,8 +47,13 @@ class TicketObserver
      */
     public function updated(Ticket $ticket): void
     {
-        // Update availability when ticket status changes
+        // 1. Update availability when ticket status changes
         $this->ticketService->updateAvailability($ticket->event_id);
+
+        // 2. Check if ticket was cancelled and notify organizer
+        if ($ticket->wasChanged('status') && $ticket->status === Ticket::STATUS_CANCELLED) {
+            $this->notificationService->notifyTicketCancellation($ticket);
+        }
     }
 
     /**
@@ -45,7 +61,10 @@ class TicketObserver
      */
     public function deleted(Ticket $ticket): void
     {
-        // Update availability when ticket is deleted (refund)
+        // Update availability when ticket is deleted (hard delete/refund)
         $this->ticketService->updateAvailability($ticket->event_id);
+
+        // Notify organizer about deletion (this counts as cancellation)
+        $this->notificationService->notifyTicketCancellation($ticket);
     }
 }

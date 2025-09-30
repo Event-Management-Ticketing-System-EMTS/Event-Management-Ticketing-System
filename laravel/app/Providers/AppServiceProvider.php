@@ -31,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
         // Register Service bindings
         $this->app->singleton(\App\Services\SortingService::class);
         $this->app->singleton(\App\Services\SimpleTicketService::class);
+        $this->app->singleton(\App\Services\SimpleNotificationService::class);
     }
 
     /**

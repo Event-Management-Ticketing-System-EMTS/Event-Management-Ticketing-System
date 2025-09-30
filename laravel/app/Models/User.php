@@ -17,8 +17,13 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-    'name', 'email', 'password', 'role', 'email_verified', 'avatar_path',
-];
+        'name',
+        'email',
+        'password',
+        'role',
+        'email_verified',
+        'avatar_path',
+    ];
     /**
      * Hidden attributes for arrays / JSON.
      *
@@ -81,5 +86,29 @@ class User extends Authenticatable
     public function loginLogs()
     {
         return $this->hasMany(LoginLog::class);
+    }
+
+    /** A user can organize many events */
+    public function events()
+    {
+        return $this->hasMany(Event::class, 'organizer_id');
+    }
+
+    /** A user can have many tickets */
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    /** A user can receive many notifications */
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class)->orderBy('created_at', 'desc');
+    }
+
+    /** Get unread notifications count */
+    public function unreadNotificationsCount(): int
+    {
+        return $this->notifications()->where('is_read', false)->count();
     }
 }
