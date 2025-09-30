@@ -19,13 +19,15 @@ graph TB
     subgraph "Business Logic Layer"
         G[Services]
         H[Repositories]
-        I[Events]
+        I[Observers]
+        J[Strategies]
     end
     
     subgraph "Data Layer"
-        J[Eloquent Models]
-        K[Database]
-        L[Migrations]
+        K[Eloquent Models]
+        L[Database]
+        M[Migrations]
+        N[Caching]
     end
     
     A --> D
@@ -35,9 +37,13 @@ graph TB
     E --> D
     F --> D
     G --> H
-    H --> J
-    J --> K
-    L --> K
+    G --> I
+    G --> J
+    H --> K
+    I --> K
+    K --> L
+    M --> L
+    N --> K
 ```
 
 ## Design Patterns Flow
@@ -86,6 +92,37 @@ sequenceDiagram
     R-->>S: success
     S-->>C: role changed
     C-->>U: JSON success response
+
+    Note over U,DB: Ticket Availability Real-time Flow (Observer + Strategy Pattern)
+    U->>C: GET /events/{id}/ticket-availability
+    C->>TS: getAvailability(eventId)
+    TS->>Cache: get availability data
+    Cache-->>TS: cached or null
+    alt Cache Miss
+        TS->>Strategy: calculateAvailability(event)
+        Strategy->>M: query tickets and capacity
+        M->>DB: SELECT tickets WHERE event_id = ?
+        DB-->>M: ticket data
+        M-->>Strategy: ticket counts
+        Strategy-->>TS: availability data
+        TS->>Cache: store availability
+    end
+    TS-->>C: availability data
+    C-->>U: JSON response
+
+    Note over U,DB: Ticket Purchase with Observer Pattern
+    U->>C: POST /events/{id}/purchase-ticket
+    C->>TS: purchaseTickets(eventId, quantity, userId)
+    TS->>M: create ticket records
+    M->>DB: INSERT INTO tickets
+    DB-->>M: tickets created
+    M-->>TO: Ticket::created event
+    TO->>TS: updateEventAvailability(eventId)
+    TS->>Strategy: recalculate availability
+    Strategy-->>TS: new availability
+    TS->>Cache: invalidate/update cache
+    TS-->>C: purchase success
+    C-->>U: JSON success response
 ```
 
 ## Component Hierarchy
@@ -108,16 +145,25 @@ graph TD
     C1 --> TC[Table Component]
     C1 --> PC[Pagination Component]
     
+    C3 --> TAC[Ticket Availability Component]
+    TAC --> TPB[Ticket Progress Bar]
+    TAC --> TPF[Ticket Purchase Form]
+    TAC --> TRT[Real-time Ticker]
+    
     D --> D1[Profile Edit]
     D --> D2[Avatar Upload]
     
     A --> E[Admin Views]
     E --> E1[User Management]
     E --> E2[User Details]
+    E --> E3[Ticket Management]
     
     E1 --> RSC[Role Selector Component]
     E1 --> SSC[Sorting Controls Component]
     E1 --> USC[User Stats Component]
+    
+    E3 --> TSC[Ticket Stats Component]
+    E3 --> TAM[Ticket Availability Monitor]
 ```
 
 ## Database Relationships
@@ -241,6 +287,72 @@ classDiagram
     SortingService --> EventRepository : validates parameters for
 ```
 
+## Ticket Availability System Architecture
+
+```mermaid
+classDiagram
+    class TicketAvailabilityService {
+        -cacheManager: CacheManager
+        -strategyManager: StrategyManager
+        +getAvailability(eventId) array
+        +purchaseTickets(eventId, quantity, userId) bool
+        +updateEventAvailability(eventId) void
+        +setStrategy(strategy) void
+        -buildCacheKey(eventId) string
+        -invalidateCache(eventId) void
+    }
+    
+    class TicketUpdateStrategyInterface {
+        <<interface>>
+        +calculateAvailability(event) array
+        +canPurchase(event, quantity) bool
+        +getAvailabilityPercentage(event) float
+    }
+    
+    class SimpleTicketStrategy {
+        +calculateAvailability(event) array
+        +canPurchase(event, quantity) bool
+        +getAvailabilityPercentage(event) float
+    }
+    
+    class AdvancedTicketStrategy {
+        -bufferPercentage: float
+        +calculateAvailability(event) array
+        +canPurchase(event, quantity) bool
+        +getAvailabilityPercentage(event) float
+        -calculateBuffer(capacity) int
+    }
+    
+    class TicketObserver {
+        -availabilityService: TicketAvailabilityService
+        +created(ticket) void
+        +updated(ticket) void
+        +deleted(ticket) void
+    }
+    
+    class TicketController {
+        -availabilityService: TicketAvailabilityService
+        +getAvailability(eventId) JsonResponse
+        +purchaseTickets(request, eventId) JsonResponse
+        +getUserTickets(userId) JsonResponse
+    }
+    
+    class TicketAvailabilityComponent {
+        +eventId: int
+        +refreshInterval: int
+        +render() View
+        +updateAvailability() void
+        +handlePurchase() void
+    }
+    
+    TicketAvailabilityService --> TicketUpdateStrategyInterface : uses
+    SimpleTicketStrategy ..|> TicketUpdateStrategyInterface : implements
+    AdvancedTicketStrategy ..|> TicketUpdateStrategyInterface : implements
+    TicketObserver --> TicketAvailabilityService : triggers
+    TicketController --> TicketAvailabilityService : uses
+    TicketAvailabilityComponent --> TicketController : calls API
+```
+
 ## Role Management System Architecture
 
 ```mermaid
@@ -348,3 +460,44 @@ graph TD
         S5[Input Validation]
     end
 ```
+
+## Caching Architecture for Real-time Systems
+
+```mermaid
+graph TD
+    A[User Request] --> B[Controller]
+    B --> C[TicketAvailabilityService]
+    C --> D{Cache Hit?}
+    D -->|Yes| E[Return Cached Data]
+    D -->|No| F[Execute Strategy]
+    F --> G[Database Query]
+    G --> H[Calculate Availability]
+    H --> I[Store in Cache]
+    I --> J[Return Fresh Data]
+    
+    K[Observer Event] --> L[Invalidate Cache]
+    L --> M[Trigger Recalculation]
+    M --> N[Update Cache]
+    
+    subgraph "Cache Keys"
+        CK1[event_availability_{id}]
+        CK2[event_tickets_{id}]
+        CK3[user_tickets_{userId}]
+    end
+    
+    subgraph "Cache TTL"
+        T1[Availability: 30 seconds]
+        T2[Tickets: 5 minutes]
+        T3[User Data: 10 minutes]
+    end
+```
+
+## Performance Optimization Strategies
+
+- **Database Indexing**: Optimized indexes on frequently queried columns
+- **Query Optimization**: Efficient joins and selective loading
+- **Caching Layers**: Multi-level caching for hot data
+- **Observer Pattern**: Event-driven cache invalidation
+- **Strategy Pattern**: Pluggable business logic for different scenarios
+- **Component-based UI**: Reusable components with real-time updates
+- **AJAX Polling**: Efficient client-side data refresh without page reloads

@@ -30,12 +30,14 @@ The Event Management & Ticketing System (EMTS) is a full-stack web application t
 - 👥 **Advanced User Management** (Admin-only access with role transitions)
 - 🔄 **Dynamic Role Management** (Real-time role changes with validation)
 - 🎪 **Event Management** (CRUD operations with sorting/filtering)
-- 🎫 **Ticket Management** (Sales tracking, inventory management)
+- 🎫 **Advanced Ticket System** (Real-time availability with purchase management)
+- ⚡ **Real-time Updates** (Live ticket availability and inventory tracking)
 - 📊 **Analytics Dashboard** (Event statistics and insights)
 - 🎛️ **Admin Control Panel** (User oversight and system management)
-- 🔄 **Real-time Sorting** (Dynamic content organization)
+- 🔄 **Smart Sorting** (Dynamic content organization)
 - 🎨 **Component-based UI** (Reusable interface components)
 - 🛡️ **Security Features** (Login tracking, role-based access control)
+- 🏗️ **Design Patterns** (Observer, Strategy, Service Layer, Component patterns)
 
 ---
 
@@ -478,6 +480,185 @@ classDiagram
 - **Security**: Prevents self-role modification and validates permissions
 - **UX Optimized**: Silent error handling, no intrusive popups
 
+### 9. **Observer Pattern** - Real-time Ticket Availability
+
+**Location**: `app/Observers/TicketObserver.php`
+
+**Purpose**: Automatically update event ticket availability when tickets are purchased, confirmed, or cancelled.
+
+```php
+// app/Observers/TicketObserver.php
+class TicketObserver
+{
+    protected $ticketService;
+
+    public function __construct(TicketAvailabilityService $ticketService)
+    {
+        $this->ticketService = $ticketService;
+    }
+
+    public function created(Ticket $ticket): void
+    {
+        $this->ticketService->updateEventAvailability($ticket->event_id);
+    }
+
+    public function updated(Ticket $ticket): void
+    {
+        $this->ticketService->updateEventAvailability($ticket->event_id);
+    }
+
+    public function deleted(Ticket $ticket): void
+    {
+        $this->ticketService->updateEventAvailability($ticket->event_id);
+    }
+}
+```
+
+**Observer Pattern Implementation**:
+```mermaid
+sequenceDiagram
+    participant User
+    participant TicketController
+    participant Ticket
+    participant TicketObserver
+    participant TicketService
+    participant Event
+
+    User->>TicketController: Purchase tickets
+    TicketController->>Ticket: create(ticket_data)
+    Ticket-->>TicketObserver: created event
+    TicketObserver->>TicketService: updateEventAvailability()
+    TicketService->>Event: update tickets_sold
+    Event-->>User: Real-time availability update
+```
+
+### 10. **Advanced Strategy Pattern** - Ticket Update Strategies
+
+**Location**: `app/Services/TicketStrategies/`
+
+**Purpose**: Flexible ticket availability calculation with different business rules.
+
+```php
+// Strategy Interface
+interface TicketUpdateStrategyInterface
+{
+    public function updateAvailability(Event $event): bool;
+    public function isAvailable(Event $event, int $requestedQuantity): bool;
+    public function getAvailableCount(Event $event): int;
+}
+
+// Simple Strategy - Basic calculation
+class SimpleTicketStrategy implements TicketUpdateStrategyInterface
+{
+    public function updateAvailability(Event $event): bool
+    {
+        $soldTickets = Ticket::where('event_id', $event->id)
+            ->where('status', 'confirmed')
+            ->sum('quantity');
+        
+        $event->update(['tickets_sold' => $soldTickets]);
+        return true;
+    }
+}
+
+// Advanced Strategy - Includes pending tickets and buffers
+class AdvancedTicketStrategy implements TicketUpdateStrategyInterface
+{
+    private const BUFFER_PERCENTAGE = 0.05; // 5% buffer for high-demand events
+    
+    public function isAvailable(Event $event, int $requestedQuantity): bool
+    {
+        $availableCount = $this->getAvailableCount($event);
+        
+        // Apply buffer for high-demand events (>80% sold)
+        if ($event->tickets_sold / $event->total_tickets > 0.8) {
+            $buffer = (int) ($event->total_tickets * self::BUFFER_PERCENTAGE);
+            $availableCount -= $buffer;
+        }
+        
+        return $availableCount >= $requestedQuantity;
+    }
+}
+```
+
+**Strategy Selection Flow**:
+```mermaid
+classDiagram
+    class TicketAvailabilityService {
+        -strategy: TicketUpdateStrategyInterface
+        +setStrategy(strategy) void
+        +updateEventAvailability(eventId) bool
+        +purchaseTickets(eventId, userId, quantity) array
+    }
+    
+    class TicketUpdateStrategyInterface {
+        <<interface>>
+        +updateAvailability(event) bool
+        +isAvailable(event, quantity) bool
+        +getAvailableCount(event) int
+    }
+    
+    class SimpleTicketStrategy {
+        +updateAvailability(event) bool
+        +isAvailable(event, quantity) bool
+        +getAvailableCount(event) int
+    }
+    
+    class AdvancedTicketStrategy {
+        -BUFFER_PERCENTAGE: float
+        +updateAvailability(event) bool
+        +isAvailable(event, quantity) bool
+        +getAvailableCount(event) int
+    }
+    
+    TicketAvailabilityService --> TicketUpdateStrategyInterface : uses
+    TicketUpdateStrategyInterface <|-- SimpleTicketStrategy
+    TicketUpdateStrategyInterface <|-- AdvancedTicketStrategy
+```
+
+### 11. **Real-time Component Pattern** - Ticket Availability Widget
+
+**Location**: `resources/views/components/ticket-availability.blade.php`
+
+**Purpose**: Reusable UI component with real-time ticket availability updates.
+
+```blade
+{{-- Real-time Ticket Availability Component --}}
+@props(['event'])
+
+<div class="ticket-availability-widget" data-event-id="{{ $event->id }}">
+    {{-- Availability Status with Progress Bar --}}
+    <div class="availability-status">
+        <span class="available-count">{{ $event->available_tickets }}</span>
+        <div class="availability-bar" style="width: {{ $event->availability_percentage }}%"></div>
+    </div>
+
+    {{-- Purchase Form with Real-time Updates --}}
+    <form class="ticket-purchase-form" data-event-id="{{ $event->id }}">
+        <select name="quantity" class="quantity-select">
+            @for($i = 1; $i <= min(10, $event->available_tickets); $i++)
+                <option value="{{ $i }}">{{ $i }} ticket{{ $i > 1 ? 's' : '' }}</option>
+            @endfor
+        </select>
+        <button type="submit" class="purchase-btn">Buy Now</button>
+    </form>
+</div>
+
+<script>
+// Real-time updates every 10 seconds
+setInterval(() => {
+    updateAvailability(eventId);
+}, 10000);
+</script>
+```
+
+**Features**:
+- **Real-time Updates**: AJAX polling every 10 seconds
+- **Visual Progress**: Animated progress bars and counters
+- **Instant Feedback**: Purchase confirmations and error handling
+- **Responsive Design**: Mobile-friendly interface
+- **Caching**: Optimized performance with intelligent caching
+
 ---
 
 ## 🗄️ Database Schema
@@ -532,6 +713,24 @@ CREATE TABLE login_logs (
     created_at TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- Tickets table for real-time availability tracking
+CREATE TABLE tickets (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    event_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    quantity INTEGER DEFAULT 1,
+    total_price DECIMAL(8,2) NOT NULL,
+    purchase_date TIMESTAMP NOT NULL,
+    status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
+    created_at TIMESTAMP,
+    updated_at TIMESTAMP,
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_event_status (event_id, status),
+    INDEX idx_user_status (user_id, status),
+    INDEX idx_created_status (created_at, status)
+);
 ```
 
 ### Entity Relationship Diagram
@@ -570,6 +769,18 @@ erDiagram
         timestamp updated_at
     }
     
+    TICKETS {
+        bigint id PK
+        bigint event_id FK
+        bigint user_id FK
+        int quantity
+        decimal total_price
+        timestamp purchase_date
+        enum status
+        timestamp created_at
+        timestamp updated_at
+    }
+    
     LOGIN_LOGS {
         bigint id PK
         bigint user_id FK
@@ -582,6 +793,8 @@ erDiagram
     
     USERS ||--o{ EVENTS : organizes
     USERS ||--o{ LOGIN_LOGS : generates
+    USERS ||--o{ TICKETS : purchases
+    EVENTS ||--o{ TICKETS : "has bookings"
 ```
 
 ---
@@ -681,7 +894,29 @@ Our design system follows a **dark theme with cyan accents** approach, emphasizi
   - Role-based route protection
   - Comprehensive user statistics
 
-### Sprint 5: Optimization & Polish (Week 9-10)
+### Sprint 5: Real-time Ticket System (Week 9-10)
+
+- ✅ **Observer Pattern Implementation**
+  - Automatic ticket availability updates
+  - Real-time event inventory synchronization
+  - Observer-triggered database updates
+  - Event-driven architecture
+- ✅ **Strategy Pattern for Ticket Management**
+  - Simple vs Advanced calculation strategies
+  - Flexible business rule implementation
+  - Pending ticket handling with timeouts
+  - High-demand event buffer management
+- ✅ **Real-time UI Components**
+  - Live ticket availability widgets
+  - AJAX-powered purchase forms
+  - Progress bars and visual indicators
+  - Instant feedback and notifications
+- ✅ **Performance Optimization**
+  - Intelligent caching strategies
+  - Database indexing for ticket queries
+  - Optimized real-time polling
+
+### Sprint 6: Documentation & Polish (Week 11-12)
 
 - 🔄 Performance optimization
 - 🔄 Comprehensive testing
@@ -698,20 +933,29 @@ app/
 │   ├── Controllers/
 │   │   ├── AuthController.php          # Authentication logic
 │   │   ├── EventController.php         # Event CRUD with DI
+│   │   ├── TicketController.php        # Ticket purchase & availability
 │   │   ├── UserController.php          # User management & roles
 │   │   ├── RegisterController.php      # User registration
 │   │   └── ProfileController.php       # Profile management
 │   └── Middleware/                     # Custom middleware
 ├── Models/
 │   ├── User.php                        # User model with roles
-│   ├── Event.php                       # Event model
+│   ├── Event.php                       # Event model with tickets
+│   ├── Ticket.php                      # Ticket model with relationships
 │   └── LoginLog.php                    # Security logging
+├── Observers/
+│   └── TicketObserver.php              # Observer pattern for tickets
 ├── Repositories/
 │   ├── EventRepository.php             # Event data access
 │   └── UserRepository.php              # User data access
 ├── Services/
 │   ├── SortingService.php              # Sorting logic
 │   ├── RoleManagementService.php       # Role transition strategy
+│   ├── TicketAvailabilityService.php   # Ticket business logic
+│   ├── TicketStrategies/               # Strategy pattern implementations
+│   │   ├── TicketUpdateStrategyInterface.php
+│   │   ├── SimpleTicketStrategy.php    # Basic availability calculation
+│   │   └── AdvancedTicketStrategy.php  # Advanced with buffers
 │   └── UserCreation/
 │       ├── UserFactory.php             # Factory pattern
 │       └── UserFactoryInterface.php    # Factory contract
@@ -728,7 +972,8 @@ resources/
 │   │       └── show.blade.php          # User details
 │   ├── components/
 │   │   ├── sorting-controls.blade.php  # Reusable sorting
-│   │   └── role-selector.blade.php     # Role management component
+│   │   ├── role-selector.blade.php     # Role management component
+│   │   └── ticket-availability.blade.php # Real-time ticket widget
 │   └── layouts/                        # Layout templates
 ├── css/
 │   └── app.css                         # Tailwind CSS
