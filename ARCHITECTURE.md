@@ -73,6 +73,19 @@ sequenceDiagram
     M-->>R: Collection
     R-->>C: Events collection
     C-->>U: Rendered view with sorted events
+
+    Note over U,DB: Role Management Flow (Strategy Pattern)
+    U->>C: PATCH /users/{id}/role
+    C->>S: changeUserRole(user, newRole, admin)
+    S->>S: validate role transition rules
+    S->>R: updateRole(userId, newRole)
+    R->>M: update(['role' => newRole])
+    M->>DB: UPDATE users SET role = ?
+    DB-->>M: success
+    M-->>R: updated user
+    R-->>S: success
+    S-->>C: role changed
+    C-->>U: JSON success response
 ```
 
 ## Component Hierarchy
@@ -97,6 +110,14 @@ graph TD
     
     D --> D1[Profile Edit]
     D --> D2[Avatar Upload]
+    
+    A --> E[Admin Views]
+    E --> E1[User Management]
+    E --> E2[User Details]
+    
+    E1 --> RSC[Role Selector Component]
+    E1 --> SSC[Sorting Controls Component]
+    E1 --> USC[User Stats Component]
 ```
 
 ## Database Relationships
@@ -218,4 +239,112 @@ classDiagram
     EventController --> EventRepository : uses
     EventController --> SortingControlsComponent : passes data to
     SortingService --> EventRepository : validates parameters for
+```
+
+## Role Management System Architecture
+
+```mermaid
+sequenceDiagram
+    participant A as Admin
+    participant UI as Role Selector
+    participant UC as UserController
+    participant RMS as RoleManagementService
+    participant UR as UserRepository
+    participant DB as Database
+
+    Note over A,DB: Role Change Flow (Strategy Pattern)
+    A->>UI: Select new role for user
+    UI->>UC: PATCH /users/{id}/role
+    UC->>RMS: changeUserRole(user, newRole, admin)
+    
+    Note over RMS: Strategy: Validate admin permissions
+    RMS->>RMS: validateAdminRole(admin)
+    
+    Note over RMS: Strategy: Prevent self-modification
+    RMS->>RMS: preventSelfModification(user, admin)
+    
+    Note over RMS: Strategy: Validate role transition
+    RMS->>RMS: canTransitionToRole(currentRole, newRole)
+    
+    RMS->>UR: updateRole(userId, newRole)
+    UR->>DB: UPDATE users SET role = newRole
+    DB-->>UR: success
+    UR-->>RMS: updated
+    RMS-->>UC: success
+    UC-->>UI: JSON success response
+    UI-->>A: Success notification & UI update
+```
+
+```mermaid
+classDiagram
+    class RoleManagementService {
+        +ROLE_TRANSITIONS: array
+        +ROLE_COLORS: array
+        +ROLE_ICONS: array
+        +changeUserRole(user, newRole, admin) bool
+        +getAvailableRoles(currentRole) array
+        +getRoleColor(role) string
+        +getRoleIcon(role) string
+        -canTransitionToRole(currentRole, newRole) bool
+    }
+    
+    class UserController {
+        -userRepository: UserRepository
+        -sortingService: SortingService
+        -roleManagementService: RoleManagementService
+        +index(request) View
+        +show(id) View
+        +updateRole(request, id) JsonResponse
+    }
+    
+    class UserRepository {
+        -model: User
+        +getAllWithSorting(sortBy, direction) Collection
+        +findById(id) User
+        +countByRole(role) int
+        +getRecentUsers(days) Collection
+        +updateRole(userId, role) bool
+    }
+    
+    class RoleSelectorComponent {
+        +user: User
+        +roleService: RoleManagementService
+        +render() View
+        +handleRoleChange() void
+    }
+    
+    UserController --> RoleManagementService : uses
+    UserController --> UserRepository : uses
+    RoleSelectorComponent --> RoleManagementService : uses
+    RoleManagementService --> UserRepository : updates through
+```
+
+## Security & Access Control
+
+```mermaid
+graph TD
+    subgraph "Role Hierarchy"
+        A[Admin] --> O[Organizer]
+        O --> U[User]
+    end
+    
+    subgraph "Access Control Matrix"
+        A --> A1[User Management]
+        A --> A2[Event Oversight] 
+        A --> A3[System Config]
+        
+        O --> O1[Own Events Only]
+        O --> O2[Event Creation]
+        
+        U --> U1[Event Browsing]
+        U --> U2[Profile Management]
+    end
+    
+    subgraph "Security Measures"
+        S1[Admin Privilege Validation]
+        S2[Self-Role Prevention]
+        S3[Role Transition Rules]
+        S4[CSRF Protection]
+        S5[Input Validation]
+    end
 ```

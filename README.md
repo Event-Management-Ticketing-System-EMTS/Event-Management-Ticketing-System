@@ -27,11 +27,15 @@ The Event Management & Ticketing System (EMTS) is a full-stack web application t
 
 ### Core Features
 - 🔐 **Multi-role Authentication** (Admin, Organizer, User)
+- 👥 **Advanced User Management** (Admin-only access with role transitions)
+- 🔄 **Dynamic Role Management** (Real-time role changes with validation)
 - 🎪 **Event Management** (CRUD operations with sorting/filtering)
 - 🎫 **Ticket Management** (Sales tracking, inventory management)
 - 📊 **Analytics Dashboard** (Event statistics and insights)
-- 👥 **User Management** (Profile management, role-based access)
-- 🔄 **Real-time Sorting** (Dynamic event organization)
+- 🎛️ **Admin Control Panel** (User oversight and system management)
+- 🔄 **Real-time Sorting** (Dynamic content organization)
+- 🎨 **Component-based UI** (Reusable interface components)
+- 🛡️ **Security Features** (Login tracking, role-based access control)
 
 ---
 
@@ -346,6 +350,134 @@ class EventController extends Controller
 }
 ```
 
+### 7. **Strategy Pattern** - Role Management System
+
+**Location**: `app/Services/RoleManagementService.php`
+
+**Purpose**: Implement flexible role transition logic with validation rules and business constraints.
+
+```php
+// app/Services/RoleManagementService.php
+class RoleManagementService
+{
+    // Define role transition strategies
+    public const ROLE_TRANSITIONS = [
+        'user' => ['organizer'],
+        'organizer' => ['user', 'admin'],
+        'admin' => ['organizer']
+    ];
+
+    public function changeUserRole(User $user, string $newRole, User $admin): bool
+    {
+        // Strategy: Admin permission validation
+        if ($admin->role !== 'admin') {
+            throw new \Exception('Only admins can change user roles');
+        }
+
+        // Strategy: Self-role prevention
+        if ($user->id === $admin->id) {
+            throw new \Exception('Cannot change your own role');
+        }
+
+        // Strategy: Role transition validation
+        if (!$this->canTransitionToRole($user->role, $newRole)) {
+            throw new \Exception("Cannot transition from {$user->role} to {$newRole}");
+        }
+
+        return DB::transaction(function () use ($user, $newRole) {
+            return $user->update(['role' => $newRole]);
+        });
+    }
+
+    private function canTransitionToRole(string $currentRole, string $newRole): bool
+    {
+        return in_array($newRole, self::ROLE_TRANSITIONS[$currentRole] ?? []);
+    }
+}
+```
+
+**Role Management Strategy Implementation**:
+```mermaid
+classDiagram
+    class RoleTransitionStrategy {
+        <<interface>>
+        +canTransition(from, to) bool
+        +execute(user, newRole) bool
+    }
+    
+    class UserToOrganizerStrategy {
+        +canTransition(from, to) bool
+        +execute(user, newRole) bool
+    }
+    
+    class OrganizerToAdminStrategy {
+        +canTransition(from, to) bool
+        +execute(user, newRole) bool
+    }
+    
+    class AdminToOrganizerStrategy {
+        +canTransition(from, to) bool
+        +execute(user, newRole) bool
+    }
+    
+    class RoleManagementService {
+        -strategies: Map
+        +changeUserRole(user, newRole, admin) bool
+        +getAvailableRoles(currentRole) array
+        +getRoleColor(role) string
+        +getRoleIcon(role) string
+    }
+    
+    RoleTransitionStrategy <|-- UserToOrganizerStrategy
+    RoleTransitionStrategy <|-- OrganizerToAdminStrategy
+    RoleTransitionStrategy <|-- AdminToOrganizerStrategy
+    RoleManagementService --> RoleTransitionStrategy : uses
+```
+
+### 8. **Component Pattern** - Role Selector Component
+
+**Location**: `resources/views/components/role-selector.blade.php`
+
+**Purpose**: Create reusable UI component for role management with AJAX functionality.
+
+```blade
+{{-- Role Selector Component --}}
+@props(['user', 'roleService'])
+
+<div class="role-selector inline-block">
+    @if($user->id === auth()->id())
+        {{-- Current user cannot change their own role --}}
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $roleService->getRoleColor($user->role) }}">
+            {{ $roleService->getRoleIcon($user->role) }} {{ ucfirst($user->role) }}
+        </span>
+    @else
+        {{-- Role management interface for other users --}}
+        <div class="flex items-center gap-2">
+            {{-- Current role badge --}}
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-700 text-slate-300">
+                {{ $roleService->getRoleIcon($user->role) }} {{ ucfirst($user->role) }}
+            </span>
+
+            {{-- Change role dropdown with AJAX --}}
+            <select class="role-change-select" data-user-id="{{ $user->id }}" data-current-role="{{ $user->role }}">
+                <option value="">Change to...</option>
+                @foreach($roleService->getAvailableRoles($user->role) as $availableRole)
+                    <option value="{{ $availableRole }}">
+                        {{ $roleService->getRoleIcon($availableRole) }} {{ ucfirst($availableRole) }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+    @endif
+</div>
+```
+
+**Features**:
+- **Real-time Role Updates**: AJAX-based role changes without page refresh
+- **Visual Feedback**: Success/error notifications with smooth animations
+- **Security**: Prevents self-role modification and validates permissions
+- **UX Optimized**: Silent error handling, no intrusive popups
+
 ---
 
 ## 🗄️ Database Schema
@@ -531,7 +663,26 @@ Our design system follows a **dark theme with cyan accents** approach, emphasizi
 - ✅ Reusable Blade components
 - ✅ Advanced UI enhancements
 
-### Sprint 4: Optimization & Polish (Week 7-8)
+### Sprint 4: Role Management & Admin Features (Week 7-8)
+
+- ✅ **Role Management System Implementation**
+  - Strategy Pattern for role transitions
+  - Admin-only user management interface
+  - Real-time role updates with AJAX
+  - Role transition validation and security
+- ✅ **Advanced User Interface Components**
+  - Reusable role-selector component
+  - Interactive dropdown with visual feedback
+  - Silent error handling (no intrusive popups)
+  - Responsive admin dashboard
+- ✅ **Security & Access Control**
+  - Admin privilege validation
+  - Self-role modification prevention
+  - Role-based route protection
+  - Comprehensive user statistics
+
+### Sprint 5: Optimization & Polish (Week 9-10)
+
 - 🔄 Performance optimization
 - 🔄 Comprehensive testing
 - 🔄 Documentation completion
@@ -547,6 +698,7 @@ app/
 │   ├── Controllers/
 │   │   ├── AuthController.php          # Authentication logic
 │   │   ├── EventController.php         # Event CRUD with DI
+│   │   ├── UserController.php          # User management & roles
 │   │   ├── RegisterController.php      # User registration
 │   │   └── ProfileController.php       # Profile management
 │   └── Middleware/                     # Custom middleware
@@ -555,9 +707,11 @@ app/
 │   ├── Event.php                       # Event model
 │   └── LoginLog.php                    # Security logging
 ├── Repositories/
-│   └── EventRepository.php             # Data access layer
+│   ├── EventRepository.php             # Event data access
+│   └── UserRepository.php              # User data access
 ├── Services/
 │   ├── SortingService.php              # Sorting logic
+│   ├── RoleManagementService.php       # Role transition strategy
 │   └── UserCreation/
 │       ├── UserFactory.php             # Factory pattern
 │       └── UserFactoryInterface.php    # Factory contract
@@ -568,8 +722,13 @@ resources/
 ├── views/
 │   ├── auth/                           # Authentication views
 │   ├── events/                         # Event management views
+│   ├── admin/
+│   │   └── users/                      # User management interface
+│   │       ├── index.blade.php         # User listing
+│   │       └── show.blade.php          # User details
 │   ├── components/
-│   │   └── sorting-controls.blade.php  # Reusable component
+│   │   ├── sorting-controls.blade.php  # Reusable sorting
+│   │   └── role-selector.blade.php     # Role management component
 │   └── layouts/                        # Layout templates
 ├── css/
 │   └── app.css                         # Tailwind CSS
@@ -631,9 +790,18 @@ php artisan serve
 ### Default Users
 After seeding, you can login with:
 
-- **Admin**: admin@example.com / password
-- **Organizer**: organizer@example.com / password  
-- **User**: user@example.com / password
+- **Admin**: admin@gmail.com / admin1234
+  - Access to all features including user management
+  - Can change user roles and access admin panel
+- **User**: abcd@gmail.com / aaaa1234
+  - Basic user access for event browsing
+  - Can be promoted to organizer by admin
+
+**Role Management Features**:
+- Admin can access user management at `/users`
+- Real-time role changes with dropdown selection
+- Role transition validation (user→organizer, organizer→admin/user, admin→organizer)
+- Comprehensive user statistics and analytics
 
 ---
 
@@ -643,11 +811,14 @@ After seeding, you can login with:
 - **Repository Tests**: Data access layer validation
 - **Service Tests**: Business logic verification
 - **Factory Tests**: User creation scenarios
+- **Role Management Tests**: Role transition validation and security
 
 ### Integration Testing
 - **Authentication Flow**: Login, registration, password reset
 - **Event Management**: CRUD operations with sorting
 - **Role-based Access**: Dashboard routing and permissions
+- **User Management**: Admin role management workflows
+- **Component Testing**: Role selector and UI components
 
 ### Feature Testing
 - **End-to-End Workflows**: Complete user journeys
@@ -678,18 +849,26 @@ After seeding, you can login with:
 - **Reusability**: Same component for different entity types
 - **Maintainability**: Single source of truth for UI elements
 
+### Role Management Strategy Benefits
+- **Security**: Controlled role transitions with validation rules
+- **Flexibility**: Easy to modify role hierarchy and permissions
+- **User Experience**: Real-time updates with smooth UI interactions
+- **Maintainability**: Centralized role logic in dedicated service
+
 ---
 
 ## 🎯 Key Learning Outcomes
 
 Through building this project, we've demonstrated:
 
-1. **Design Pattern Application**: Practical implementation of Factory, Repository, Strategy, and Service Layer patterns
-2. **Clean Architecture**: Proper separation of concerns and dependency management
-3. **Laravel Best Practices**: Eloquent relationships, middleware, service providers
-4. **Modern UI/UX**: Consistent design system with Tailwind CSS
-5. **Security Implementation**: Authentication, authorization, and audit logging
-6. **Code Organization**: Maintainable and scalable project structure
+1. **Advanced Design Patterns**: Factory, Repository, Strategy, Service Layer, and Component patterns
+2. **Role Management Architecture**: Secure, flexible user role systems with validation
+3. **Clean Architecture**: Proper separation of concerns and dependency management
+4. **Laravel Best Practices**: Eloquent relationships, middleware, service providers
+5. **Modern UI/UX**: Consistent design system with interactive components
+6. **Security Implementation**: Authentication, authorization, role-based access control
+7. **Code Organization**: Maintainable and scalable project structure
+8. **Real-time Interactions**: AJAX-based updates and dynamic user interfaces
 
 ---
 
