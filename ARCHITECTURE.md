@@ -6,48 +6,65 @@
 
 ```mermaid
 graph TB
+# EMTS - System Architecture Documentation
+
+## 🏗️ Overall System Architecture
+
+### Clean, Simple Architecture with Advanced Design Patterns
+
+```mermaid
+graph TB
     subgraph "🎨 Presentation Layer"
         A[Blade Templates]
-        B[Tailwind CSS]
+        B[Tailwind CSS + Premium Design]
         C[Alpine.js Components]
         D[AJAX Real-time Updates]
+        E[Booking Management UI]
     end
     
     subgraph "🎮 Application Layer"  
-        E[Controllers]
-        F[Middleware]
-        G[Form Requests]
-        H[Route Handlers]
+        F[Controllers]
+        G[Middleware]
+        H[Form Requests]
+        I[Route Handlers]
+        J[SimpleBookingController]
     end
     
     subgraph "🧠 Business Logic Layer"
-        I[Simple Services]
-        J[Observer Pattern]
-        K[Event Listeners]
-        L[Notification System]
+        K[Simple Services]
+        L[SimpleBookingService]
+        M[Observer Pattern]
+        N[Event Listeners]
+        O[Notification System]
+        P[Cache Management]
     end
     
     subgraph "📊 Data Layer"
-        M[Eloquent Models]
-        N[SQLite Database]
-        O[Migrations]
-        P[Relationships]
+        Q[Eloquent Models]
+        R[SQLite Database]
+        S[Migrations]
+        T[Relationships]
+        U[TicketObserver]
     end
     
-    A --> E
+    A --> F
     B --> A
     C --> D
-    D --> E
-    E --> I
-    F --> E
-    G --> E
-    H --> E
-    I --> J
-    J --> K
-    K --> L
-    I --> M
-    J --> M
+    D --> F
+    E --> J
+    J --> L
+    F --> K
+    G --> F
+    H --> F
+    I --> F
+    K --> M
+    L --> P
     M --> N
+    N --> O
+    M --> U
+    K --> Q
+    M --> Q
+    Q --> R
     O --> N
     P --> M
 ```
@@ -147,11 +164,11 @@ sequenceDiagram
     Note over U,DB: User Registration Flow (Factory Pattern)
     U->>C: POST /register
     C->>F: createUser(data, role)
-## 🎯 Simple Service Layer Architecture
+## 🎯 Enhanced Service Layer Architecture
 
-### Beginner-Friendly Design Patterns
+### Modern Design Patterns for Scalable Development
 
-Our system focuses on **simplicity and learning** rather than over-engineering:
+Our system combines **simplicity with advanced patterns** for educational and production readiness:
 
 ```mermaid
 graph TD
@@ -162,18 +179,28 @@ graph TD
         D[Cache Results]
     end
     
-    subgraph "🔔 Notification System"
-        E[SimpleNotificationService]
-        F[notifyTicketCancellation]
-        G[notifyTicketPurchase]
-        H[getUnreadNotifications]
+    subgraph "📊 Booking Management"
+        E[SimpleBookingService]
+        F[getAllBookings]
+        G[getBookingStats]
+        H[exportBookings]
+        I[Cache Statistics]
     end
     
-    subgraph "👁️ Observer Pattern"
-        I[TicketObserver]
-        J[updated method]
-        K[created method]
-        L[Auto-trigger notifications]
+    subgraph "🔔 Notification System"
+        J[SimpleNotificationService]
+        K[notifyTicketCancellation]
+        L[notifyTicketPurchase]
+        M[getUnreadNotifications]
+    end
+    
+    subgraph "👁️ Enhanced Observer Pattern"
+        N[TicketObserver]
+        O[updated method]
+        P[created method]
+        Q[deleted method]
+        R[clearBookingCache]
+        S[Auto-trigger notifications]
     end
     
     A --> B
@@ -181,6 +208,19 @@ graph TD
     A --> D
     E --> F
     E --> G
+    E --> H
+    E --> I
+    J --> K
+    J --> L
+    J --> M
+    N --> O
+    N --> P
+    N --> Q
+    N --> R
+    O --> S
+    P --> S
+    Q --> S
+    R --> E
     E --> H
     I --> J
     I --> K

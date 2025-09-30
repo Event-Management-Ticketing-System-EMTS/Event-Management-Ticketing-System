@@ -15,7 +15,7 @@ A comprehensive event management and ticketing system built with Laravel, showca
 5. [Database Schema](#-database-schema)
 6. [UI/UX Design System](#-uiux-design-system)
 7. [Feature Implementation Timeline](#-feature-implementation-timeline)
-8. [Code Structure](#-code-structure)
+8. [Code Structure & Architecture](#-code-structure--architecture)
 9. [Installation & Setup](#-installation--setup)
 10. [Testing Strategy](#-testing-strategy)
 
@@ -32,13 +32,14 @@ The Event Management & Ticketing System (EMTS) is a full-stack web application t
 - 🎪 **Event Management** (CRUD operations with sorting/filtering)
 - 🎫 **Real-time Ticket System** (Live availability with automatic updates)
 - 📬 **Smart Notification System** (Automatic organizer notifications via Observer Pattern)
+- 📋 **Advanced Booking Management** (Complete booking lifecycle with filters & export)
 - ⚡ **Real-time Updates** (Live ticket availability and inventory tracking)
 - 📊 **Analytics Dashboard** (Event statistics and insights)
 - 🎛️ **Admin Control Panel** (User oversight and system management)
 - 🔄 **Smart Sorting** (Dynamic content organization)
 - 🎨 **Component-based UI** (Reusable interface components)
 - 🛡️ **Security Features** (Login tracking, role-based access control)
-- 🏗️ **Design Patterns** (Observer Pattern for tickets & notifications, Service Layer, Component patterns)
+- 🏗️ **Design Patterns** (Observer Pattern for tickets & notifications & bookings, Service Layer, Component patterns)
 
 ---
 
@@ -808,11 +809,137 @@ setInterval(() => {
 
 ---
 
-## 🗄️ Database Schema
+### 12. **Booking Management System** ⭐ **BEGINNER FRIENDLY**
+
+**Location**: `app/Services/SimpleBookingService.php`, `app/Http/Controllers/SimpleBookingController.php`
+
+**Purpose**: Complete booking lifecycle management with advanced filtering, export capabilities, and real-time updates.
+
+**Design Patterns Used**:
+- **Service Layer Pattern**: Business logic separation
+- **Observer Pattern Extension**: Automatic cache invalidation
+- **Filter Pattern**: Advanced filtering capabilities
+
+```mermaid
+classDiagram
+    class SimpleBookingService {
+        +getAllBookings(filters, perPage) Collection
+        +getBookingStats() array
+        +getEventBookings(eventId) Collection
+        +getUserBookings(userId) Collection
+        +getBookingDetails(ticketId) Ticket
+        +getFilterOptions() array
+        +clearCache() void
+    }
+    
+    class SimpleBookingController {
+        -bookingService: SimpleBookingService
+        +index(request) View
+        +show(id) View
+        +export(request) StreamedResponse
+        +getEventBookings(eventId) JsonResponse
+        +getUserBookings(userId) JsonResponse
+    }
+    
+    class TicketObserver {
+        -bookingService: SimpleBookingService
+        +created(ticket) void
+        +updated(ticket) void
+        +deleted(ticket) void
+    }
+    
+    SimpleBookingController --> SimpleBookingService : uses
+    TicketObserver --> SimpleBookingService : clears cache
+```
+
+**Observer Pattern Integration**:
+```mermaid
+sequenceDiagram
+    participant T as 🎫 Ticket
+    participant O as 👁️ TicketObserver
+    participant TS as 🎫 TicketService
+    participant NS as 🔔 NotificationService
+    participant BS as 📋 BookingService
+    participant C as 📦 Cache
+
+    Note over T,C: Automatic Booking Cache Management
+    
+    T->>O: Ticket created/updated/deleted
+    O->>TS: updateAvailability()
+    O->>NS: sendNotification()
+    O->>BS: clearCache()
+    BS->>C: Clear booking statistics
+    BS->>C: Clear booking data
+    
+    Note over T,C: Next booking request gets fresh data
+```
+
+**Key Features**:
+
+**📊 Advanced Statistics Dashboard**
+```php
+public function getBookingStats()
+{
+    return Cache::remember('booking_stats', 300, function () {
+        return [
+            'total_bookings' => Ticket::count(),
+            'confirmed_bookings' => Ticket::where('status', 'confirmed')->count(),
+            'cancelled_bookings' => Ticket::where('status', 'cancelled')->count(),
+            'pending_bookings' => Ticket::where('status', 'pending')->count(),
+            'total_revenue' => Ticket::where('status', 'confirmed')->sum('total_price'),
+            'recent_bookings' => Ticket::with(['event', 'user'])
+                ->orderBy('created_at', 'desc')->take(5)->get()
+        ];
+    });
+}
+```
+
+**🔍 Advanced Filtering System**
+- **Status Filtering**: All, Confirmed, Pending, Cancelled
+- **Event Filtering**: Filter by specific events
+- **Date Range Filtering**: Custom date ranges
+- **User Filtering**: Filter by specific customers
+- **Combined Filters**: Multiple filters work together
+
+**� CSV Export Functionality**
+```php
+public function export(Request $request)
+{
+    $bookings = $this->bookingService->getAllBookings($filters, 999999);
+    
+    return response()->stream(function() use($bookings) {
+        $file = fopen('php://output', 'w');
+        fputcsv($file, ['Booking ID', 'Event', 'Customer', 'Status', 'Revenue']);
+        
+        foreach ($bookings as $booking) {
+            fputcsv($file, [
+                $booking->id,
+                $booking->event->title,
+                $booking->user->name,
+                $booking->status,
+                $booking->total_price
+            ]);
+        }
+        fclose($file);
+    }, 200, ['Content-Type' => 'text/csv']);
+}
+```
+
+**Benefits**:
+- ✅ **Complete Lifecycle**: View, filter, export, and analyze all bookings
+- ✅ **Real-time Data**: Observer pattern ensures fresh data
+- ✅ **Performance Optimized**: Intelligent caching with auto-invalidation
+- ✅ **Professional UI**: Consistent with login page design
+- ✅ **Export Ready**: CSV export for external analysis
+- ✅ **Multi-filter Support**: Advanced filtering capabilities
+
+---
+
+## �🗄️ Database Schema
 
 ### Simple & Clean Database Design
 
-Our simplified ticketing system with notifications uses 5 main tables:
+Our simplified ticketing system with notifications and bookings uses 5 main tables:
 
 ```mermaid
 erDiagram
@@ -1121,7 +1248,30 @@ Our design system follows a **dark theme with cyan accents** approach, emphasizi
   - Database indexing for ticket queries
   - Optimized real-time polling
 
-### Sprint 6: Documentation & Polish (Week 11-12)
+### Sprint 6: Booking Management System (Week 11-12)
+
+- ✅ **Booking Service Layer**
+  - SimpleBookingService for business logic
+  - Advanced filtering and search capabilities
+  - Performance-optimized with caching
+- ✅ **Booking Management Interface**
+  - Beautiful booking dashboard with statistics
+  - Advanced filtering (status, event, date range)
+  - Professional table with booking details
+  - Detailed booking view with customer/event info
+- ✅ **Observer Pattern Extension**
+  - Automatic cache invalidation on ticket changes
+  - Real-time booking data updates
+  - Integration with existing notification system
+- ✅ **Export Functionality**
+  - CSV export with filters applied
+  - Professional format for external analysis
+- ✅ **UI Consistency**
+  - Matching login page premium design
+  - Glassmorphism and gradient effects
+  - Consistent color palette and typography
+
+### Sprint 7: Documentation & Polish (Week 13-14)
 
 - 🔄 Performance optimization
 - 🔄 Comprehensive testing
@@ -1130,9 +1280,9 @@ Our design system follows a **dark theme with cyan accents** approach, emphasizi
 
 ---
 
-## 📂 Code Structure
+## 📂 Code Structure & Architecture
 
-```
+```text
 app/
 ├── Http/
 │   ├── Controllers/
@@ -1140,6 +1290,7 @@ app/
 │   │   ├── EventController.php              # Event CRUD with DI
 │   │   ├── SimpleTicketController.php       # Simple ticket purchase & availability
 │   │   ├── SimpleNotificationController.php # Notification management
+│   │   ├── SimpleBookingController.php      # Booking management with filtering
 │   │   ├── UserController.php               # User management & roles
 │   │   ├── RegisterController.php           # User registration
 │   │   └── ProfileController.php            # Profile management
@@ -1151,7 +1302,7 @@ app/
 │   ├── Notification.php                     # Notification model for organizers
 │   └── LoginLog.php                         # Security logging
 ├── Observers/
-│   └── TicketObserver.php                   # Observer pattern: tickets & notifications
+│   └── TicketObserver.php                   # Observer pattern: tickets, notifications & bookings
 ├── Repositories/
 │   ├── EventRepository.php                  # Event data access
 │   └── UserRepository.php                   # User data access
@@ -1160,6 +1311,7 @@ app/
 │   ├── RoleManagementService.php            # Role transition strategy
 │   ├── SimpleTicketService.php              # Simple ticket availability (Observer pattern)
 │   ├── SimpleNotificationService.php        # Notification creation & management
+│   ├── SimpleBookingService.php             # Booking business logic with caching
 │   └── UserCreation/
 │       ├── UserFactory.php                  # Factory pattern
 │       └── UserFactoryInterface.php         # Factory contract
@@ -1170,26 +1322,91 @@ resources/
 ├── views/
 │   ├── auth/                                # Authentication views
 │   ├── events/                              # Event management views
+│   ├── bookings/                            # Booking management views
+│   │   ├── index.blade.php                  # Booking dashboard with statistics
+│   │   └── show.blade.php                   # Detailed booking view
 │   ├── notifications/
 │   │   └── index.blade.php                  # Beautiful notifications page
 │   ├── admin/
 │   │   └── users/                           # User management interface
 │   │       ├── index.blade.php              # User listing
-│   │       └── show.blade.php          # User details
+│   │       └── show.blade.php               # User details
 │   ├── components/
-│   │   ├── sorting-controls.blade.php  # Reusable sorting
-│   │   ├── role-selector.blade.php     # Role management component
+│   │   ├── sorting-controls.blade.php       # Reusable sorting
+│   │   ├── role-selector.blade.php          # Role management component
 │   │   └── simple-ticket-availability.blade.php # Simple real-time ticket widget
-│   └── layouts/                        # Layout templates
+│   └── layouts/                             # Layout templates
 ├── css/
-│   └── app.css                         # Tailwind CSS
+│   └── app.css                              # Tailwind CSS with premium design
 └── js/
-    └── app.js                          # Frontend logic
+    └── app.js                               # Frontend logic with real-time updates
 
 database/
-├── migrations/                         # Database structure
-├── seeders/                            # Test data
-└── factories/                          # Model factories
+├── migrations/                              # Database structure evolution
+├── seeders/                                 # Test data generators
+└── factories/                               # Model factories
+```
+
+### Design Pattern Implementation Details
+
+#### 1. Service Layer Pattern (Booking System)
+```php
+// app/Services/SimpleBookingService.php
+class SimpleBookingService {
+    public function getAllBookings($filters = []) {
+        $query = Ticket::with(['user', 'event']);
+        
+        // Apply filters with method chaining
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+        
+        return $query->orderBy('created_at', 'desc')->paginate(10);
+    }
+    
+    public function getBookingStats() {
+        return Cache::remember('booking_stats', 60, function() {
+            return [
+                'total_bookings' => Ticket::count(),
+                'pending_bookings' => Ticket::where('status', 'pending')->count(),
+                'confirmed_bookings' => Ticket::where('status', 'confirmed')->count(),
+                'cancelled_bookings' => Ticket::where('status', 'cancelled')->count(),
+            ];
+        });
+    }
+}
+```
+
+#### 2. Observer Pattern Extension
+```php
+// app/Observers/TicketObserver.php - Enhanced for booking management
+class TicketObserver {
+    public function created(Ticket $ticket) {
+        // Clear booking cache for real-time updates
+        Cache::forget('booking_stats');
+        Cache::forget('recent_bookings');
+        
+        // Existing notification logic
+        $this->createOrganizerNotification($ticket);
+    }
+    
+    public function updated(Ticket $ticket) {
+        // Clear cache when booking status changes
+        Cache::forget('booking_stats');
+    }
+}
+```
+
+#### 3. MVC Pattern with Service Integration
+```mermaid
+graph TD
+    A[User Request] --> B[SimpleBookingController]
+    B --> C[SimpleBookingService]
+    C --> D[Ticket Model]
+    C --> E[Cache Layer]
+    D --> F[Database]
+    E --> G[Redis/File Cache]
+    B --> H[Booking Views]
 ```
 
 ---
