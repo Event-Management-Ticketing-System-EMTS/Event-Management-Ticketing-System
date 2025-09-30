@@ -61,4 +61,38 @@ class SimpleTicketController extends Controller
             'message' => 'Not enough tickets available!'
         ], 400);
     }
+
+    /**
+     * Cancel a ticket (sets status to cancelled)
+     */
+    public function cancelTicket(Request $request, $ticketId)
+    {
+        $ticket = \App\Models\Ticket::where('id', $ticketId)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if (!$ticket) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ticket not found or not yours to cancel'
+            ], 404);
+        }
+
+        if ($ticket->status === \App\Models\Ticket::STATUS_CANCELLED) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ticket is already cancelled'
+            ], 400);
+        }
+
+        // Update ticket status to cancelled
+        // This will trigger the TicketObserver which will send notification!
+        $ticket->update(['status' => \App\Models\Ticket::STATUS_CANCELLED]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ticket cancelled successfully. Organizer has been notified.',
+            'availability' => $this->ticketService->getAvailability($ticket->event_id)
+        ]);
+    }
 }
