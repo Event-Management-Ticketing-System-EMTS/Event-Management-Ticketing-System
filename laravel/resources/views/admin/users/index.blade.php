@@ -240,13 +240,7 @@
               </td>
               <td class="px-4 py-3 text-slate-300">{{ $user->email }}</td>
               <td class="px-4 py-3">
-                @if($user->role === 'admin')
-                  <span class="inline-flex rounded-full bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/30">👑 Admin</span>
-                @elseif($user->role === 'organizer')
-                  <span class="inline-flex rounded-full bg-yellow-500/10 px-2 py-1 text-xs font-medium text-yellow-400 ring-1 ring-inset ring-yellow-500/30">🎪 Organizer</span>
-                @else
-                  <span class="inline-flex rounded-full bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400 ring-1 ring-inset ring-green-500/30">👤 User</span>
-                @endif
+                <x-role-selector :user="$user" :roleService="$roleService" />
               </td>
               <td class="px-4 py-3">
                 @if($user->email_verified)
