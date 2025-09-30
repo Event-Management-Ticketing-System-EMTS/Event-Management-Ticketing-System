@@ -168,6 +168,7 @@
                   @endif
                 </a>
               </th>
+              <th class="px-4 py-3 text-left text-sm font-semibold text-cyan-300">Approval</th>
               <th class="px-4 py-3 text-right text-sm font-semibold text-cyan-300">Actions</th>
             </tr>
           </thead>
@@ -189,6 +190,15 @@
                   <span class="inline-flex rounded-full bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-400 ring-1 ring-inset ring-amber-500/30">Draft</span>
                 @else
                   <span class="inline-flex rounded-full bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/30">Cancelled</span>
+                @endif
+              </td>
+              <td class="px-4 py-3">
+                @if($event->approval_status === 'approved')
+                  <span class="inline-flex rounded-full bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400 ring-1 ring-inset ring-green-500/30">Approved</span>
+                @elseif($event->approval_status === 'pending')
+                  <span class="inline-flex rounded-full bg-yellow-500/10 px-2 py-1 text-xs font-medium text-yellow-400 ring-1 ring-inset ring-yellow-500/30">Pending</span>
+                @else
+                  <span class="inline-flex rounded-full bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/30">Rejected</span>
                 @endif
               </td>
               <td class="px-4 py-3 text-right space-x-1 whitespace-nowrap">

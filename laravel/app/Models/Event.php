@@ -26,6 +26,10 @@ class Event extends Model
         'tickets_sold',
         'price',
         'status',
+        'approval_status',
+        'admin_comments',
+        'reviewed_by',
+        'reviewed_at',
         'organizer_id',
         'image_path',
     ];
@@ -39,6 +43,7 @@ class Event extends Model
         'event_date' => 'date',
         'start_time' => 'datetime',
         'end_time' => 'datetime',
+        'reviewed_at' => 'datetime',
         'price' => 'decimal:2',
         'tickets_sold' => 'integer',
         'total_tickets' => 'integer',
@@ -50,6 +55,14 @@ class Event extends Model
     public function organizer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'organizer_id');
+    }
+
+    /**
+     * Get the admin who reviewed this event.
+     */
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 
     /**
@@ -86,5 +99,29 @@ class Event extends Model
         }
 
         return round(($this->available_tickets / $this->total_tickets) * 100, 2);
+    }
+
+    /**
+     * Check if event is pending approval
+     */
+    public function isPending(): bool
+    {
+        return $this->approval_status === 'pending';
+    }
+
+    /**
+     * Check if event is approved
+     */
+    public function isApproved(): bool
+    {
+        return $this->approval_status === 'approved';
+    }
+
+    /**
+     * Check if event is rejected
+     */
+    public function isRejected(): bool
+    {
+        return $this->approval_status === 'rejected';
     }
 }
