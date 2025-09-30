@@ -8,7 +8,256 @@
 graph TB
 # EMTS - System Architecture Documentation
 
-## 🏗️ Overall System Architecture
+## 🏗️ Overall System     R --> E
+```
+
+## 🔐 Event Approval System Architecture
+
+### Admin-Controlled Event Workflow
+
+The Event Approval System implements a three-state workflow with admin oversight:
+
+```mermaid
+graph TD
+    subgraph "📝 Event Creation (Organizer)"
+        A[Organizer Creates Event]
+        B[Event Status: Draft]
+        C[Approval Status: Pending]
+    end
+    
+    subgraph "👨‍💼 Admin Review Process"
+        D[Admin Dashboard Alert]
+        E[Pending Events Counter]
+        F[Review Event Details]
+        G{Admin Decision}
+        H[Approve + Comments]
+        I[Reject + Required Reason]
+    end
+    
+    subgraph "📊 Event State Management"
+        J[Approved Status]
+        K[Rejected Status]
+        L[Audit Trail Created]
+        M[Organizer Notification]
+    end
+    
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+    G -->|Approve| H
+    G -->|Reject| I
+    H --> J
+    I --> K
+    J --> L
+    K --> L
+    L --> M
+```
+
+### Service Layer Implementation
+
+**SimpleEventApprovalService** encapsulates all approval business logic:
+
+```mermaid
+classDiagram
+    class SimpleEventApprovalService {
+        +approve(Event event, string comments) bool
+        +reject(Event event, string comments) bool
+        +getPendingEvents() Collection
+        +getApprovalStats() array
+        -validateAdminAccess() bool
+        -createAuditTrail() void
+    }
+    
+    class SimpleEventApprovalController {
+        -approvalService: SimpleEventApprovalService
+        +index() View
+        +show(Event event) View
+        +approve(Request request, Event event) RedirectResponse
+        +reject(Request request, Event event) RedirectResponse
+        -checkAdminAccess() void
+    }
+    
+    class Event {
+        +approval_status: enum
+        +admin_comments: text
+        +reviewed_by: foreign_key
+        +reviewed_at: timestamp
+        +isPending() bool
+        +isApproved() bool
+        +isRejected() bool
+        +reviewer() BelongsTo
+    }
+    
+    SimpleEventApprovalController --> SimpleEventApprovalService : uses
+    SimpleEventApprovalService --> Event : manages
+```
+
+### Database Schema Extension
+
+**Enhanced Events Table** with approval tracking:
+
+```mermaid
+erDiagram
+    EVENTS {
+        bigint id PK
+        string title
+        text description
+        date event_date
+        time start_time
+        time end_time
+        string venue
+        bigint organizer_id FK
+        enum status "draft, published, cancelled"
+        enum approval_status "pending, approved, rejected"
+        text admin_comments "Admin feedback"
+        bigint reviewed_by FK "Admin who reviewed"
+        timestamp reviewed_at "When reviewed"
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    USERS ||--o{ EVENTS : organizes
+    USERS ||--o{ EVENTS : reviews
+```
+
+### Approval Workflow Sequence
+
+**Complete Admin Approval Process**:
+
+```mermaid
+sequenceDiagram
+    participant O as 👤 Organizer
+    participant E as 📝 Event Model
+    participant AS as 🔐 ApprovalService
+    participant A as 👨‍💼 Admin
+    participant DB as 🗄️ Database
+    participant N as 📬 Notification
+
+    Note over O,N: Complete Event Approval Workflow
+    
+    O->>E: Create new event
+    E->>DB: Save with approval_status = 'pending'
+    DB-->>E: Event created
+    E-->>O: Event submitted for review
+    
+    Note over A,N: Admin Review Process
+    
+    A->>AS: Access pending events
+    AS->>DB: Query events WHERE approval_status = 'pending'
+    DB-->>AS: List of pending events
+    AS-->>A: Display approval interface
+    
+    A->>AS: Review event details
+    AS->>DB: Get event with organizer details
+    DB-->>AS: Complete event information
+    AS-->>A: Show detailed review page
+    
+    alt Admin Approves
+        A->>AS: approve(event, comments)
+        AS->>AS: validateAdminAccess()
+        AS->>E: Update approval_status = 'approved'
+        AS->>E: Set admin_comments, reviewed_by, reviewed_at
+        E->>DB: Save approval decision
+        DB-->>E: Updated successfully
+        AS->>N: Create approval notification
+        N-->>O: "Event approved" notification
+    else Admin Rejects
+        A->>AS: reject(event, required_comments)
+        AS->>AS: validateAdminAccess()
+        AS->>E: Update approval_status = 'rejected'
+        AS->>E: Set admin_comments, reviewed_by, reviewed_at
+        E->>DB: Save rejection decision
+        DB-->>E: Updated successfully
+        AS->>N: Create rejection notification
+        N-->>O: "Event rejected" notification with reason
+    end
+```
+
+### Security & Access Control
+
+**Multi-Layer Security Implementation**:
+
+```mermaid
+graph TB
+    subgraph "🛡️ Access Control Layers"
+        A[Route Access]
+        B[Controller Validation]
+        C[Service Layer Security]
+        D[Database Constraints]
+    end
+    
+    subgraph "🔐 Admin Validation"
+        E[User Authentication]
+        F[Role Verification]
+        G[Admin Role Check]
+        H[Action Authorization]
+    end
+    
+    A --> E
+    B --> F
+    C --> G
+    D --> H
+    
+    E -->|Authenticated| F
+    F -->|role = admin| G
+    G -->|Authorized| H
+    H -->|Permitted| I[Approval Action Executed]
+```
+
+**Access Validation Code Pattern**:
+```php
+private function checkAdminAccess()
+{
+    if (!Auth::check() || Auth::user()->role !== 'admin') {
+        abort(403, 'Admin access required');
+    }
+}
+```
+
+### Performance & Caching Strategy
+
+**Approval System Optimization**:
+
+```mermaid
+graph LR
+    subgraph "📊 Stats Caching"
+        A[Approval Stats]
+        B[Cache Key: approval_stats]
+        C[TTL: 300 seconds]
+    end
+    
+    subgraph "📋 Event Caching"
+        D[Pending Events]
+        E[Cache Key: pending_events]
+        F[TTL: 60 seconds]
+    end
+    
+    subgraph "🔄 Cache Invalidation"
+        G[Event Approved/Rejected]
+        H[Clear All Approval Caches]
+        I[Refresh Dashboard Counters]
+    end
+    
+    A --> B --> C
+    D --> E --> F
+    G --> H --> I
+```
+
+### Key Benefits
+
+- ✅ **Quality Control**: Admin oversight ensures event standards
+- ✅ **Audit Trail**: Complete tracking of approval decisions
+- ✅ **Security Focused**: Multi-layer admin access validation
+- ✅ **User Feedback**: Required comments provide organizer guidance
+- ✅ **Scalable Design**: Supports multiple admin reviewers
+- ✅ **Performance Optimized**: Intelligent caching strategies
+
+---
+
+## 🔄 Complete Data Flow Diagramsitecture
 
 ### Clean, Simple Architecture with Advanced Design Patterns
 

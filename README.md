@@ -30,6 +30,7 @@ The Event Management & Ticketing System (EMTS) is a full-stack web application t
 - 👥 **Advanced User Management** (Admin-only access with role transitions)
 - 🔄 **Dynamic Role Management** (Real-time role changes with validation)
 - 🎪 **Event Management** (CRUD operations with sorting/filtering)
+- ✅ **Event Approval System** (Admin-controlled event approval/rejection workflow)
 - 🎫 **Real-time Ticket System** (Live availability with automatic updates)
 - 📬 **Smart Notification System** (Automatic organizer notifications via Observer Pattern)
 - 📋 **Advanced Booking Management** (Complete booking lifecycle with filters & export)
@@ -39,7 +40,7 @@ The Event Management & Ticketing System (EMTS) is a full-stack web application t
 - 🔄 **Smart Sorting** (Dynamic content organization)
 - 🎨 **Component-based UI** (Reusable interface components)
 - 🛡️ **Security Features** (Login tracking, role-based access control)
-- 🏗️ **Design Patterns** (Observer Pattern for tickets & notifications & bookings, Service Layer, Component patterns)
+- 🏗️ **Design Patterns** (Observer Pattern, Service Layer, Strategy Pattern, Component patterns)
 
 ---
 
@@ -1271,7 +1272,34 @@ Our design system follows a **dark theme with cyan accents** approach, emphasizi
   - Glassmorphism and gradient effects
   - Consistent color palette and typography
 
-### Sprint 7: Documentation & Polish (Week 13-14)
+### Sprint 7: Event Approval System (Week 13-14)
+
+- ✅ **Event Approval Workflow**
+  - Admin-controlled approval/rejection system
+  - Three-state approval status (pending, approved, rejected)
+  - Admin comments and feedback system
+  - Approval timestamp and reviewer tracking
+- ✅ **Service Layer Pattern**
+  - SimpleEventApprovalService for business logic
+  - Centralized approval operations
+  - Admin access validation
+  - Approval statistics and analytics
+- ✅ **Enhanced Admin Dashboard**
+  - Pending approvals counter with visual indicators
+  - Quick access to approval management
+  - Real-time approval status updates
+- ✅ **Professional Approval Interface**
+  - Detailed event review page
+  - Side-by-side approve/reject forms
+  - Organizer information display
+  - Previous admin comments history
+- ✅ **Database Schema Enhancement**
+  - Approval status tracking
+  - Admin comments storage
+  - Reviewer relationship tracking
+  - Audit trail implementation
+
+### Sprint 8: Documentation & Polish (Week 15-16)
 
 - 🔄 Performance optimization
 - 🔄 Comprehensive testing
@@ -1291,6 +1319,7 @@ app/
 │   │   ├── SimpleTicketController.php       # Simple ticket purchase & availability
 │   │   ├── SimpleNotificationController.php # Notification management
 │   │   ├── SimpleBookingController.php      # Booking management with filtering
+│   │   ├── SimpleEventApprovalController.php # Event approval management (Admin-only)
 │   │   ├── UserController.php               # User management & roles
 │   │   ├── RegisterController.php           # User registration
 │   │   └── ProfileController.php            # Profile management
@@ -1312,6 +1341,7 @@ app/
 │   ├── SimpleTicketService.php              # Simple ticket availability (Observer pattern)
 │   ├── SimpleNotificationService.php        # Notification creation & management
 │   ├── SimpleBookingService.php             # Booking business logic with caching
+│   ├── SimpleEventApprovalService.php       # Event approval workflow (Admin-only)
 │   └── UserCreation/
 │       ├── UserFactory.php                  # Factory pattern
 │       └── UserFactoryInterface.php         # Factory contract
