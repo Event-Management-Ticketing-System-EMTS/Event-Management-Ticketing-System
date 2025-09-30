@@ -8,8 +8,9 @@ use App\Http\Controllers\ProfileController;
 
 // ---------- Public (guest-only) ----------
 Route::middleware('guest')->group(function () {
-    // Login
-    Route::get('/', [AuthController::class, 'showLogin'])->name('login.show');
+    // Login (both route names for compatibility)
+    Route::get('/', [AuthController::class, 'showLogin'])->name('login'); // Laravel expects this name
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login.show'); // Alternative access
     Route::post('/login', [AuthController::class, 'login'])->name('login.perform');
 
     // Registration
@@ -72,6 +73,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/users', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
     Route::get('/users/{id}', [\App\Http\Controllers\UserController::class, 'show'])->name('users.show');
     Route::patch('/users/{id}/role', [\App\Http\Controllers\UserController::class, 'updateRole'])->name('users.updateRole');
+
+    // Booking management (Simple booking functionality)
+    Route::prefix('bookings')->name('bookings.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\SimpleBookingController::class, 'index'])->name('index');
+        Route::get('/{id}', [\App\Http\Controllers\SimpleBookingController::class, 'show'])->name('show');
+        Route::get('/export/csv', [\App\Http\Controllers\SimpleBookingController::class, 'export'])->name('export');
+
+        // AJAX endpoints for dynamic loading
+        Route::get('/event/{eventId}/bookings', [\App\Http\Controllers\SimpleBookingController::class, 'getEventBookings'])->name('event');
+        Route::get('/user/{userId}/bookings', [\App\Http\Controllers\SimpleBookingController::class, 'getUserBookings'])->name('user');
+    });
 
     // Shared demo page (optional)
     Route::view('/tailwind-demo', 'tailwind-demo')->name('tailwind.demo');
