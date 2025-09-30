@@ -61,4 +61,12 @@ class UserRepository
             ->orderBy('created_at', 'desc')
             ->get();
     }
+
+    /**
+     * Update user role
+     */
+    public function updateRole(int $userId, string $role): bool
+    {
+        return $this->model->where('id', $userId)->update(['role' => $role]);
+    }
 }
