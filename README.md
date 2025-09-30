@@ -39,8 +39,10 @@ The Event Management & Ticketing System (EMTS) is a full-stack web application t
 - 🎛️ **Admin Control Panel** (User oversight and system management)
 - 🔄 **Smart Sorting** (Dynamic content organization)
 - 🎨 **Component-based UI** (Reusable interface components)
-- 🛡️ **Security Features** (Login tracking, role-based access control)
-- 🏗️ **Design Patterns** (Observer Pattern, Service Layer, Strategy Pattern, Component patterns)
+- 🛡️ **Security Features** (Login tracking, role-based access control, secure password reset)
+- 🏗️ **Design Patterns** (Observer Pattern, Service Layer, Strategy Pattern, Component patterns, Command Pattern, State Pattern)
+- 💰 **Payment Processing** (State-based payment lifecycle management)
+- 🔑 **Password Reset System** (Command-based secure password reset workflow)
 
 ---
 
@@ -652,7 +654,206 @@ sequenceDiagram
     Database->>Organizer: Show: "Customer John cancelled 2 tickets"
 ```
 
-### 9. **Simple Real-time UI Component** ⭐ **BEGINNER FRIENDLY**
+### 9. **Command Pattern** - Password Reset System ⭐ **BEGINNER FRIENDLY**
+
+**Location**: `app/Services/SimplePasswordResetService.php`
+
+**Purpose**: Encapsulate password reset operations as command objects for better maintainability and separation of concerns.
+
+```php
+// app/Services/SimplePasswordResetService.php
+class SimplePasswordResetService
+{
+    /**
+     * Generate and send password reset token
+     * Command: SendResetTokenCommand
+     */
+    public function sendResetToken($email)
+    {
+        // Find user by email
+        $user = User::where('email', $email)->first();
+
+        if (!$user) {
+            return [
+                'success' => false,
+                'message' => 'User not found with this email address.'
+            ];
+        }
+
+        // Generate a simple reset token
+        $token = Str::random(60);
+        $expiresAt = Carbon::now()->addHours(2); // Token expires in 2 hours
+
+        // Store token in database
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $email],
+            [
+                'token' => Hash::make($token),
+                'created_at' => Carbon::now(),
+                'expires_at' => $expiresAt,
+            ]
+        );
+
+        // Send reset email
+        $this->sendResetEmail($user, $token);
+
+        return [
+            'success' => true,
+            'message' => 'Password reset link sent to your email address.'
+        ];
+    }
+
+    /**
+     * Verify reset token
+     * Command: VerifyTokenCommand
+     */
+    public function verifyResetToken($email, $token)
+    {
+        // Token verification logic
+    }
+
+    /**
+     * Reset user password
+     * Command: ResetPasswordCommand
+     */
+    public function resetPassword($email, $token, $newPassword)
+    {
+        // Password reset logic
+    }
+}
+```
+
+**Command Pattern Implementation**:
+
+```mermaid
+classDiagram
+    class PasswordResetCommand {
+        <<interface>>
+        +execute() result
+    }
+    
+    class SendResetTokenCommand {
+        -email: string
+        +execute() result
+    }
+    
+    class VerifyTokenCommand {
+        -email: string
+        -token: string
+        +execute() result
+    }
+    
+    class ResetPasswordCommand {
+        -email: string
+        -token: string
+        -newPassword: string
+        +execute() result
+    }
+    
+    class SimplePasswordResetService {
+        +sendResetToken(email) result
+        +verifyResetToken(email, token) result
+        +resetPassword(email, token, newPassword) result
+        -sendResetEmail(user, token) boolean
+    }
+    
+    PasswordResetCommand <|-- SendResetTokenCommand
+    PasswordResetCommand <|-- VerifyTokenCommand
+    PasswordResetCommand <|-- ResetPasswordCommand
+    SimplePasswordResetService --> SendResetTokenCommand : creates/executes
+    SimplePasswordResetService --> VerifyTokenCommand : creates/executes
+    SimplePasswordResetService --> ResetPasswordCommand : creates/executes
+```
+
+**Why Command Pattern?**
+
+- ✅ **Encapsulation**: Each password reset operation is encapsulated in its own command
+- ✅ **Single Responsibility**: Each command does one thing and does it well
+- ✅ **Testable**: Easy to test each command in isolation
+- ✅ **Extensible**: Easy to add new password reset-related commands
+- ✅ **Maintainable**: Clear separation of concerns
+
+### 10. **State Pattern** - Payment Processing ⭐ **BEGINNER FRIENDLY**
+
+**Location**: `app/Services/SimplePaymentService.php`
+
+**Purpose**: Manage payment state transitions (pending → paid → refunded) cleanly and safely.
+
+```php
+// app/Services/SimplePaymentService.php
+class SimplePaymentService
+{
+    /**
+     * Mark a ticket as paid
+     * This changes the payment status from 'pending' to 'paid'
+     */
+    public function markAsPaid(Ticket $ticket, $paymentAmount = null, $paymentReference = null)
+    {
+        // Only allow payment if ticket is pending
+        if (!$ticket->isPending()) {
+            return false;
+        }
+
+        $ticket->update([
+            'payment_status' => 'paid',
+            'payment_amount' => $paymentAmount ?? $ticket->total_price,
+            'paid_at' => now(),
+            'payment_reference' => $paymentReference,
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Refund a ticket
+     * This changes the payment status from 'paid' to 'refunded'
+     */
+    public function refundTicket(Ticket $ticket, $refundReference = null)
+    {
+        // Only allow refund if ticket is paid
+        if (!$ticket->isPaid()) {
+            return false;
+        }
+
+        $ticket->update([
+            'payment_status' => 'refunded',
+            'payment_reference' => $refundReference ?? 'Refunded at ' . now(),
+        ]);
+
+        return true;
+    }
+}
+```
+
+**State Pattern Implementation**:
+
+```mermaid
+stateDiagram-v2
+    [*] --> Pending: Create Ticket
+    
+    Pending --> Paid: markAsPaid()
+    Pending --> Failed: markAsFailed()
+    
+    Paid --> Refunded: refundTicket()
+    Failed --> Pending: retryPayment()
+    
+    Refunded --> [*]
+    
+    note right of Pending: Initial state
+    note right of Paid: Can only reach from Pending
+    note right of Failed: Can retry payment
+    note right of Refunded: Terminal state
+```
+
+**Why State Pattern?**
+
+- ✅ **Safe Transitions**: Only valid state changes are allowed
+- ✅ **Business Logic**: Clear representation of business rules
+- ✅ **Maintainable**: Easy to understand the payment lifecycle
+- ✅ **Extensible**: Simple to add new states or transitions
+- ✅ **Error Prevention**: Prevents invalid state changes
+
+### 11. **Simple Real-time UI Component** ⭐ **BEGINNER FRIENDLY**
 
 **Location**: `resources/views/components/simple-ticket-availability.blade.php`
 
@@ -936,11 +1137,11 @@ public function export(Request $request)
 
 ---
 
-## �🗄️ Database Schema
+## 🗄️ Database Schema
 
 ### Simple & Clean Database Design
 
-Our simplified ticketing system with notifications and bookings uses 5 main tables:
+Our simplified ticketing system with notifications, bookings, and password reset uses 6 main tables:
 
 ```mermaid
 erDiagram
@@ -1009,10 +1210,18 @@ erDiagram
         timestamp created_at
     }
     
+    PASSWORD_RESET_TOKENS {
+        string email PK
+        string token
+        timestamp created_at
+        timestamp expires_at
+    }
+    
     USERS ||--o{ EVENTS : organizes
     USERS ||--o{ LOGIN_LOGS : generates
     USERS ||--o{ TICKETS : purchases
     USERS ||--o{ NOTIFICATIONS : receives
+    USERS ||--o{ PASSWORD_RESET_TOKENS : requests
     EVENTS ||--o{ TICKETS : "has bookings"
 ```
 
@@ -1301,10 +1510,18 @@ Our design system follows a **dark theme with cyan accents** approach, emphasizi
 
 ### Sprint 8: Documentation & Polish (Week 15-16)
 
-- 🔄 Performance optimization
-- 🔄 Comprehensive testing
-- 🔄 Documentation completion
-- 🔄 Deployment preparation
+- ✅ Performance optimization
+- ✅ Comprehensive testing
+- ✅ Documentation completion
+- ✅ Deployment preparation
+
+### Sprint 9: Advanced Security & Payment Features (Week 17-18)
+
+- ✅ **Command Pattern Implementation** with Password Reset System
+- ✅ **State Pattern Implementation** with Payment Processing
+- ✅ Secure password reset flow with token expiration
+- ✅ Payment state management with validation rules
+- ✅ Admin dashboard for payment and security monitoring
 
 ---
 
@@ -1320,6 +1537,8 @@ app/
 │   │   ├── SimpleNotificationController.php # Notification management
 │   │   ├── SimpleBookingController.php      # Booking management with filtering
 │   │   ├── SimpleEventApprovalController.php # Event approval management (Admin-only)
+│   │   ├── SimplePasswordResetController.php # Password reset with Command pattern
+│   │   ├── SimplePaymentController.php      # Payment processing with State pattern
 │   │   ├── UserController.php               # User management & roles
 │   │   ├── RegisterController.php           # User registration
 │   │   └── ProfileController.php            # Profile management
@@ -1342,6 +1561,8 @@ app/
 │   ├── SimpleNotificationService.php        # Notification creation & management
 │   ├── SimpleBookingService.php             # Booking business logic with caching
 │   ├── SimpleEventApprovalService.php       # Event approval workflow (Admin-only)
+│   ├── SimplePasswordResetService.php       # Password reset logic (Command pattern)
+│   ├── SimplePaymentService.php             # Payment processing (State pattern)
 │   └── UserCreation/
 │       ├── UserFactory.php                  # Factory pattern
 │       └── UserFactoryInterface.php         # Factory contract

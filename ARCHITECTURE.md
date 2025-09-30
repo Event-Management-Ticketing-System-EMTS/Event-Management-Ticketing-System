@@ -853,6 +853,192 @@ sequenceDiagram
     SortingService --> EventRepository : validates parameters for
 ```
 
+## 🔑 Command Pattern - Password Reset System Architecture ⭐ **BEGINNER FRIENDLY**
+
+The password reset system uses Command Pattern to encapsulate reset operations as individual command objects, enhancing maintainability and separation of concerns.
+
+### Password Reset Workflow
+
+```mermaid
+sequenceDiagram
+    participant User as 👤 User
+    participant Controller as 🎮 Controller
+    participant Service as 🔧 Service
+    participant DB as 🗄️ Database
+    participant Mail as ✉️ Mail System
+    
+    User->>Controller: Request password reset
+    Controller->>Service: sendResetToken(email)
+    Service->>DB: Check if user exists
+    DB-->>Service: User info
+    
+    alt User exists
+        Service->>DB: Store token & expiry
+        Service->>Mail: Send reset email
+        Mail-->>User: Reset link email
+        Service-->>Controller: Success response
+        Controller-->>User: "Check your email"
+    else User not found
+        Service-->>Controller: Error response
+        Controller-->>User: "Email not found"
+    end
+    
+    Note over User,Mail: Later: User clicks reset link
+    
+    User->>Controller: Open reset form
+    Controller->>Service: verifyResetToken(email, token)
+    Service->>DB: Check token validity
+    DB-->>Service: Token info
+    
+    alt Valid token
+        Service-->>Controller: Token verified
+        Controller-->>User: Show reset form
+        
+        User->>Controller: Submit new password
+        Controller->>Service: resetPassword(email, token, newPassword)
+        Service->>DB: Update password
+        Service->>DB: Remove used token
+        Service-->>Controller: Success response
+        Controller-->>User: "Password reset successful"
+    else Invalid/expired token
+        Service-->>Controller: Error response
+        Controller-->>User: "Invalid or expired token"
+    end
+```
+
+### Command Pattern Implementation
+
+```mermaid
+classDiagram
+    class PasswordResetCommand {
+        <<interface>>
+        +execute() result
+    }
+    
+    class SendResetTokenCommand {
+        -email: string
+        +execute() result
+    }
+    
+    class VerifyTokenCommand {
+        -email: string
+        -token: string
+        +execute() result
+    }
+    
+    class ResetPasswordCommand {
+        -email: string
+        -token: string
+        -newPassword: string
+        +execute() result
+    }
+    
+    class SimplePasswordResetService {
+        +sendResetToken(email) result
+        +verifyResetToken(email, token) result
+        +resetPassword(email, token, newPassword) result
+        +cleanupExpiredTokens() result
+        +getResetStats() array
+        -sendResetEmail(user, token) boolean
+    }
+    
+    class SimplePasswordResetController {
+        -passwordResetService: SimplePasswordResetService
+        +showForgotForm() View
+        +sendResetLink(Request) RedirectResponse
+        +showResetForm(token) View
+        +resetPassword(Request) RedirectResponse
+        +adminStats() View
+        +adminCleanup() RedirectResponse
+    }
+    
+    PasswordResetCommand <|-- SendResetTokenCommand
+    PasswordResetCommand <|-- VerifyTokenCommand
+    PasswordResetCommand <|-- ResetPasswordCommand
+    SimplePasswordResetService --> SendResetTokenCommand : creates/executes
+    SimplePasswordResetService --> VerifyTokenCommand : creates/executes
+    SimplePasswordResetService --> ResetPasswordCommand : creates/executes
+    SimplePasswordResetController --> SimplePasswordResetService : uses
+```
+
+### Key Benefits of Command Pattern in Password Reset:
+
+- ✅ **Encapsulation**: Each password reset operation encapsulated in its own command
+- ✅ **Separation of Concerns**: Each command handles one specific task
+- ✅ **Auditability**: Commands can be logged, tracked, and monitored
+- ✅ **Testability**: Easy to test each command in isolation
+- ✅ **Flexibility**: New password-related commands can be added easily
+- ✅ **Security**: Clean separation between validation and execution
+
+## 💰 State Pattern - Payment Processing Architecture ⭐ **BEGINNER FRIENDLY**
+
+The payment system uses the State Pattern to manage payment status transitions in a clean, safe way, ensuring that tickets can only move through valid payment states.
+
+### Payment State Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> Pending: Create Ticket
+    
+    Pending --> Paid: markAsPaid()
+    Pending --> Failed: markAsFailed()
+    
+    Paid --> Refunded: refundTicket()
+    Failed --> Pending: retryPayment()
+    
+    note right of Pending: Initial state
+    note right of Paid: Can only reach from Pending
+    note right of Failed: Can retry payment
+    note right of Refunded: Terminal state
+```
+
+### State Pattern Implementation
+
+```mermaid
+classDiagram
+    class SimplePaymentService {
+        +markAsPaid(ticket, amount, reference) boolean
+        +markAsFailed(ticket, reason) boolean
+        +refundTicket(ticket, reference) boolean
+        +retryPayment(ticket) boolean
+        +getPaymentStats() array
+        +getPendingPayments() Collection
+        +getFailedPayments() Collection
+    }
+    
+    class Ticket {
+        +payment_status: string
+        +payment_amount: decimal
+        +payment_reference: string
+        +paid_at: timestamp
+        +isPending() boolean
+        +isPaid() boolean
+        +isFailed() boolean
+        +isRefunded() boolean
+    }
+    
+    class SimplePaymentController {
+        -paymentService: SimplePaymentService
+        +processPendingPayment(ticketId, amount, reference) JsonResponse
+        +markPaymentFailed(ticketId, reason) JsonResponse
+        +processRefund(ticketId) JsonResponse
+        +retryFailedPayment(ticketId) JsonResponse
+        +showPaymentDashboard() View
+    }
+    
+    SimplePaymentService --> Ticket : manages state
+    SimplePaymentController --> SimplePaymentService : uses
+```
+
+### Key Benefits of State Pattern in Payment Processing:
+
+- ✅ **Clear State Transitions**: Only valid payment state changes are allowed
+- ✅ **Business Rules Enforcement**: System prevents invalid operations (e.g., refunding an unpaid ticket)
+- ✅ **Code Organization**: Payment states and transitions are clearly defined
+- ✅ **Reduced Bugs**: Prevents accidental invalid state changes
+- ✅ **Maintainability**: Easy to understand the payment lifecycle
+- ✅ **Extensibility**: New payment states can be added easily
+
 ## Simplified Ticket Availability System Architecture ⭐ **BEGINNER FRIENDLY**
 
 ```mermaid
