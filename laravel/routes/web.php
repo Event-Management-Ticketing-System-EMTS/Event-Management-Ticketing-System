@@ -43,17 +43,10 @@ Route::middleware('auth')->group(function () {
     // Event statistics
     Route::get('/event-statistics', [\App\Http\Controllers\EventStatisticsController::class, 'index'])->name('events.statistics');
 
-    // Ticket management
-    Route::prefix('tickets')->group(function () {
-        Route::post('/purchase', [\App\Http\Controllers\TicketController::class, 'purchase'])->name('tickets.purchase');
-        Route::post('/confirm', [\App\Http\Controllers\TicketController::class, 'confirm'])->name('tickets.confirm');
-        Route::get('/check/{event}', [\App\Http\Controllers\TicketController::class, 'checkAvailability'])->name('tickets.check');
-    });
-
-    // API routes for real-time updates
-    Route::prefix('api/tickets')->group(function () {
-        Route::get('/availability/{event}', [\App\Http\Controllers\TicketController::class, 'realTimeAvailability']);
-        Route::post('/purchase', [\App\Http\Controllers\TicketController::class, 'purchase']);
+    // Simple API routes for ticket availability
+    Route::prefix('api/events')->group(function () {
+        Route::get('/{event}/availability', [\App\Http\Controllers\SimpleTicketController::class, 'getAvailability']);
+        Route::post('/{event}/purchase', [\App\Http\Controllers\SimpleTicketController::class, 'purchaseTickets']);
     });
 
     // User management (Admin only)

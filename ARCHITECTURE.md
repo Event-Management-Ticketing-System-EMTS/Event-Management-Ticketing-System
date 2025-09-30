@@ -93,34 +93,30 @@ sequenceDiagram
     S-->>C: role changed
     C-->>U: JSON success response
 
-    Note over U,DB: Ticket Availability Real-time Flow (Observer + Strategy Pattern)
-    U->>C: GET /events/{id}/ticket-availability
+    Note over U,DB: Simple Ticket Availability Flow (Observer Pattern)
+    U->>C: GET /events/{id}/availability
     C->>TS: getAvailability(eventId)
-    TS->>Cache: get availability data
+    TS->>Cache: get cached data
     Cache-->>TS: cached or null
     alt Cache Miss
-        TS->>Strategy: calculateAvailability(event)
-        Strategy->>M: query tickets and capacity
-        M->>DB: SELECT tickets WHERE event_id = ?
-        DB-->>M: ticket data
-        M-->>Strategy: ticket counts
-        Strategy-->>TS: availability data
+        TS->>M: query tickets and capacity
+        M->>DB: SELECT count(*) FROM tickets WHERE event_id = ?
+        DB-->>M: ticket count
+        M-->>TS: availability data
         TS->>Cache: store availability
     end
     TS-->>C: availability data
     C-->>U: JSON response
 
-    Note over U,DB: Ticket Purchase with Observer Pattern
+    Note over U,DB: Simple Ticket Purchase with Observer Pattern
     U->>C: POST /events/{id}/purchase-ticket
     C->>TS: purchaseTickets(eventId, quantity, userId)
     TS->>M: create ticket records
     M->>DB: INSERT INTO tickets
     DB-->>M: tickets created
     M-->>TO: Ticket::created event
-    TO->>TS: updateEventAvailability(eventId)
-    TS->>Strategy: recalculate availability
-    Strategy-->>TS: new availability
-    TS->>Cache: invalidate/update cache
+    TO->>TS: updateAvailability(eventId)
+    TS->>Cache: clear cache
     TS-->>C: purchase success
     C-->>U: JSON success response
 ```
@@ -287,57 +283,31 @@ classDiagram
     SortingService --> EventRepository : validates parameters for
 ```
 
-## Ticket Availability System Architecture
+## Simplified Ticket Availability System Architecture ⭐ **BEGINNER FRIENDLY**
 
 ```mermaid
 classDiagram
-    class TicketAvailabilityService {
-        -cacheManager: CacheManager
-        -strategyManager: StrategyManager
+    class SimpleTicketService {
         +getAvailability(eventId) array
         +purchaseTickets(eventId, quantity, userId) bool
-        +updateEventAvailability(eventId) void
-        +setStrategy(strategy) void
-        -buildCacheKey(eventId) string
-        -invalidateCache(eventId) void
-    }
-    
-    class TicketUpdateStrategyInterface {
-        <<interface>>
-        +calculateAvailability(event) array
-        +canPurchase(event, quantity) bool
-        +getAvailabilityPercentage(event) float
-    }
-    
-    class SimpleTicketStrategy {
-        +calculateAvailability(event) array
-        +canPurchase(event, quantity) bool
-        +getAvailabilityPercentage(event) float
-    }
-    
-    class AdvancedTicketStrategy {
-        -bufferPercentage: float
-        +calculateAvailability(event) array
-        +canPurchase(event, quantity) bool
-        +getAvailabilityPercentage(event) float
-        -calculateBuffer(capacity) int
+        +updateAvailability(eventId) void
+        -clearAvailabilityCache(eventId) void
     }
     
     class TicketObserver {
-        -availabilityService: TicketAvailabilityService
+        -ticketService: SimpleTicketService
         +created(ticket) void
         +updated(ticket) void
         +deleted(ticket) void
     }
     
-    class TicketController {
-        -availabilityService: TicketAvailabilityService
+    class SimpleTicketController {
+        -ticketService: SimpleTicketService
         +getAvailability(eventId) JsonResponse
         +purchaseTickets(request, eventId) JsonResponse
-        +getUserTickets(userId) JsonResponse
     }
     
-    class TicketAvailabilityComponent {
+    class SimpleTicketAvailabilityComponent {
         +eventId: int
         +refreshInterval: int
         +render() View
@@ -345,13 +315,17 @@ classDiagram
         +handlePurchase() void
     }
     
-    TicketAvailabilityService --> TicketUpdateStrategyInterface : uses
-    SimpleTicketStrategy ..|> TicketUpdateStrategyInterface : implements
-    AdvancedTicketStrategy ..|> TicketUpdateStrategyInterface : implements
-    TicketObserver --> TicketAvailabilityService : triggers
-    TicketController --> TicketAvailabilityService : uses
-    TicketAvailabilityComponent --> TicketController : calls API
+    TicketObserver --> SimpleTicketService : triggers
+    SimpleTicketController --> SimpleTicketService : uses
+    SimpleTicketAvailabilityComponent --> SimpleTicketController : calls API
 ```
+
+**Key Benefits of Simplified Design:**
+- ✅ **Easy to understand** - One service, one observer, one controller
+- ✅ **Observer Pattern** - Automatic updates when tickets change
+- ✅ **Caching** - Fast performance with simple cache strategy
+- ✅ **Real-time UI** - Updates every 10 seconds automatically
+- ✅ **No complexity** - No strategy interfaces or multiple implementations
 
 ## Role Management System Architecture
 

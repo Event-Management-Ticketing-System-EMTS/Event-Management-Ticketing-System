@@ -3,17 +3,21 @@
 namespace App\Observers;
 
 use App\Models\Ticket;
-use App\Services\TicketAvailabilityService;
+use App\Services\SimpleTicketService;
 
 /**
- * Observer Pattern Implementation
- * Automatically updates event ticket availability when tickets are created/updated/deleted
+ * Simple Ticket Observer - Observer Pattern
+ *
+ * This automatically updates ticket availability whenever:
+ * - A new ticket is created (someone buys tickets)
+ * - A ticket is updated (status changes)
+ * - A ticket is deleted (refund/cancellation)
  */
 class TicketObserver
 {
     protected $ticketService;
 
-    public function __construct(TicketAvailabilityService $ticketService)
+    public function __construct(SimpleTicketService $ticketService)
     {
         $this->ticketService = $ticketService;
     }
@@ -23,7 +27,8 @@ class TicketObserver
      */
     public function created(Ticket $ticket): void
     {
-        $this->ticketService->updateEventAvailability($ticket->event_id);
+        // Automatically update availability when ticket is created
+        $this->ticketService->updateAvailability($ticket->event_id);
     }
 
     /**
@@ -31,7 +36,8 @@ class TicketObserver
      */
     public function updated(Ticket $ticket): void
     {
-        $this->ticketService->updateEventAvailability($ticket->event_id);
+        // Update availability when ticket status changes
+        $this->ticketService->updateAvailability($ticket->event_id);
     }
 
     /**
@@ -39,6 +45,7 @@ class TicketObserver
      */
     public function deleted(Ticket $ticket): void
     {
-        $this->ticketService->updateEventAvailability($ticket->event_id);
+        // Update availability when ticket is deleted (refund)
+        $this->ticketService->updateAvailability($ticket->event_id);
     }
 }
