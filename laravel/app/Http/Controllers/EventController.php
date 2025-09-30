@@ -89,6 +89,9 @@ class EventController extends Controller
             // Initialize tickets_sold to 0
             $validated['tickets_sold'] = 0;
 
+            // Set approval status to pending for new events
+            $validated['approval_status'] = 'pending';
+
             // Handle image upload if provided
             if ($request->hasFile('image')) {
                 $imagePath = $request->file('image')->store('events', 'public');

@@ -83,7 +83,7 @@
     {{-- Quick Actions --}}
     <section class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-6 shadow-lg">
       <h2 class="text-lg font-semibold text-cyan-300 mb-4">Quick Actions</h2>
-      <div class="grid grid-cols-2 sm:grid-cols-5 gap-4">
+      <div class="grid grid-cols-2 sm:grid-cols-6 gap-4">
         <a href="{{ url('/events/create') }}"
            class="block p-4 rounded-xl bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-center font-medium shadow-md">
           Create Event
@@ -95,6 +95,14 @@
         <a href="{{ route('users.index') }}"
            class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">
           Manage Users
+        </a>
+        <a href="{{ route('admin.approvals.index') }}"
+           class="block p-4 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-center font-medium shadow-md">
+          Event Approvals
+          @php $pendingApprovals = \App\Models\Event::where('approval_status', 'pending')->count(); @endphp
+          @if($pendingApprovals > 0)
+            <span class="block text-xs mt-1 text-white/90">{{ $pendingApprovals }} pending</span>
+          @endif
         </a>
         <a href="{{ route('events.statistics') }}"
            class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">

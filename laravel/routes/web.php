@@ -85,6 +85,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/user/{userId}/bookings', [\App\Http\Controllers\SimpleBookingController::class, 'getUserBookings'])->name('user');
     });
 
+    // Event approval (Admin only)
+    Route::prefix('admin/approvals')->name('admin.approvals.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\SimpleEventApprovalController::class, 'index'])->name('index');
+        Route::get('/{event}', [\App\Http\Controllers\SimpleEventApprovalController::class, 'show'])->name('show');
+        Route::post('/{event}/approve', [\App\Http\Controllers\SimpleEventApprovalController::class, 'approve'])->name('approve');
+        Route::post('/{event}/reject', [\App\Http\Controllers\SimpleEventApprovalController::class, 'reject'])->name('reject');
+    });
+
     // Shared demo page (optional)
     Route::view('/tailwind-demo', 'tailwind-demo')->name('tailwind.demo');
 });
