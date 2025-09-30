@@ -93,6 +93,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/{event}/reject', [\App\Http\Controllers\SimpleEventApprovalController::class, 'reject'])->name('reject');
     });
 
+    // Payment management (Admin only)
+    Route::prefix('admin/payments')->name('admin.payments.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\SimplePaymentController::class, 'index'])->name('index');
+        Route::post('/{ticket}/mark-paid', [\App\Http\Controllers\SimplePaymentController::class, 'markPaid'])->name('mark-paid');
+        Route::post('/{ticket}/mark-failed', [\App\Http\Controllers\SimplePaymentController::class, 'markFailed'])->name('mark-failed');
+        Route::post('/{ticket}/refund', [\App\Http\Controllers\SimplePaymentController::class, 'refund'])->name('refund');
+        Route::post('/{ticket}/retry', [\App\Http\Controllers\SimplePaymentController::class, 'retry'])->name('retry');
+    });
+
     // Shared demo page (optional)
     Route::view('/tailwind-demo', 'tailwind-demo')->name('tailwind.demo');
 });

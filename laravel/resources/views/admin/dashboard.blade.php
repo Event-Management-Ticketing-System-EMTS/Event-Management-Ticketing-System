@@ -104,6 +104,14 @@
             <span class="block text-xs mt-1 text-white/90">{{ $pendingApprovals }} pending</span>
           @endif
         </a>
+        <a href="{{ route('admin.payments.index') }}"
+           class="block p-4 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-400 hover:to-emerald-400 text-center font-medium shadow-md">
+          Payment Management
+          @php $pendingPayments = \App\Models\Ticket::where('payment_status', 'pending')->count(); @endphp
+          @if($pendingPayments > 0)
+            <span class="block text-xs mt-1 text-white/90">{{ $pendingPayments }} pending</span>
+          @endif
+        </a>
         <a href="{{ route('events.statistics') }}"
            class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">
           Event Statistics

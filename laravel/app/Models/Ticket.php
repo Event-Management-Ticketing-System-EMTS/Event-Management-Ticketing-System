@@ -13,12 +13,18 @@ class Ticket extends Model
         'quantity',
         'total_price',
         'purchase_date',
-        'status'
+        'status',
+        'payment_status',
+        'payment_amount',
+        'paid_at',
+        'payment_reference'
     ];
 
     protected $casts = [
         'purchase_date' => 'datetime',
+        'paid_at' => 'datetime',
         'total_price' => 'decimal:2',
+        'payment_amount' => 'decimal:2',
         'quantity' => 'integer',
     ];
 
@@ -40,6 +46,27 @@ class Ticket extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Payment status helper methods (simple and easy to understand)
+    public function isPaid()
+    {
+        return $this->payment_status === 'paid';
+    }
+
+    public function isPending()
+    {
+        return $this->payment_status === 'pending';
+    }
+
+    public function isFailed()
+    {
+        return $this->payment_status === 'failed';
+    }
+
+    public function isRefunded()
+    {
+        return $this->payment_status === 'refunded';
     }
 }
