@@ -82,35 +82,118 @@
 
     {{-- Quick Actions --}}
     <section class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-6 shadow-lg">
-      <h2 class="text-lg font-semibold text-cyan-300 mb-4">Quick Actions</h2>
-      <div class="grid grid-cols-2 sm:grid-cols-6 gap-4">
+      <h2 class="text-lg font-semibold text-cyan-300 mb-6 flex items-center gap-3">
+        <svg class="h-6 w-6 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+        </svg>
+        Quick Actions
+      </h2>
+
+      {{-- Primary Actions Row --}}
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
         <a href="{{ url('/events/create') }}"
-           class="block p-4 rounded-xl bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-center font-medium shadow-md">
-          Create Event
+           class="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 p-6 text-center font-medium shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+          <div class="flex flex-col items-center gap-3">
+            <div class="p-3 rounded-full bg-white/20 group-hover:bg-white/30 transition-colors">
+              <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+              </svg>
+            </div>
+            <span class="text-white font-semibold">Create Event</span>
+            <span class="text-xs text-white/80">Add new event</span>
+          </div>
         </a>
-        <a href="{{ url('/events') }}"
-           class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">
-          Manage Events
-        </a>
-        <a href="{{ route('users.index') }}"
-           class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">
-          Manage Users
-        </a>
+
         <a href="{{ route('admin.approvals.index') }}"
-           class="block p-4 rounded-xl bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 text-center font-medium shadow-md">
-          Event Approvals
-          @php $pendingApprovals = \App\Models\Event::where('approval_status', 'pending')->count(); @endphp
-          @if($pendingApprovals > 0)
-            <span class="block text-xs mt-1 text-white/90">{{ $pendingApprovals }} pending</span>
-          @endif
+           class="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-400 hover:to-orange-400 p-6 text-center font-medium shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+          <div class="flex flex-col items-center gap-3">
+            <div class="p-3 rounded-full bg-white/20 group-hover:bg-white/30 transition-colors">
+              <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <span class="text-white font-semibold">Event Approvals</span>
+            @php $pendingApprovals = \App\Models\Event::where('approval_status', 'pending')->count(); @endphp
+            @if($pendingApprovals > 0)
+              <span class="px-2 py-1 rounded-full bg-white/20 text-xs text-white font-medium">{{ $pendingApprovals }} pending</span>
+            @else
+              <span class="text-xs text-white/80">All up to date</span>
+            @endif
+          </div>
         </a>
+
+        <a href="{{ route('admin.payments.index') }}"
+           class="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-400 hover:to-green-400 p-6 text-center font-medium shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02]">
+          <div class="flex flex-col items-center gap-3">
+            <div class="p-3 rounded-full bg-white/20 group-hover:bg-white/30 transition-colors">
+              <svg class="h-6 w-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/>
+                <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/>
+              </svg>
+            </div>
+            <span class="text-white font-semibold">Payment Management</span>
+            @php $pendingPayments = \App\Models\Ticket::where('payment_status', 'pending')->count(); @endphp
+            @if($pendingPayments > 0)
+              <span class="px-2 py-1 rounded-full bg-white/20 text-xs text-white font-medium">{{ $pendingPayments }} pending</span>
+            @else
+              <span class="text-xs text-white/80">All up to date</span>
+            @endif
+          </div>
+        </a>
+      </div>
+
+      {{-- Secondary Actions Row --}}
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <a href="{{ url('/events') }}"
+           class="group flex items-center gap-3 p-4 rounded-xl bg-slate-800/60 hover:bg-slate-700/80 border border-cyan-400/10 hover:border-cyan-400/30 transition-all duration-300">
+          <div class="p-2 rounded-lg bg-cyan-500/20 group-hover:bg-cyan-500/30 transition-colors">
+            <svg class="h-4 w-4 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">Manage Events</div>
+            <div class="text-xs text-slate-400">Edit & organize</div>
+          </div>
+        </a>
+
+        <a href="{{ route('users.index') }}"
+           class="group flex items-center gap-3 p-4 rounded-xl bg-slate-800/60 hover:bg-slate-700/80 border border-cyan-400/10 hover:border-cyan-400/30 transition-all duration-300">
+          <div class="p-2 rounded-lg bg-purple-500/20 group-hover:bg-purple-500/30 transition-colors">
+            <svg class="h-4 w-4 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">Manage Users</div>
+            <div class="text-xs text-slate-400">Roles & permissions</div>
+          </div>
+        </a>
+
         <a href="{{ route('events.statistics') }}"
-           class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">
-          Event Statistics
+           class="group flex items-center gap-3 p-4 rounded-xl bg-slate-800/60 hover:bg-slate-700/80 border border-cyan-400/10 hover:border-cyan-400/30 transition-all duration-300">
+          <div class="p-2 rounded-lg bg-blue-500/20 group-hover:bg-blue-500/30 transition-colors">
+            <svg class="h-4 w-4 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">Event Statistics</div>
+            <div class="text-xs text-slate-400">Analytics & reports</div>
+          </div>
         </a>
+
         <a href="{{ url('/bookings') }}"
-           class="block p-4 rounded-xl bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-center font-medium">
-          View Bookings
+           class="group flex items-center gap-3 p-4 rounded-xl bg-slate-800/60 hover:bg-slate-700/80 border border-cyan-400/10 hover:border-cyan-400/30 transition-all duration-300">
+          <div class="p-2 rounded-lg bg-indigo-500/20 group-hover:bg-indigo-500/30 transition-colors">
+            <svg class="h-4 w-4 text-indigo-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">View Bookings</div>
+            <div class="text-xs text-slate-400">Customer tickets</div>
+          </div>
         </a>
       </div>
     </section>
