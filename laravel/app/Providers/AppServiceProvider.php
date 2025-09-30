@@ -30,6 +30,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Register Service bindings
         $this->app->singleton(\App\Services\SortingService::class);
+        $this->app->singleton(\App\Services\SimpleTicketService::class);
     }
 
     /**
@@ -37,6 +38,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register Observer Pattern for automatic ticket updates
+        \App\Models\Ticket::observe(\App\Observers\TicketObserver::class);
+
         // Force "remember me" cookies to expire in 10 minutes (instead of default ~5 years)
         Auth::viaRemember();
 

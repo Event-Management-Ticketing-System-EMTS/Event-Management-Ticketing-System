@@ -51,4 +51,40 @@ class Event extends Model
     {
         return $this->belongsTo(User::class, 'organizer_id');
     }
+
+    /**
+     * Get all tickets for this event
+     */
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class);
+    }
+
+    /**
+     * Get available ticket count
+     */
+    public function getAvailableTicketsAttribute(): int
+    {
+        return max(0, $this->total_tickets - $this->tickets_sold);
+    }
+
+    /**
+     * Check if event has available tickets
+     */
+    public function hasAvailableTickets(int $quantity = 1): bool
+    {
+        return $this->available_tickets >= $quantity;
+    }
+
+    /**
+     * Get ticket availability percentage
+     */
+    public function getAvailabilityPercentageAttribute(): float
+    {
+        if ($this->total_tickets == 0) {
+            return 0;
+        }
+
+        return round(($this->available_tickets / $this->total_tickets) * 100, 2);
+    }
 }
