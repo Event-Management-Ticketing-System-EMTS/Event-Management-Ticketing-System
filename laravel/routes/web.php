@@ -6,6 +6,7 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 
+
 // ---------- Public (guest-only) ----------
 Route::middleware('guest')->group(function () {
     // Login
