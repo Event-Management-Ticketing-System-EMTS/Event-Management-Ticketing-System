@@ -5,6 +5,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\EventController;
 
 // ---------- Public (guest-only) ----------
 Route::middleware('guest')->group(function () {
@@ -108,3 +109,4 @@ Route::middleware('auth')->group(function () {
 
 // ---------- Public Landing ----------
 Route::view('/welcome', 'welcome')->name('welcome');
+Route::get('/events', [EventController::class, 'index'])->name('events.index');
