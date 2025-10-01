@@ -1,12 +1,12 @@
 # Event Management & Ticketing System (EMTS)
 
-## 🏗️ System Design Lifecycle & Architecture Documentation
+##  System Design Lifecycle & Architecture Documentation
 
 A comprehensive event management and ticketing system built with Laravel, showcasing modern software design patterns and best practices for educational purposes.
 
 ---
 
-## 📋 Table of Contents
+##  Table of Contents
 
 1. [Project Overview](#-project-overview)
 2. [System Design Lifecycle](#-system-design-lifecycle)
@@ -21,28 +21,28 @@ A comprehensive event management and ticketing system built with Laravel, showca
 
 ---
 
-## 🎯 Project Overview
+##  Project Overview
 
 The Event Management & Ticketing System (EMTS) is a full-stack web application that allows organizers to create, manage, and track events while enabling users to browse and purchase tickets. The project emphasizes clean architecture, design patterns, and modern development practices.
 
 ### Core Features
-- 🔐 **Multi-role Authentication** (Admin, Organizer, User)
-- 👥 **Advanced User Management** (Admin-only access with role transitions)
-- 🔄 **Dynamic Role Management** (Real-time role changes with validation)
-- 🎪 **Event Management** (CRUD operations with sorting/filtering)
-- ✅ **Event Approval System** (Admin-controlled event approval/rejection workflow)
-- 🎫 **Real-time Ticket System** (Live availability with automatic updates)
-- 📬 **Smart Notification System** (Automatic organizer notifications via Observer Pattern)
-- 📋 **Advanced Booking Management** (Complete booking lifecycle with filters & export)
-- ⚡ **Real-time Updates** (Live ticket availability and inventory tracking)
-- 📊 **Analytics Dashboard** (Event statistics and insights)
-- 🎛️ **Admin Control Panel** (User oversight and system management)
-- 🔄 **Smart Sorting** (Dynamic content organization)
-- 🎨 **Component-based UI** (Reusable interface components)
-- 🛡️ **Security Features** (Login tracking, role-based access control, secure password reset)
-- 🏗️ **Design Patterns** (Observer Pattern, Service Layer, Strategy Pattern, Component patterns, Command Pattern, State Pattern)
-- 💰 **Payment Processing** (State-based payment lifecycle management)
-- 🔑 **Password Reset System** (Command-based secure password reset workflow)
+-  **Multi-role Authentication** (Admin, Organizer, User)
+-  **Advanced User Management** (Admin-only access with role transitions)
+-  **Dynamic Role Management** (Real-time role changes with validation)
+-  **Event Management** (CRUD operations with sorting/filtering)
+-  **Event Approval System** (Admin-controlled event approval/rejection workflow)
+-  **Real-time Ticket System** (Live availability with automatic updates)
+-  **Smart Notification System** (Automatic organizer notifications via Observer Pattern)
+-  **Advanced Booking Management** (Complete booking lifecycle with filters & export)
+-  **Real-time Updates** (Live ticket availability and inventory tracking)
+-  **Analytics Dashboard** (Event statistics and insights)
+-  **Admin Control Panel** (User oversight and system management)
+-  **Smart Sorting** (Dynamic content organization)
+-  **Component-based UI** (Reusable interface components)
+-  **Security Features** (Login tracking, role-based access control, secure password reset)
+-  **Design Patterns** (Observer Pattern, Service Layer, Strategy Pattern, Component patterns, Command Pattern, State Pattern)
+-  **Payment Processing** (State-based payment lifecycle management)
+-  **Password Reset System** (Command-based secure password reset workflow)
 
 ---
 
