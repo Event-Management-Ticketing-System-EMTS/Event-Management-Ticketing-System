@@ -6,6 +6,7 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\SupportController;
 
 // ---------- Public (guest-only) ----------
 Route::middleware('guest')->group(function () {
@@ -66,6 +67,17 @@ Route::middleware('auth')->group(function () {
 
     // My Tickets page for users
     Route::get('/my-tickets', [\App\Http\Controllers\SimpleTicketController::class, 'myTickets'])->name('tickets.my');
+
+    // Support system
+    Route::get('/support', [SupportController::class, 'create'])->name('support.create');
+    Route::post('/support', [SupportController::class, 'store'])->name('support.store');
+
+    // Admin support routes
+    Route::prefix('admin/support')->name('admin.support.')->group(function () {
+        Route::get('/', [SupportController::class, 'index'])->name('index');
+        Route::get('/{id}', [SupportController::class, 'show'])->name('show');
+        Route::post('/{id}/respond', [SupportController::class, 'respond'])->name('respond');
+    });
 
     // Test routes (remove these later!)
     Route::prefix('test')->group(function () {

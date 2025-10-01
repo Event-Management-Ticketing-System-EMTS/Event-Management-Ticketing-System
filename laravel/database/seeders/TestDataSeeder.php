@@ -200,9 +200,46 @@ class TestDataSeeder extends Seeder
 
             echo "Created ticket for {$user->name} for event: {$eventTitle}\n";
         }
+
+        // Create some sample support messages
+        $supportMessages = [
+            [
+                'user_id' => $user->id,
+                'event_id' => $createdEvents[0]->id,
+                'subject' => 'Question about venue parking',
+                'message' => "Hi! I purchased tickets for the Summer Music Festival and I'm wondering if there will be parking available at the venue? Also, what time do doors open?",
+                'priority' => 'medium',
+                'status' => 'open'
+            ],
+            [
+                'user_id' => $user->id,
+                'event_id' => $createdEvents[1]->id,
+                'subject' => 'Dietary restrictions for conference lunch',
+                'message' => "I have severe allergies to nuts and shellfish. Will there be options available during the lunch break at the Tech Innovation Conference? This is very important for my safety.",
+                'priority' => 'high',
+                'status' => 'open'
+            ],
+            [
+                'user_id' => $user->id,
+                'event_id' => null,
+                'subject' => 'How to cancel tickets?',
+                'message' => "I need to understand the cancellation policy. Can I get a refund if I need to cancel my tickets? What's the deadline for cancellations?",
+                'priority' => 'low',
+                'status' => 'resolved',
+                'admin_response' => "Hi! You can cancel tickets up to 48 hours before the event for a full refund. After that, we offer a 50% refund up to 24 hours before. You can cancel directly from your 'My Tickets' page.",
+                'admin_responded_at' => Carbon::now()->subHours(2),
+                'admin_id' => $admin->id
+            ]
+        ];
+
+        foreach ($supportMessages as $supportData) {
+            \App\Models\SupportMessage::create($supportData);
+            echo "Created support message: {$supportData['subject']}\n";
+        }
+
         echo "\nTest data seeded successfully!\n";
         echo "User: {$user->email} (password: 'password')\n";
         echo "Admin: {$admin->email} (password: 'password')\n";
-        echo "Created " . count($createdEvents) . " events and " . count($ticketData) . " tickets\n";
+        echo "Created " . count($createdEvents) . " events, " . count($ticketData) . " tickets, and " . count($supportMessages) . " support messages\n";
     }
 }

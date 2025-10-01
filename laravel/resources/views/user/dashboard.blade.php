@@ -106,9 +106,9 @@
                class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20 text-center">
               Profile Settings
             </a>
-            <button class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20">
+            <a href="{{ route('support.create') }}" class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20 text-center">
               Support
-            </button>
+            </a>
           </div>
         </div>
 
