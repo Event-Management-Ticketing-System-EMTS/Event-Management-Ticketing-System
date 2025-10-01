@@ -1,0 +1,98 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Event;
+use App\Services\SimpleTicketService;
+use Illuminate\Http\Request;
+
+/**
+ * Simple Ticket Controller
+ * Handles ticket availability and purchases
+ */
+class SimpleTicketController extends Controller
+{
+    protected $ticketService;
+
+    public function __construct(SimpleTicketService $ticketService)
+    {
+        $this->ticketService = $ticketService;
+    }
+
+    /**
+     * Get ticket availability for an event
+     */
+    public function getAvailability($eventId)
+    {
+        $availability = $this->ticketService->getAvailability($eventId);
+
+        if (!$availability) {
+            return response()->json(['error' => 'Event not found'], 404);
+        }
+
+        return response()->json($availability);
+    }
+
+    /**
+     * Purchase tickets for an event
+     */
+    public function purchaseTickets(Request $request, $eventId)
+    {
+        $request->validate([
+            'quantity' => 'required|integer|min:1|max:10'
+        ]);
+
+        $success = $this->ticketService->purchaseTickets(
+            $eventId,
+            $request->quantity,
+            auth()->id()
+        );
+
+        if ($success) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Tickets purchased successfully!',
+                'availability' => $this->ticketService->getAvailability($eventId)
+            ]);
+        }
+
+        return response()->json([
+            'success' => false,
+            'message' => 'Not enough tickets available!'
+        ], 400);
+    }
+
+    /**
+     * Cancel a ticket (sets status to cancelled)
+     */
+    public function cancelTicket(Request $request, $ticketId)
+    {
+        $ticket = \App\Models\Ticket::where('id', $ticketId)
+            ->where('user_id', auth()->id())
+            ->first();
+
+        if (!$ticket) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ticket not found or not yours to cancel'
+            ], 404);
+        }
+
+        if ($ticket->status === \App\Models\Ticket::STATUS_CANCELLED) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Ticket is already cancelled'
+            ], 400);
+        }
+
+        // Update ticket status to cancelled
+        // This will trigger the TicketObserver which will send notification!
+        $ticket->update(['status' => \App\Models\Ticket::STATUS_CANCELLED]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Ticket cancelled successfully. Organizer has been notified.',
+            'availability' => $this->ticketService->getAvailability($ticket->event_id)
+        ]);
+    }
+}

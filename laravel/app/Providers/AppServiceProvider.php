@@ -13,7 +13,25 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Register Repository bindings
+        $this->app->bind(
+            \App\Repositories\EventRepository::class,
+            function ($app) {
+                return new \App\Repositories\EventRepository($app->make(\App\Models\Event::class));
+            }
+        );
+
+        $this->app->bind(
+            \App\Repositories\UserRepository::class,
+            function ($app) {
+                return new \App\Repositories\UserRepository($app->make(\App\Models\User::class));
+            }
+        );
+
+        // Register Service bindings
+        $this->app->singleton(\App\Services\SortingService::class);
+        $this->app->singleton(\App\Services\SimpleTicketService::class);
+        $this->app->singleton(\App\Services\SimpleNotificationService::class);
     }
 
     /**
@@ -21,6 +39,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register Observer Pattern for automatic ticket updates
+        \App\Models\Ticket::observe(\App\Observers\TicketObserver::class);
+
         // Force "remember me" cookies to expire in 10 minutes (instead of default ~5 years)
         Auth::viaRemember();
 
