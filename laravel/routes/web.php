@@ -64,6 +64,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/{ticket}/cancel', [\App\Http\Controllers\SimpleTicketController::class, 'cancelTicket'])->name('tickets.cancel');
     });
 
+    // My Tickets page for users
+    Route::get('/my-tickets', [\App\Http\Controllers\SimpleTicketController::class, 'myTickets'])->name('tickets.my');
+
     // Test routes (remove these later!)
     Route::prefix('test')->group(function () {
         Route::get('/cancel-ticket', [\App\Http\Controllers\TestNotificationController::class, 'testCancellation']);

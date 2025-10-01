@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Event;
 use App\Services\SimpleTicketService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * Simple Ticket Controller
@@ -45,7 +46,7 @@ class SimpleTicketController extends Controller
         $success = $this->ticketService->purchaseTickets(
             $eventId,
             $request->quantity,
-            auth()->id()
+            Auth::id()
         );
 
         if ($success) {
@@ -68,7 +69,7 @@ class SimpleTicketController extends Controller
     public function cancelTicket(Request $request, $ticketId)
     {
         $ticket = \App\Models\Ticket::where('id', $ticketId)
-            ->where('user_id', auth()->id())
+            ->where('user_id', Auth::id())
             ->first();
 
         if (!$ticket) {
@@ -94,5 +95,18 @@ class SimpleTicketController extends Controller
             'message' => 'Ticket cancelled successfully. Organizer has been notified.',
             'availability' => $this->ticketService->getAvailability($ticket->event_id)
         ]);
+    }
+
+    /**
+     * Show user's tickets
+     */
+    public function myTickets()
+    {
+        $tickets = \App\Models\Ticket::where('user_id', Auth::id())
+            ->with('event')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('tickets.my-tickets', compact('tickets'));
     }
 }

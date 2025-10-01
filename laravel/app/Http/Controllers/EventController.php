@@ -30,8 +30,8 @@ class EventController extends Controller
             $request->get('direction')
         );
 
-        // Get events with sorting
-        $events = $this->eventRepository->getAllWithSorting(
+        // Get only published and approved events for public viewing
+        $events = $this->eventRepository->getPublishedAndApprovedWithSorting(
             $sortParams['sort_by'],
             $sortParams['direction']
         );
