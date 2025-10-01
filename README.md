@@ -2496,7 +2496,352 @@ A **real-time ticket availability system** that:
 
 ---
 
-## 👥 Contributing
+## � API Documentation
+
+The application exposes several API endpoints for real-time functionality and integration with other services.
+
+### Event & Ticket Management APIs
+
+#### `GET /api/events/{id}/availability`
+
+Retrieves the real-time ticket availability for a specific event. This endpoint is used by the ticket availability widget for automatic updates.
+
+**Response Example:**
+```json
+{
+    "total_capacity": 100,
+    "available_tickets": 45,
+    "tickets_sold": 55,
+    "availability_percentage": 55
+}
+```
+
+#### `POST /api/tickets/purchase`
+
+Creates a new ticket purchase for an event.
+
+**Request Body:**
+```json
+{
+    "event_id": 5,
+    "quantity": 2
+}
+```
+
+**Response Example:**
+```json
+{
+    "success": true,
+    "ticket": {
+        "id": 123,
+        "event_id": 5,
+        "quantity": 2,
+        "total_price": 50.00,
+        "status": "confirmed",
+        "created_at": "2025-10-01T12:34:56Z"
+    },
+    "message": "Ticket purchased successfully!"
+}
+```
+
+### Support System APIs
+
+#### `POST /api/support-messages`
+
+Submits a new support message from a user.
+
+**Request Body:**
+```json
+{
+    "event_id": 12,
+    "subject": "Question about parking",
+    "message": "Is there free parking available at the venue?",
+    "priority": "medium"
+}
+```
+
+**Response Example:**
+```json
+{
+    "success": true,
+    "message": "Your support request has been submitted successfully.",
+    "support_id": 45
+}
+```
+
+#### `GET /api/admin/support-messages`
+
+Admin-only endpoint to retrieve all support messages (with filtering).
+
+**Query Parameters:**
+- `status`: Filter by message status (`open`, `in_progress`, `resolved`)
+- `priority`: Filter by priority (`low`, `medium`, `high`) 
+- `event_id`: Filter by specific event
+
+**Response Example:**
+```json
+{
+    "total": 25,
+    "per_page": 10,
+    "current_page": 1,
+    "data": [
+        {
+            "id": 45,
+            "user": {
+                "id": 12,
+                "name": "John Doe",
+                "email": "john@example.com"
+            },
+            "event": {
+                "id": 5,
+                "title": "Summer Concert"
+            },
+            "subject": "Question about parking",
+            "message": "Is there free parking available at the venue?",
+            "status": "open",
+            "priority": "medium",
+            "created_at": "2025-09-30T15:23:42Z"
+        },
+        // More messages...
+    ]
+}
+```
+
+### Notification APIs
+
+#### `GET /api/notifications`
+
+Retrieves notifications for the authenticated user.
+
+**Query Parameters:**
+- `is_read`: Filter by read status (`true`, `false`)
+- `type`: Filter by notification type
+
+**Response Example:**
+```json
+{
+    "unread_count": 3,
+    "notifications": [
+        {
+            "id": 78,
+            "title": "New Ticket Purchase",
+            "message": "User Jane Smith purchased 2 tickets for your event 'Summer Concert'",
+            "type": "ticket_purchased",
+            "is_read": false,
+            "data": {
+                "event_id": 5,
+                "ticket_id": 123,
+                "quantity": 2
+            },
+            "created_at": "2025-10-01T10:45:23Z"
+        },
+        // More notifications...
+    ]
+}
+```
+
+#### `PATCH /api/notifications/{id}/mark-as-read`
+
+Marks a notification as read.
+
+**Response Example:**
+```json
+{
+    "success": true,
+    "message": "Notification marked as read"
+}
+```
+
+### API Authentication
+
+All API endpoints require authentication with the exception of public event data. The application uses Laravel Sanctum for API authentication:
+
+```php
+// Example API authentication
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::patch('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+    // Admin-only routes
+    Route::middleware('admin')->prefix('admin')->group(function () {
+        Route::get('/support-messages', [SupportMessageController::class, 'index']);
+    });
+});
+```
+
+### API Response Standards
+
+All API responses follow a consistent format:
+
+- Success responses include a `success: true` field
+- Error responses include a `success: false` field and an `errors` object
+- Paginated responses include `total`, `per_page`, `current_page`, and `last_page` fields
+- Timestamps are in ISO 8601 format
+
+---
+
+## ⚡ Performance & Optimization
+
+The application is optimized for performance, scalability, and resource efficiency through several key strategies:
+
+### 1. Database Optimization
+
+#### Strategic Indexing
+```php
+// Migration example
+Schema::table('events', function (Blueprint $table) {
+    $table->index('status');
+    $table->index('approval_status');
+    $table->index('event_date');
+    $table->index('organizer_id');
+});
+
+Schema::table('tickets', function (Blueprint $table) {
+    $table->index(['event_id', 'status']);
+    $table->index('payment_status');
+});
+```
+
+#### Query Optimization
+- **Eager Loading**: All relationships are eagerly loaded to avoid N+1 query issues
+- **Repository Pattern**: Centralized, optimized queries through repository classes
+- **Chunk Processing**: Large datasets are processed in chunks for memory efficiency
+
+### 2. Caching Strategy
+
+The application implements a multi-level caching system to minimize database load and improve response times:
+
+#### Data Caching
+```php
+// Example from BookingService
+public function getBookingStats()
+{
+    return Cache::remember('booking_stats', 300, function () {
+        return [
+            'total_bookings' => Ticket::count(),
+            'confirmed_bookings' => Ticket::where('status', 'confirmed')->count(),
+            'cancelled_bookings' => Ticket::where('status', 'cancelled')->count(),
+            'total_revenue' => Ticket::where('status', 'confirmed')->sum('total_price'),
+            // More statistics...
+        ];
+    });
+}
+```
+
+#### Intelligent Cache Invalidation
+The Observer Pattern automatically clears relevant caches when data changes:
+
+```php
+// Example from TicketObserver
+public function created(Ticket $ticket)
+{
+    // Clear availability cache
+    Cache::forget("event_availability_{$ticket->event_id}");
+    
+    // Clear booking statistics
+    Cache::forget('booking_stats');
+    
+    // Clear event statistics
+    Cache::forget("event_stats_{$ticket->event_id}");
+}
+```
+
+#### Tiered TTL Strategy
+Different types of data are cached with appropriate time-to-live values:
+
+- **Real-time data**: 30-60 seconds (ticket availability)
+- **Semi-dynamic data**: 5-15 minutes (dashboard statistics)
+- **Static data**: 1 hour or more (event details, venue information)
+
+### 3. Frontend Optimization
+
+#### Asset Management
+- **CSS/JS Bundling**: Vite bundles assets to minimize HTTP requests
+- **Code Splitting**: Only necessary JavaScript is loaded per page
+- **Minification**: All production assets are minified and compressed
+
+#### Asynchronous Loading
+```javascript
+// Example of asynchronous data loading
+function updateTicketAvailability(eventId) {
+    fetch(`/api/events/${eventId}/availability`)
+        .then(response => response.json())
+        .then(data => {
+            document.querySelector('.availability-count').textContent = data.available_tickets;
+            document.querySelector('.availability-bar').style.width = data.availability_percentage + '%';
+        });
+}
+
+// Update every 10 seconds
+setInterval(() => {
+    updateTicketAvailability(eventId);
+}, 10000);
+```
+
+#### Resource Hints
+```html
+<!-- Preload critical assets -->
+<link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://api.example.com">
+```
+
+### 4. Real-time Updates Optimization
+
+The system uses efficient AJAX polling instead of WebSockets for simplicity and broad compatibility:
+
+- **Optimized Polling**: 10-second intervals for ticket availability
+- **Conditional Requests**: ETag/If-None-Match headers to minimize transfer
+- **Micro-Updates**: Only transmit changed data, not entire page content
+
+### 5. Performance Monitoring
+
+The application includes built-in performance monitoring:
+
+```php
+// Example from AppServiceProvider
+public function boot()
+{
+    // Track query performance in development
+    if (app()->environment('local')) {
+        DB::listen(function ($query) {
+            if ($query->time > 100) {
+                Log::channel('performance')->warning('Slow query: ' . $query->sql, [
+                    'time' => $query->time,
+                    'bindings' => $query->bindings
+                ]);
+            }
+        });
+    }
+}
+```
+
+### 6. Lazy Loading & Pagination
+
+All large datasets are paginated for optimal performance:
+
+```php
+// Example from EventController
+public function index(Request $request)
+{
+    $sortParams = $this->sortingService->validateEventSortParameters(
+        $request->get('sort'),
+        $request->get('direction')
+    );
+    
+    $events = $this->eventRepository->getPaginatedEventsWithSorting(
+        $sortParams['sort_by'],
+        $sortParams['direction'],
+        15 // Items per page
+    );
+    
+    return view('events.index', compact('events', 'sortParams'));
+}
+```
+
+This combination of strategies ensures the application remains fast and responsive even under heavy load, providing an optimal user experience while maintaining server efficiency.
+
+---
+
+## �👥 Contributing
 
 This project serves as an educational reference for learning Laravel and design patterns. Feel free to fork, experiment, and contribute improvements!
 
