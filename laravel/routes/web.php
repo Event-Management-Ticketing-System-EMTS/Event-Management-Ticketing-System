@@ -5,13 +5,14 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
-
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\SupportController;
 
 // ---------- Public (guest-only) ----------
 Route::middleware('guest')->group(function () {
     // Login (both route names for compatibility)
-    Route::get('/', [AuthController::class, 'showLogin'])->name('login'); // Laravel expects this name
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login.show'); // Alternative access
+    Route::get('/', [AuthController::class, 'showLogin'])->name('login');
+    Route::get('/login', [AuthController::class, 'showLogin'])->name('login.show');
     Route::post('/login', [AuthController::class, 'login'])->name('login.perform');
 
     // Registration
@@ -24,6 +25,13 @@ Route::middleware('guest')->group(function () {
     Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetPasswordForm'])->name('password.reset');
     Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 });
+
+// ---------- Public Landing & Event browsing ----------
+Route::view('/welcome', 'welcome')->name('welcome');
+
+// Public event browsing (view-only)
+Route::get('/events', [EventController::class, 'index'])->name('events.index');
+Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
 
 // ---------- Authenticated-only ----------
 Route::middleware('auth')->group(function () {
@@ -39,8 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
-    // Event management
-    Route::resource('events', \App\Http\Controllers\EventController::class);
+    // Event management (CRUD except index/show which are public)
+    Route::resource('events', EventController::class)->except(['index', 'show']);
 
     // Event statistics
     Route::get('/event-statistics', [\App\Http\Controllers\EventStatisticsController::class, 'index'])->name('events.statistics');
@@ -62,6 +70,20 @@ Route::middleware('auth')->group(function () {
     // Simple ticket management
     Route::prefix('api/tickets')->group(function () {
         Route::post('/{ticket}/cancel', [\App\Http\Controllers\SimpleTicketController::class, 'cancelTicket'])->name('tickets.cancel');
+    });
+
+    // My Tickets page for users
+    Route::get('/my-tickets', [\App\Http\Controllers\SimpleTicketController::class, 'myTickets'])->name('tickets.my');
+
+    // Support system
+    Route::get('/support', [SupportController::class, 'create'])->name('support.create');
+    Route::post('/support', [SupportController::class, 'store'])->name('support.store');
+
+    // Admin support routes
+    Route::prefix('admin/support')->name('admin.support.')->group(function () {
+        Route::get('/', [SupportController::class, 'index'])->name('index');
+        Route::get('/{id}', [SupportController::class, 'show'])->name('show');
+        Route::post('/{id}/respond', [SupportController::class, 'respond'])->name('respond');
     });
 
     // Test routes (remove these later!)
@@ -106,7 +128,3 @@ Route::middleware('auth')->group(function () {
     // Shared demo page (optional)
     Route::view('/tailwind-demo', 'tailwind-demo')->name('tailwind.demo');
 });
-
-// ---------- Public Landing ----------
-Route::view('/welcome', 'welcome')->name('welcome');
-

@@ -29,22 +29,30 @@
     </div>
 
     <div class="flex items-center gap-4">
-      <a href="{{ route('events.statistics') }}" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-sm transition">
-        View Statistics
-      </a>
-      <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-sm transition">
-        Back to Dashboard
-      </a>
+      @if(auth()->check() && auth()->user()->role === 'admin')
+        <a href="{{ route('events.statistics') }}" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-sm transition">
+          View Statistics
+        </a>
+        <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-sm transition">
+          Back to Dashboard
+        </a>
+      @else
+        <a href="{{ route('user.dashboard') }}" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-cyan-400/20 text-sm transition">
+          Back to Dashboard
+        </a>
+      @endif
     </div>
   </header>
 
   <main class="max-w-7xl mx-auto p-6 space-y-6">
     {{-- Page header --}}
     <div class="flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-white">All Events</h1>
-      <a href="{{ route('events.create') }}" class="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-white font-medium shadow-md">
-        Create New Event
-      </a>
+      <h1 class="text-2xl font-bold text-white">Browse Events</h1>
+      @if(auth()->check() && auth()->user()->role === 'admin')
+        <a href="{{ route('events.create') }}" class="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-white font-medium shadow-md">
+          Create New Event
+        </a>
+      @endif
     </div>
 
     {{-- Sorting Controls --}}

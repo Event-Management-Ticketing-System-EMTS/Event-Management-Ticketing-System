@@ -1,203 +1,672 @@
 # Event Management & Ticketing System (EMTS)
 
-## 🏗️ System Design Lifecycle & Architecture Documentation
+## 🎯 Complete System Design & Architecture Documentation
 
-A comprehensive event management and ticketing system built with Laravel, showcasing modern software design patterns and best practices for educational purposes.
+A comprehensive event management and ticketing system built with Laravel, showcasing modern software design patterns, real-time features, and best practices for educational and production use.
 
 ---
 
 ## 📋 Table of Contents
 
 1. [Project Overview](#-project-overview)
-2. [System Design Lifecycle](#-system-design-lifecycle)
-3. [Architecture Patterns](#-architecture-patterns)
-4. [Design Patterns Implementation](#-design-patterns-implementation)
-5. [Database Schema](#-database-schema)
-6. [UI/UX Design System](#-uiux-design-system)
-7. [Feature Implementation Timeline](#-feature-implementation-timeline)
-8. [Code Structure & Architecture](#-code-structure--architecture)
-9. [Installation & Setup](#-installation--setup)
-10. [Testing Strategy](#-testing-strategy)
+2. [🎯 Latest Features](#-latest-features)
+3. [System Design Lifecycle](#-system-design-lifecycle)
+4. [Architecture Patterns](#-architecture-patterns)
+5. [Design Patterns Implementation](#-design-patterns-implementation)
+6. [Database Schema](#-database-schema)
+7. [UI/UX Design System](#-uiux-design-system)
+8. [Feature Implementation Timeline](#-feature-implementation-timeline)
+9. [Code Structure & Architecture](#-code-structure--architecture)
+10. [Installation & Setup](#-installation--setup)
+11. [Testing Strategy](#-testing-strategy)
+12. [API Documentation](#-api-documentation)
+13. [Performance & Optimization](#-performance--optimization)
 
 ---
 
-## 🎯 Project Overview
+## 🚀 Project Overview
 
-The Event Management & Ticketing System (EMTS) is a full-stack web application that allows organizers to create, manage, and track events while enabling users to browse and purchase tickets. The project emphasizes clean architecture, design patterns, and modern development practices.
+The Event Management & Ticketing System (EMTS) is a **complete full-stack web application** that demonstrates advanced Laravel development with modern design patterns. It serves as both a **learning resource for students** and a **production-ready ticketing system**.
 
-### Core Features
+### 🎯 Core Features
+
+#### **User Management & Authentication**
 - 🔐 **Multi-role Authentication** (Admin, Organizer, User)
 - 👥 **Advanced User Management** (Admin-only access with role transitions)
 - 🔄 **Dynamic Role Management** (Real-time role changes with validation)
-- 🎪 **Event Management** (CRUD operations with sorting/filtering)
+- 🛡️ **Security Features** (Login tracking, secure password reset, role-based access control)
+
+#### **Event Management System**
+- 📝 **Event Management** (CRUD operations with sorting/filtering)
 - ✅ **Event Approval System** (Admin-controlled event approval/rejection workflow)
 - 🎫 **Real-time Ticket System** (Live availability with automatic updates)
-- 📬 **Smart Notification System** (Automatic organizer notifications via Observer Pattern)
+- 📊 **Analytics Dashboard** (Event statistics and insights)
+
+#### **Booking & Notification System**
+- 🔔 **Smart Notification System** (Automatic organizer notifications via Observer Pattern)
 - 📋 **Advanced Booking Management** (Complete booking lifecycle with filters & export)
 - ⚡ **Real-time Updates** (Live ticket availability and inventory tracking)
-- 📊 **Analytics Dashboard** (Event statistics and insights)
-- 🎛️ **Admin Control Panel** (User oversight and system management)
-- 🔄 **Smart Sorting** (Dynamic content organization)
+- 📈 **Booking Analytics** (Revenue tracking, booking statistics, export functionality)
+
+#### **Support Communication System** ⭐ **NEW**
+- 💬 **User-Admin Support Communication** (Direct messaging between users and organizers/admins)
+- 🎯 **Event-Specific Support** (Link support messages to specific events)
+- 📋 **Admin Support Dashboard** (Centralized support message management)
+- 🔄 **Status Tracking** (Open → In Progress → Resolved workflow)
+- ⚡ **Priority System** (Low, Medium, High priority handling)
+
+#### **Technical Features**
 - 🎨 **Component-based UI** (Reusable interface components)
-- 🛡️ **Security Features** (Login tracking, role-based access control, secure password reset)
-- 🏗️ **Design Patterns** (Observer Pattern, Service Layer, Strategy Pattern, Component patterns, Command Pattern, State Pattern)
-- 💰 **Payment Processing** (State-based payment lifecycle management)
+- 🔧 **Design Patterns** (Observer, Service Layer, Strategy, Component, Command, State patterns)
+- 💳 **Payment Processing** (State-based payment lifecycle management)
 - 🔑 **Password Reset System** (Command-based secure password reset workflow)
+- 📱 **Responsive Design** (Mobile-first approach with Tailwind CSS)
 
 ---
 
-## 🔄 System Design Lifecycle
+## 🎯 Latest Features
 
-We followed a structured approach to building this system, implementing design patterns at each phase:
+### 💬 Support Communication System
 
-### Phase 1: Foundation & Authentication
+**Complete User-Admin Communication Platform**
+
+```mermaid
+graph LR
+    A[👤 User Question] --> B[📝 Support Form]
+    B --> C[💾 Database Storage]
+    C --> D[👨‍💼 Admin Dashboard]
+    D --> E[📝 Admin Response]
+    E --> F[📬 User Notification]
+    
+    style A fill:#e1f5fe
+    style D fill:#f3e5f5
+    style F fill:#e8f5e8
+```
+
+**Key Support Features:**
+- **Event-Specific Questions**: Users can link questions to specific events
+- **Priority System**: Low, Medium, High priority classification
+- **Admin Response System**: Complete response workflow with status tracking
+- **Status Management**: Open → In Progress → Resolved lifecycle
+- **Role-Based Access**: Only admins can view and respond to support messages
+
+### 🎫 Advanced Ticket Management
+
+**Real-Time Ticket Availability with Observer Pattern**
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant T as Ticket System
+    participant O as Observer
+    participant N as Notifications
+    participant A as Admin
+
+    U->>T: Purchase/Cancel Ticket
+    T->>O: Trigger Event
+    O->>T: Update Availability
+    O->>N: Create Notification
+    N->>A: Alert Organizer
+```
+
+**Ticket System Features:**
+- **Real-Time Updates**: AJAX polling every 10 seconds
+- **Automatic Notifications**: Organizers get instant alerts
+- **Observer Pattern**: Automatic availability updates
+- **My Tickets**: Users can view and cancel their tickets
+- **Progress Bars**: Visual availability indicators
+
+### ✅ Event Approval Workflow
+
+**Admin-Controlled Event Publishing System**
+
+```mermaid
+stateDiagram-v2
+    [*] --> Pending: Organizer Creates Event
+    Pending --> Approved: Admin Approves
+    Pending --> Rejected: Admin Rejects
+    Approved --> Published: Auto-Published
+    Rejected --> [*]: Organizer Notified
+    
+    note right of Pending: Admin Review Required
+    note right of Approved: Visible to Users
+    note right of Rejected: Feedback Provided
+```
+
+**Approval System Features:**
+- **Three-State Workflow**: Pending → Approved/Rejected
+- **Admin Comments**: Required feedback for rejections
+- **Audit Trail**: Complete approval history tracking
+- **Dashboard Integration**: Pending approvals counter
+- **Organizer Notifications**: Automatic approval/rejection alerts
+
+---
+
+## 🏛️ System Design Lifecycle
+
+We followed a **comprehensive, iterative approach** to building this enterprise-level system, implementing multiple design patterns and advanced features across different development phases:
+
+### Phase 1: Foundation & Security (Weeks 1-2)
 ```mermaid
 graph TD
     A[Requirements Analysis] --> B[Database Design]
     B --> C[Authentication System]
     C --> D[Role-based Access Control]
     D --> E[Factory Pattern Implementation]
+    E --> F[Security Middleware]
 ```
 
-### Phase 2: Core Features Development
+**Completed Features:**
+- Multi-role authentication system
+- Factory pattern for user creation
+- Role-based access control
+- Login security tracking
+- Database schema design
+
+### Phase 2: Core Event System (Weeks 3-4)
 ```mermaid
 graph TD
     A[Event Model Design] --> B[CRUD Operations]
     B --> C[Repository Pattern]
     C --> D[Service Layer]
     D --> E[Strategy Pattern for Dashboards]
+    E --> F[Event Approval Workflow]
 ```
 
-### Phase 3: Advanced Features & Optimization
+**Completed Features:**
+- Complete event management CRUD
+- Admin approval system for events
+- Repository pattern for data access
+- Service layer for business logic
+- Dashboard routing strategies
+
+### Phase 3: Real-Time Features (Weeks 5-6)
 ```mermaid
 graph TD
-    A[Sorting Requirements] --> B[Service Layer Design]
-    B --> C[Component Architecture]
-    C --> D[Performance Optimization]
-    D --> E[Testing & Deployment]
+    A[Observer Pattern Design] --> B[Ticket System]
+    B --> C[Real-time Updates]
+    C --> D[Notification System]
+    D --> E[Performance Optimization]
+    E --> F[Caching Strategy]
 ```
+
+**Completed Features:**
+- Observer pattern for automatic updates
+- Real-time ticket availability
+- Automatic organizer notifications
+- AJAX polling for live updates
+- Intelligent caching system
+
+### Phase 4: Advanced Management (Weeks 7-8)
+```mermaid
+graph TD
+    A[Booking Management] --> B[Advanced Filtering]
+    B --> C[Export Functionality]
+    C --> D[Admin Dashboard]
+    D --> E[Role Management]
+    E --> F[User Analytics]
+```
+
+**Completed Features:**
+- Complete booking management system
+- Advanced filtering and search
+- CSV export functionality
+- Real-time role management
+- User analytics and statistics
+
+### Phase 5: Communication System (Weeks 9-10) ⭐ **LATEST**
+```mermaid
+graph TD
+    A[Support System Design] --> B[User-Admin Communication]
+    B --> C[Status Workflow]
+    C --> D[Priority Management]
+    D --> E[Admin Response System]
+    E --> F[Integration Testing]
+```
+
+**Completed Features:**
+- Complete support communication system
+- Event-specific support messages
+- Priority classification system
+- Admin response workflow
+- Status tracking (Open → In Progress → Resolved)
 
 ---
 
-## 🏛️ Architecture Patterns
+## 🏗️ Architecture Patterns
 
-### 1. **MVC (Model-View-Controller) Architecture**
-The foundation of our Laravel application following the MVC pattern:
+### 1. **MVC + Service Layer Architecture**
+Modern Laravel architecture with enhanced service layer for complex business logic:
 
 ```
-app/
-├── Models/          # Data layer (Eloquent models)
-├── Http/Controllers/ # Business logic controllers
-├── Services/        # Business logic services
-└── Repositories/    # Data access layer
+🎨 Presentation Layer    →  Blade Templates + Tailwind CSS + Alpine.js
+🎮 Controller Layer      →  Route Handlers + Request Validation
+🧠 Service Layer        →  Business Logic + Design Patterns
+📊 Repository Layer     →  Data Access + Query Optimization
+🗄️ Model Layer          →  Eloquent ORM + Relationships
 ```
 
-### 2. **Layered Architecture**
+### 2. **Layered Architecture with Design Patterns**
 ```mermaid
 graph TB
-    A[Presentation Layer] --> B[Service Layer]
-    B --> C[Repository Layer]
-    C --> D[Data Access Layer]
+    subgraph "🎨 Presentation Layer"
+        A[Blade Components]
+        B[AJAX Controllers]
+        C[Real-time UI]
+    end
     
-    A1[Blade Templates] --> A
-    A2[Controllers] --> A
+    subgraph "🧠 Business Logic Layer"
+        D[Service Classes]
+        E[Observer Pattern]
+        F[Strategy Pattern]
+        G[Command Pattern]
+        H[State Pattern]
+    end
     
-    B1[SortingService] --> B
-    B2[UserCreationService] --> B
+    subgraph "📊 Data Access Layer"
+        I[Repository Pattern]
+        J[Eloquent Models]
+        K[Database Relationships]
+    end
     
-    C1[EventRepository] --> C
-    C2[UserRepository] --> C
+    subgraph "🗄️ Infrastructure Layer"
+        L[MySQL Database]
+        M[Cache Layer]
+        N[File Storage]
+    end
     
-    D1[Eloquent Models] --> D
-    D2[Database] --> D
+    A --> D
+    B --> E
+    C --> F
+    D --> I
+    E --> J
+    F --> K
+    I --> L
+    J --> M
+    K --> N
+```
+
+### 3. **Event-Driven Architecture**
+Using Laravel's Observer Pattern for real-time features:
+
+```mermaid
+graph LR
+    A[📝 Data Change] --> B[🔔 Observer Triggered]
+    B --> C[📋 Service Called]
+    C --> D[📊 Cache Updated]
+    D --> E[💬 Notifications Sent]
+    E --> F[🔄 UI Refreshed]
 ```
 
 ---
 
 ## 🎨 Design Patterns Implementation
 
-### 1. **Factory Pattern** - User Creation System
+### 1. **Observer Pattern** - Real-Time System ⭐ **CORE PATTERN**
 
-**Location**: `app/Services/UserCreation/`
+**Location**: `app/Observers/TicketObserver.php`
 
-**Purpose**: Create different types of users (Admin, Organizer, Regular User) with role-specific validation and setup.
+**Purpose**: Automatically handle ticket availability, notifications, and booking updates when tickets change.
 
 ```php
-// app/Services/UserCreation/UserFactory.php
-class UserFactory implements UserFactoryInterface
+// app/Observers/TicketObserver.php
+class TicketObserver
 {
-    public function createUser(array $userData, string $role): User
+    public function created(Ticket $ticket): void
     {
-        // Validate based on role
-        $validationRules = $this->validateUserData($userData, $role);
+        // Automatic availability update
+        $this->ticketService->updateAvailability($ticket->event_id);
         
-        // Role-specific processing
-        switch ($role) {
-            case User::ROLE_ADMIN:
-                return $this->createAdminUser($userData);
-            case User::ROLE_ORGANIZER:
-                return $this->createOrganizerUser($userData);
-            default:
-                return $this->createRegularUser($userData);
+        // Automatic organizer notification
+        $this->notificationService->notifyTicketPurchase($ticket);
+        
+        // Clear booking cache for real-time updates
+        $this->bookingService->clearCache();
+    }
+    
+    public function updated(Ticket $ticket): void
+    {
+        if ($ticket->wasChanged('status') && $ticket->status === 'cancelled') {
+            $this->notificationService->notifyTicketCancellation($ticket);
         }
+        
+        $this->ticketService->updateAvailability($ticket->event_id);
     }
 }
 ```
 
-**Implementation Diagram**:
-```mermaid
-classDiagram
-    class UserFactoryInterface {
-        +createUser(userData, role) User
-    }
-    
-    class UserFactory {
-        +createUser(userData, role) User
-        +validateUserData(userData, role) array
-        -createAdminUser(userData) User
-        -createOrganizerUser(userData) User
-        -createRegularUser(userData) User
-    }
-    
-    class User {
-        +role: string
-        +email: string
-        +password: string
-    }
-    
-    UserFactoryInterface <|-- UserFactory
-    UserFactory --> User : creates
-```
+**Observer Pattern Benefits:**
+- ✅ **Automatic Processing**: No manual triggers needed
+- ✅ **Real-time Updates**: Instant availability changes
+- ✅ **Loose Coupling**: Services don't need to know about each other
+- ✅ **Extensible**: Easy to add new automatic behaviors
 
-### 2. **Strategy Pattern** - Dashboard Routing
+### 2. **Service Layer Pattern** - Business Logic Separation
 
-**Location**: `app/Http/Controllers/AuthController.php`
+**Location**: `app/Services/`
 
-**Purpose**: Redirect users to appropriate dashboards based on their role after authentication.
+**Purpose**: Clean separation of business logic from controllers and models.
 
 ```php
-// app/Http/Controllers/AuthController.php
-public function showLogin()
+// app/Services/SimpleTicketService.php
+class SimpleTicketService
 {
-    if (Auth::check()) {
-        $user = Auth::user();
-        
-        // Strategy pattern: different behavior based on user role
-        return $user->role === User::ROLE_ADMIN
-            ? redirect()->route('dashboard')           // Admin strategy
-            : redirect()->route('user.dashboard');     // User strategy
+    public function getAvailability($eventId): array
+    {
+        return Cache::remember("event_tickets_{$eventId}", 60, function () use ($eventId) {
+            $event = Event::find($eventId);
+            $soldTickets = Ticket::where('event_id', $eventId)
+                ->where('status', 'confirmed')
+                ->sum('quantity');
+            
+            return [
+                'total_capacity' => $event->capacity,
+                'available_tickets' => max(0, $event->capacity - $soldTickets),
+                'tickets_sold' => $soldTickets,
+                'availability_percentage' => ($soldTickets / $event->capacity) * 100
+            ];
+        });
     }
     
-    return view('auth.login');
+    public function purchaseTickets($eventId, $quantity, $userId): bool
+    {
+        return DB::transaction(function () use ($eventId, $quantity, $userId) {
+            $availability = $this->getAvailability($eventId);
+            
+            if ($availability['available_tickets'] < $quantity) {
+                throw new \Exception('Not enough tickets available');
+            }
+            
+            $event = Event::find($eventId);
+            $ticket = Ticket::create([
+                'event_id' => $eventId,
+                'user_id' => $userId,
+                'quantity' => $quantity,
+                'total_price' => $event->price * $quantity,
+                'status' => 'confirmed'
+            ]);
+            
+            // Observer will automatically handle availability and notifications
+            return true;
+        });
+    }
 }
 ```
 
-**Strategy Pattern Implementation**:
+### 3. **Strategy Pattern** - Role Management System
+
+**Location**: `app/Services/RoleManagementService.php`
+
+**Purpose**: Flexible role transition logic with validation strategies.
+
+```php
+// app/Services/RoleManagementService.php
+class RoleManagementService
+{
+    // Strategy: Define allowed role transitions
+    public const ROLE_TRANSITIONS = [
+        'user' => ['organizer'],
+        'organizer' => ['user', 'admin'],
+        'admin' => ['organizer']
+    ];
+    
+    public function changeUserRole(User $user, string $newRole, User $admin): bool
+    {
+        // Strategy 1: Admin permission validation
+        if (!$this->validateAdminAccess($admin)) {
+            throw new \Exception('Only admins can change user roles');
+        }
+        
+        // Strategy 2: Self-modification prevention
+        if (!$this->validateSelfModification($user, $admin)) {
+            throw new \Exception('Cannot change your own role');
+        }
+        
+        // Strategy 3: Role transition validation
+        if (!$this->validateRoleTransition($user->role, $newRole)) {
+            throw new \Exception("Cannot transition from {$user->role} to {$newRole}");
+        }
+        
+        return $user->update(['role' => $newRole]);
+    }
+    
+    private function validateRoleTransition(string $currentRole, string $newRole): bool
+    {
+        return in_array($newRole, self::ROLE_TRANSITIONS[$currentRole] ?? []);
+    }
+}
+```
+
+### 4. **Command Pattern** - Password Reset System
+
+**Location**: `app/Services/SimplePasswordResetService.php`
+
+**Purpose**: Encapsulate password reset operations as command objects.
+
+```php
+// app/Services/SimplePasswordResetService.php
+class SimplePasswordResetService
+{
+    /**
+     * Command: Send Reset Token
+     */
+    public function sendResetToken(string $email): array
+    {
+        $user = User::where('email', $email)->first();
+        
+        if (!$user) {
+            return ['success' => false, 'message' => 'User not found'];
+        }
+        
+        $token = Str::random(60);
+        $expiresAt = Carbon::now()->addHours(2);
+        
+        // Store token
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $email],
+            [
+                'token' => Hash::make($token),
+                'created_at' => Carbon::now(),
+                'expires_at' => $expiresAt,
+            ]
+        );
+        
+        // Send email
+        $this->sendResetEmail($user, $token);
+        
+        return ['success' => true, 'message' => 'Reset link sent'];
+    }
+    
+    /**
+     * Command: Reset Password
+     */
+    public function resetPassword(string $email, string $token, string $newPassword): array
+    {
+        if (!$this->verifyResetToken($email, $token)) {
+            return ['success' => false, 'message' => 'Invalid or expired token'];
+        }
+        
+        $user = User::where('email', $email)->first();
+        $user->update(['password' => Hash::make($newPassword)]);
+        
+        // Clean up used token
+        DB::table('password_reset_tokens')->where('email', $email)->delete();
+        
+        return ['success' => true, 'message' => 'Password reset successful'];
+    }
+}
+```
+
+### 5. **State Pattern** - Payment Processing
+
+**Location**: `app/Services/SimplePaymentService.php`
+
+**Purpose**: Manage payment state transitions safely.
+
 ```mermaid
-classDiagram
-    class DashboardStrategy {
-        <<interface>>
-        +getDashboardRoute() string
+stateDiagram-v2
+    [*] --> Pending: Create Ticket
+    Pending --> Paid: markAsPaid()
+    Pending --> Failed: markAsFailed()
+    Paid --> Refunded: refundTicket()
+    Failed --> Pending: retryPayment()
+    
+    note right of Pending: Initial state - awaiting payment
+    note right of Paid: Payment confirmed - ticket valid
+    note right of Failed: Payment failed - can retry
+    note right of Refunded: Refund processed - terminal state
+```
+
+```php
+// app/Services/SimplePaymentService.php
+class SimplePaymentService
+{
+    public function markAsPaid(Ticket $ticket, ?float $paymentAmount = null, ?string $reference = null): bool
+    {
+        // State validation: only pending tickets can be marked as paid
+        if (!$ticket->isPending()) {
+            return false;
+        }
+        
+        $ticket->update([
+            'payment_status' => 'paid',
+            'payment_amount' => $paymentAmount ?? $ticket->total_price,
+            'payment_reference' => $reference,
+            'paid_at' => now(),
+        ]);
+        
+        return true;
+    }
+    
+    public function refundTicket(Ticket $ticket, ?string $refundReference = null): bool
+    {
+        // State validation: only paid tickets can be refunded
+        if (!$ticket->isPaid()) {
+            return false;
+        }
+        
+        $ticket->update([
+            'payment_status' => 'refunded',
+            'payment_reference' => $refundReference ?? 'Refunded at ' . now(),
+        ]);
+        
+        return true;
+    }
+}
+```
+
+### 6. **Repository Pattern** - Data Access Layer
+
+**Location**: `app/Repositories/EventRepository.php`
+
+**Purpose**: Abstract database operations and provide clean data access interface.
+
+```php
+// app/Repositories/EventRepository.php
+class EventRepository
+{
+    public function getPublishedAndApprovedWithSorting(string $sortBy = 'created_at', string $direction = 'desc'): Collection
+    {
+        return Event::where('status', 'published')
+            ->where('approval_status', 'approved')
+            ->orderBy($sortBy, $direction)
+            ->get();
+    }
+    
+    public function getPendingApprovalEvents(): Collection
+    {
+        return Event::where('approval_status', 'pending')
+            ->with(['organizer'])
+            ->orderBy('created_at', 'asc')
+            ->get();
+    }
+    
+    public function getEventsByOrganizer(int $organizerId, array $filters = []): Collection
+    {
+        $query = Event::where('organizer_id', $organizerId);
+        
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+        
+        if (!empty($filters['approval_status'])) {
+            $query->where('approval_status', $filters['approval_status']);
+        }
+        
+        return $query->orderBy('created_at', 'desc')->get();
+    }
+}
+```
+
+### 7. **Component Pattern** - Reusable UI Components
+
+**Location**: `resources/views/components/`
+
+**Purpose**: Create consistent, reusable UI components across the application.
+
+```blade
+{{-- resources/views/components/simple-ticket-availability.blade.php --}}
+@props(['event'])
+
+<div class="ticket-availability-widget bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6" 
+     data-event-id="{{ $event->id }}">
+    
+    {{-- Availability Display --}}
+    <div class="availability-display mb-4">
+        <div class="flex justify-between items-center mb-2">
+            <span class="text-slate-300">Tickets Available</span>
+            <span class="available-count text-2xl font-bold text-cyan-400">
+                {{ $event->available_tickets ?? 0 }}
+            </span>
+        </div>
+        
+        {{-- Progress Bar --}}
+        <div class="w-full bg-slate-700 rounded-full h-3">
+            <div class="availability-bar bg-gradient-to-r from-cyan-500 to-blue-500 h-3 rounded-full transition-all duration-500" 
+                 style="width: {{ $event->availability_percentage ?? 0 }}%"></div>
+        </div>
+    </div>
+    
+    {{-- Purchase Form --}}
+    @if(($event->available_tickets ?? 0) > 0)
+        <form class="ticket-purchase-form" data-event-id="{{ $event->id }}">
+            @csrf
+            <div class="flex gap-3">
+                <select name="quantity" class="quantity-select bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-slate-300">
+                    @for($i = 1; $i <= min(10, $event->available_tickets ?? 1); $i++)
+                        <option value="{{ $i }}">{{ $i }} ticket{{ $i > 1 ? 's' : '' }}</option>
+                    @endfor
+                </select>
+                <button type="submit" class="purchase-btn bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 px-6 py-2 rounded-lg text-white font-medium transition-all">
+                    Buy Now
+                </button>
+            </div>
+        </form>
+    @else
+        <div class="sold-out text-center p-4 bg-red-900/20 border border-red-700/30 rounded-lg">
+            <span class="text-red-400 font-medium">🎫 Sold Out</span>
+        </div>
+    @endif
+</div>
+
+<script>
+// Real-time updates every 10 seconds
+setInterval(() => {
+    updateTicketAvailability({{ $event->id }});
+}, 10000);
+
+function updateTicketAvailability(eventId) {
+    fetch(`/api/events/${eventId}/availability`)
+        .then(response => response.json())
+        .then(data => {
+            document.querySelector('.available-count').textContent = data.available_tickets;
+            document.querySelector('.availability-bar').style.width = data.availability_percentage + '%';
+        });
+}
+</script>
+```
+
+---
     }
     
     class AdminDashboardStrategy {
@@ -485,319 +954,533 @@ classDiagram
 - **Security**: Prevents self-role modification and validates permissions
 - **UX Optimized**: Silent error handling, no intrusive popups
 
-### 7. **Observer Pattern** - Simple Ticket Availability ⭐ **BEGINNER FRIENDLY**
+## 🗄️ Database Schema & Relationships
 
-**Location**: `app/Observers/TicketObserver.php` + `app/Services/SimpleTicketService.php`
+### Complete Entity Relationship Diagram
 
-**Purpose**: Automatically update ticket availability whenever someone buys, cancels, or modifies tickets.
-
-**How it works**: 
-1. When a ticket is created/updated/deleted → Observer notices
-2. Observer calls the service to recalculate availability
-3. Service updates the cache with fresh data
-4. Next user sees updated availability instantly
-
-```php
-// app/Observers/TicketObserver.php
-class TicketObserver
-{
-    public function created(Ticket $ticket): void
-    {
-        // Automatically update availability when ticket is bought
-        $this->ticketService->updateAvailability($ticket->event_id);
-    }
-    
-    public function updated(Ticket $ticket): void
-    {
-        // Update when ticket status changes
-        $this->ticketService->updateAvailability($ticket->event_id);
-    }
-}
-```
-
-```php
-// app/Services/SimpleTicketService.php
-class SimpleTicketService
-{
-    public function getAvailability($eventId)
-    {
-        // Get from cache first (faster!)
-        return Cache::remember("event_tickets_{$eventId}", 60, function () use ($eventId) {
-            $event = Event::find($eventId);
-            $soldTickets = Ticket::where('event_id', $eventId)->count();
-            $available = $event->capacity - $soldTickets;
-            
-            return [
-                'total_capacity' => $event->capacity,
-                'available_tickets' => max(0, $available),
-                'is_sold_out' => $available <= 0
-            ];
-        });
-    }
-}
-```
-
-**Why Observer Pattern?**
-- ✅ **Automatic**: No need to manually update availability everywhere
-- ✅ **Real-time**: Changes happen instantly when tickets change  
-- ✅ **Clean**: Business logic separated from ticket operations
-- ✅ **Beginner-friendly**: Easy to understand "when X happens, do Y"
-
-**Observer Pattern Flow**:
-```mermaid
-sequenceDiagram
-    User->>Controller: Buy Ticket
-    Controller->>Ticket: Create new ticket
-    Ticket->>Observer: Ticket created event
-    Observer->>SimpleTicketService: updateAvailability()
-    SimpleTicketService->>Cache: Clear old data
-    SimpleTicketService->>Database: Calculate new availability
-    SimpleTicketService->>Cache: Store fresh data
-    User->>Controller: Check availability
-    Controller->>Cache: Get current data
-    Cache->>User: Show updated availability
-```
-
-### 8. **Observer Pattern Extended - Smart Notification System** ⭐ **BEGINNER FRIENDLY**
-
-**Location**: `app/Services/SimpleNotificationService.php` + `app/Models/Notification.php`
-
-**Purpose**: Automatically notify organizers when important events happen with their tickets using the same Observer Pattern you already know!
-
-**How it works**: 
-1. When a ticket is cancelled → Observer notices the change
-2. Observer calls NotificationService → Creates notification for organizer
-3. Organizer sees notification → Gets informed instantly about the cancellation
-4. Notification includes details → Customer name, quantity, refund amount
-
-```php
-// app/Services/SimpleNotificationService.php
-class SimpleNotificationService
-{
-    /**
-     * Notify organizer when their event's ticket is cancelled
-     */
-    public function notifyTicketCancellation(Ticket $ticket): void
-    {
-        $event = $ticket->event;
-        $organizer = $event->organizer;
-        $customer = $ticket->user;
-
-        // Create a simple, clear notification
-        Notification::create([
-            'user_id' => $organizer->id,
-            'title' => 'Ticket Cancelled',
-            'message' => "Customer {$customer->name} cancelled {$ticket->quantity} ticket(s) for your event '{$event->title}'",
-            'type' => Notification::TYPE_TICKET_CANCELLED,
-            'is_read' => false,
-            'data' => [
-                'ticket_id' => $ticket->id,
-                'event_id' => $event->id,
-                'customer_name' => $customer->name,
-                'quantity' => $ticket->quantity,
-                'refund_amount' => $ticket->total_price
-            ]
-        ]);
-    }
-}
-```
-
-```php
-// Updated app/Observers/TicketObserver.php
-class TicketObserver
-{
-    public function updated(Ticket $ticket): void
-    {
-        // 1. Update availability (existing functionality)
-        $this->ticketService->updateAvailability($ticket->event_id);
-        
-        // 2. Check if ticket was cancelled and notify organizer (NEW!)
-        if ($ticket->wasChanged('status') && $ticket->status === Ticket::STATUS_CANCELLED) {
-            $this->notificationService->notifyTicketCancellation($ticket);
-        }
-    }
-}
-```
-
-**Why Observer Pattern for Notifications?**
-- ✅ **Automatic**: No need to remember to send notifications manually
-- ✅ **Real-time**: Organizers get notified instantly when tickets are cancelled
-- ✅ **Consistent**: Uses the same pattern as ticket availability updates
-- ✅ **Extensible**: Easy to add more notification types (purchases, updates, etc.)
-- ✅ **Beginner-friendly**: Same "when X happens, do Y" logic you already understand
-
-**Notification System Features**:
-- 📬 **Smart Notifications**: Beautiful notifications page with icons and colors
-- 🔔 **Unread Badges**: Shows count of new notifications in header
-- 📱 **Mobile Responsive**: Works perfectly on all devices
-- 💾 **Persistent Storage**: Notifications saved in database for history
-- 🎨 **Rich Content**: Includes customer details, amounts, and context
-- ⚡ **AJAX Updates**: Mark as read without page refresh
-
-**Complete Observer Pattern Flow with Notifications**:
-```mermaid
-sequenceDiagram
-    Customer->>Controller: Cancel Ticket
-    Controller->>Ticket: Update status to 'cancelled'
-    Ticket->>Observer: Ticket updated event
-    
-    Note over Observer: Observer handles two things automatically:
-    Observer->>TicketService: updateAvailability(eventId)
-    Observer->>NotificationService: notifyTicketCancellation(ticket)
-    
-    TicketService->>Cache: Clear availability cache
-    NotificationService->>Database: Create notification for organizer
-    
-    Note over Database: Next time organizer visits:
-    Organizer->>NotificationController: View notifications
-    NotificationController->>Database: Get unread notifications
-    Database->>Organizer: Show: "Customer John cancelled 2 tickets"
-```
-
-### 9. **Command Pattern** - Password Reset System ⭐ **BEGINNER FRIENDLY**
-
-**Location**: `app/Services/SimplePasswordResetService.php`
-
-**Purpose**: Encapsulate password reset operations as command objects for better maintainability and separation of concerns.
-
-```php
-// app/Services/SimplePasswordResetService.php
-class SimplePasswordResetService
-{
-    /**
-     * Generate and send password reset token
-     * Command: SendResetTokenCommand
-     */
-    public function sendResetToken($email)
-    {
-        // Find user by email
-        $user = User::where('email', $email)->first();
-
-        if (!$user) {
-            return [
-                'success' => false,
-                'message' => 'User not found with this email address.'
-            ];
-        }
-
-        // Generate a simple reset token
-        $token = Str::random(60);
-        $expiresAt = Carbon::now()->addHours(2); // Token expires in 2 hours
-
-        // Store token in database
-        DB::table('password_reset_tokens')->updateOrInsert(
-            ['email' => $email],
-            [
-                'token' => Hash::make($token),
-                'created_at' => Carbon::now(),
-                'expires_at' => $expiresAt,
-            ]
-        );
-
-        // Send reset email
-        $this->sendResetEmail($user, $token);
-
-        return [
-            'success' => true,
-            'message' => 'Password reset link sent to your email address.'
-        ];
-    }
-
-    /**
-     * Verify reset token
-     * Command: VerifyTokenCommand
-     */
-    public function verifyResetToken($email, $token)
-    {
-        // Token verification logic
-    }
-
-    /**
-     * Reset user password
-     * Command: ResetPasswordCommand
-     */
-    public function resetPassword($email, $token, $newPassword)
-    {
-        // Password reset logic
-    }
-}
-```
-
-**Command Pattern Implementation**:
+Our comprehensive database schema supports all system features including support communication, event approval, and real-time ticketing:
 
 ```mermaid
-classDiagram
-    class PasswordResetCommand {
-        <<interface>>
-        +execute() result
+erDiagram
+    USERS {
+        bigint id PK
+        string name
+        string email UK
+        string password
+        enum role "user, organizer, admin"
+        boolean email_verified
+        string avatar_path
+        string remember_token
+        timestamp created_at
+        timestamp updated_at
     }
     
-    class SendResetTokenCommand {
-        -email: string
-        +execute() result
+    EVENTS {
+        bigint id PK
+        string title
+        text description
+        date event_date
+        time start_time
+        time end_time
+        string venue
+        string address
+        string city
+        integer capacity
+        decimal price
+        enum status "draft, published, cancelled"
+        enum approval_status "pending, approved, rejected"
+        text admin_comments "Admin feedback for approval/rejection"
+        bigint reviewed_by FK "Admin who reviewed the event"
+        timestamp reviewed_at "When the event was reviewed"
+        bigint organizer_id FK
+        string image_path
+        timestamp created_at
+        timestamp updated_at
     }
     
-    class VerifyTokenCommand {
-        -email: string
-        -token: string
-        +execute() result
+    TICKETS {
+        bigint id PK
+        bigint event_id FK
+        bigint user_id FK
+        integer quantity
+        decimal total_price
+        timestamp purchase_date
+        enum status "pending, confirmed, cancelled"
+        enum payment_status "pending, paid, failed, refunded"
+        decimal payment_amount
+        string payment_reference
+        timestamp paid_at
+        timestamp created_at
+        timestamp updated_at
     }
     
-    class ResetPasswordCommand {
-        -email: string
-        -token: string
-        -newPassword: string
-        +execute() result
+    NOTIFICATIONS {
+        bigint id PK
+        bigint user_id FK "Organizer who receives notification"
+        string title
+        text message
+        string type "ticket_purchased, ticket_cancelled, event_approved, event_rejected"
+        boolean is_read
+        json data "Additional notification data"
+        timestamp created_at
+        timestamp updated_at
     }
     
-    class SimplePasswordResetService {
-        +sendResetToken(email) result
-        +verifyResetToken(email, token) result
-        +resetPassword(email, token, newPassword) result
-        -sendResetEmail(user, token) boolean
+    SUPPORT_MESSAGES {
+        bigint id PK
+        bigint user_id FK "User who sent the message"
+        bigint event_id FK "Related event (optional)"
+        bigint admin_id FK "Admin who responded (optional)"
+        string subject "Message subject line"
+        text message "User's detailed message"
+        text admin_response "Admin's response to the message"
+        enum status "open, in_progress, resolved"
+        enum priority "low, medium, high"
+        timestamp admin_responded_at "When admin responded"
+        timestamp created_at
+        timestamp updated_at
     }
     
-    PasswordResetCommand <|-- SendResetTokenCommand
-    PasswordResetCommand <|-- VerifyTokenCommand
-    PasswordResetCommand <|-- ResetPasswordCommand
-    SimplePasswordResetService --> SendResetTokenCommand : creates/executes
-    SimplePasswordResetService --> VerifyTokenCommand : creates/executes
-    SimplePasswordResetService --> ResetPasswordCommand : creates/executes
+    LOGIN_LOGS {
+        bigint id PK
+        bigint user_id FK
+        string email
+        boolean success
+        string ip_address
+        text user_agent
+        timestamp created_at
+    }
+    
+    PASSWORD_RESET_TOKENS {
+        string email PK
+        string token
+        timestamp created_at
+        timestamp expires_at
+    }
+    
+    %% Relationships
+    USERS ||--o{ EVENTS : "organizes"
+    USERS ||--o{ TICKETS : "purchases"
+    USERS ||--o{ NOTIFICATIONS : "receives"
+    USERS ||--o{ LOGIN_LOGS : "generates"
+    USERS ||--o{ SUPPORT_MESSAGES : "sends"
+    USERS ||--o{ SUPPORT_MESSAGES : "responds as admin"
+    USERS ||--o{ EVENTS : "reviews as admin"
+    USERS ||--o{ PASSWORD_RESET_TOKENS : "requests"
+    EVENTS ||--o{ TICKETS : "has bookings"
+    EVENTS ||--o{ SUPPORT_MESSAGES : "relates to"
 ```
 
-**Why Command Pattern?**
+### Database Design Principles
 
-- ✅ **Encapsulation**: Each password reset operation is encapsulated in its own command
-- ✅ **Single Responsibility**: Each command does one thing and does it well
-- ✅ **Testable**: Easy to test each command in isolation
-- ✅ **Extensible**: Easy to add new password reset-related commands
-- ✅ **Maintainable**: Clear separation of concerns
+#### **1. Normalized Design**
+- **Third Normal Form (3NF)**: Eliminates data redundancy
+- **Proper Relationships**: Foreign keys maintain data integrity
+- **Indexing Strategy**: Optimized for common queries
 
-### 10. **State Pattern** - Payment Processing ⭐ **BEGINNER FRIENDLY**
+#### **2. Audit Trail System**
+- **User Actions**: Login logs track all authentication attempts
+- **Admin Actions**: Event approval/rejection tracking with comments
+- **Support Communication**: Complete message history with timestamps
+- **Payment History**: Full payment lifecycle tracking
 
-**Location**: `app/Services/SimplePaymentService.php`
+#### **3. Performance Optimization**
+- **Strategic Indexing**: Foreign keys and frequently queried columns
+- **Caching Layer**: Redis/File cache for frequently accessed data
+- **Query Optimization**: Repository pattern with optimized queries
 
-**Purpose**: Manage payment state transitions (pending → paid → refunded) cleanly and safely.
+### Key Database Features
 
-```php
-// app/Services/SimplePaymentService.php
-class SimplePaymentService
-{
-    /**
-     * Mark a ticket as paid
-     * This changes the payment status from 'pending' to 'paid'
-     */
-    public function markAsPaid(Ticket $ticket, $paymentAmount = null, $paymentReference = null)
-    {
-        // Only allow payment if ticket is pending
-        if (!$ticket->isPending()) {
-            return false;
-        }
+#### **Support System Tables**
 
-        $ticket->update([
-            'payment_status' => 'paid',
-            'payment_amount' => $paymentAmount ?? $ticket->total_price,
-            'paid_at' => now(),
+**Support Messages Table:**
+```sql
+CREATE TABLE support_messages (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    event_id BIGINT NULL,
+    admin_id BIGINT NULL,
+    subject VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    admin_response TEXT NULL,
+    status ENUM('open', 'in_progress', 'resolved') DEFAULT 'open',
+    priority ENUM('low', 'medium', 'high') DEFAULT 'medium',
+    admin_responded_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE SET NULL,
+    FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE SET NULL,
+    
+    INDEX idx_status (status),
+    INDEX idx_priority (priority),
+    INDEX idx_created_at (created_at)
+);
+```
+
+#### **Event Approval System**
+
+**Enhanced Events Table:**
+```sql
+CREATE TABLE events (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    event_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    venue VARCHAR(255) NOT NULL,
+    capacity INTEGER NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    status ENUM('draft', 'published', 'cancelled') DEFAULT 'draft',
+    approval_status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    admin_comments TEXT NULL,
+    reviewed_by BIGINT NULL,
+    reviewed_at TIMESTAMP NULL,
+    organizer_id BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (organizer_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL,
+    
+    INDEX idx_status_approval (status, approval_status),
+    INDEX idx_event_date (event_date),
+    INDEX idx_organizer (organizer_id)
+);
+```
+
+#### **Payment System Integration**
+
+**Enhanced Tickets Table:**
+```sql
+CREATE TABLE tickets (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    event_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    quantity INTEGER NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+    status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
+    payment_status ENUM('pending', 'paid', 'failed', 'refunded') DEFAULT 'pending',
+    payment_amount DECIMAL(10,2) NULL,
+    payment_reference VARCHAR(255) NULL,
+    paid_at TIMESTAMP NULL,
+    purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    
+    INDEX idx_event_status (event_id, status),
+    INDEX idx_user_tickets (user_id),
+    INDEX idx_payment_status (payment_status)
+);
+```
+
+---
+
+## 🎨 UI/UX Design System
+
+### Design Philosophy
+
+Our **premium dark theme with cyan accents** creates a modern, professional aesthetic that's both visually appealing and highly functional:
+
+#### **Core Design Principles**
+- **Dark Theme Excellence**: Reduced eye strain for extended use
+- **Glassmorphism Effects**: Modern blur and transparency effects
+- **Gradient Aesthetics**: Sophisticated color transitions
+- **Accessibility First**: High contrast ratios and semantic HTML
+- **Mobile Responsive**: Mobile-first design approach
+
+### Color Palette & Theming
+
+```css
+:root {
+    /* Primary Background Gradient */
+    --bg-primary: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+    --bg-secondary: #1E293B;        /* slate-800 */
+    --bg-tertiary: #334155;         /* slate-700 */
+    
+    /* Accent Colors */
+    --accent-primary: #06B6D4;      /* cyan-500 */
+    --accent-secondary: #0891B2;    /* cyan-600 */
+    --accent-light: #67E8F9;        /* cyan-300 */
+    --accent-gradient: linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%);
+    
+    /* Text Colors */
+    --text-primary: #F8FAFC;        /* slate-50 */
+    --text-secondary: #CBD5E1;      /* slate-300 */
+    --text-muted: #64748B;          /* slate-500 */
+    
+    /* Status Colors */
+    --success: #10B981;             /* emerald-500 */
+    --warning: #F59E0B;             /* amber-500 */
+    --error: #EF4444;               /* red-500 */
+    --info: #3B82F6;                /* blue-500 */
+}
+```
+
+### Component Design System
+
+#### **Form Components**
+```css
+.form-input {
+    @apply px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 
+           text-slate-300 placeholder-slate-500
+           focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 
+           focus:outline-none transition-all duration-200
+           backdrop-blur-sm;
+}
+
+.form-label {
+    @apply block text-sm font-medium text-slate-300 mb-2;
+}
+
+.form-error {
+    @apply text-red-400 text-sm mt-1 flex items-center gap-1;
+}
+```
+
+#### **Button System**
+```css
+.btn-primary {
+    @apply px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 
+           hover:from-cyan-400 hover:to-blue-400 text-white font-medium
+           shadow-lg shadow-cyan-500/25 hover:shadow-cyan-400/30
+           transform hover:scale-105 transition-all duration-200;
+}
+
+.btn-secondary {
+    @apply px-6 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 
+           border border-cyan-400/20 hover:border-cyan-400/40 text-slate-300
+           backdrop-blur-sm transition-all duration-200;
+}
+
+.btn-success {
+    @apply px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-green-500 
+           hover:from-emerald-400 hover:to-green-400 text-white font-medium
+           shadow-lg shadow-emerald-500/25 transition-all duration-200;
+}
+```
+
+#### **Card Components**
+```css
+.card {
+    @apply rounded-2xl border border-slate-700/50 bg-slate-900/80 
+           backdrop-blur-md shadow-xl shadow-slate-900/50;
+}
+
+.card-header {
+    @apply p-6 border-b border-slate-700/50;
+}
+
+.card-body {
+    @apply p-6;
+}
+
+.glass-card {
+    @apply rounded-2xl border border-cyan-400/20 bg-slate-900/60 
+           backdrop-blur-xl shadow-2xl shadow-slate-900/50
+           hover:border-cyan-400/30 transition-all duration-300;
+}
+```
+
+#### **Status Badges**
+```css
+.badge-open {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
+           bg-amber-900/20 text-amber-400 border border-amber-700/30;
+}
+
+.badge-resolved {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
+           bg-emerald-900/20 text-emerald-400 border border-emerald-700/30;
+}
+
+.badge-high-priority {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
+           bg-red-900/20 text-red-400 border border-red-700/30;
+}
+```
+
+### Layout & Navigation
+
+#### **Dashboard Layout**
+- **Sidebar Navigation**: Collapsible side navigation with role-based menu items
+- **Header Bar**: User profile, notifications, and quick actions
+- **Main Content**: Responsive grid system for dashboard widgets
+- **Footer**: System information and links
+
+#### **Responsive Breakpoints**
+```css
+/* Mobile First Approach */
+.container {
+    @apply px-4;                    /* Mobile: 16px padding */
+}
+
+@media (min-width: 640px) {         /* sm: tablet */
+    .container { @apply px-6; }     /* 24px padding */
+}
+
+@media (min-width: 1024px) {        /* lg: desktop */
+    .container { @apply px-8; }     /* 32px padding */
+}
+
+@media (min-width: 1280px) {        /* xl: large desktop */
+    .container { @apply px-12; }    /* 48px padding */
+}
+```
+
+### Interactive Elements
+
+#### **Real-Time Components**
+- **Progress Bars**: Animated ticket availability indicators
+- **Live Counters**: Real-time ticket counts with smooth transitions
+- **Status Indicators**: Color-coded status with pulse animations
+- **Notification Badges**: Animated counter badges for unread items
+
+#### **Micro-Interactions**
+- **Hover Effects**: Subtle scale and glow effects
+- **Loading States**: Skeleton screens and spinner animations
+- **Form Validation**: Real-time validation with smooth error transitions
+- **Success Feedback**: Celebration animations for successful actions
+
+---
+
+## 📅 Feature Implementation Timeline
+
+### 🚀 Sprint 1-2: Foundation & Security (Weeks 1-4)
+
+**Core Infrastructure:**
+- ✅ Laravel 11 application setup with latest dependencies
+- ✅ MySQL database design and migration system
+- ✅ Multi-role authentication (Admin, Organizer, User)
+- ✅ Factory pattern for user creation with role-specific logic
+- ✅ Security middleware and role-based access control
+- ✅ Login tracking and audit trail system
+
+**Completed Deliverables:**
+- Authentication system with secure password handling
+- User roles with proper permission validation
+- Database schema with proper relationships
+- Security logging for user activities
+
+### 🎪 Sprint 3-4: Event Management System (Weeks 5-8)
+
+**Event Platform:**
+- ✅ Complete event CRUD operations with validation
+- ✅ Event approval workflow (Admin review system)
+- ✅ Repository pattern for optimized data access
+- ✅ Service layer for business logic separation
+- ✅ Strategy pattern for dashboard routing
+- ✅ Advanced sorting and filtering capabilities
+
+**Admin Features:**
+- ✅ Event approval dashboard with pending counters
+- ✅ Admin comments system for feedback
+- ✅ Approval audit trail with timestamps
+- ✅ Organizer notification system for approvals
+
+### 🎫 Sprint 5-6: Real-Time Ticket System (Weeks 9-12)
+
+**Observer Pattern Implementation:**
+- ✅ Automatic ticket availability updates
+- ✅ Real-time inventory synchronization
+- ✅ Observer-triggered cache invalidation
+- ✅ Event-driven notification system
+
+**Live Features:**
+- ✅ AJAX polling for real-time updates (10-second intervals)
+- ✅ Progress bars and visual availability indicators
+- ✅ Instant purchase feedback and error handling
+- ✅ Mobile-responsive ticket widgets
+
+**Notification System:**
+- ✅ Automatic organizer alerts for ticket changes
+- ✅ Rich notification data with customer details
+- ✅ Notification badge system with unread counts
+- ✅ Beautiful notification interface with status tracking
+
+### 📊 Sprint 7-8: Booking & Analytics (Weeks 13-16)
+
+**Booking Management:**
+- ✅ Complete booking dashboard with advanced filtering
+- ✅ Revenue tracking and booking statistics
+- ✅ CSV export functionality for data analysis
+- ✅ Booking details with customer and event information
+- ✅ Cache optimization for performance
+
+**User Experience:**
+- ✅ "My Tickets" interface for users
+- ✅ Ticket cancellation with automatic refund processing
+- ✅ Booking history with status tracking
+- ✅ Mobile-optimized booking interface
+
+### 👥 Sprint 9-10: Advanced User Management (Weeks 17-20)
+
+**Role Management System:**
+- ✅ Strategy pattern for role transitions
+- ✅ Real-time role changes with AJAX
+- ✅ Role transition validation and security
+- ✅ Admin-only user management interface
+- ✅ User analytics and statistics dashboard
+
+**Security Enhancements:**
+- ✅ Command pattern for password reset system
+- ✅ Token-based password reset with expiration
+- ✅ Email integration for reset notifications
+- ✅ Admin dashboard for security monitoring
+
+### 💳 Sprint 11-12: Payment System (Weeks 21-24)
+
+**State Pattern Implementation:**
+- ✅ Payment state machine (Pending → Paid → Refunded)
+- ✅ Safe state transitions with validation
+- ✅ Payment reference tracking
+- ✅ Refund processing system
+- ✅ Payment dashboard for admin monitoring
+
+### 💬 Sprint 13-14: Support Communication System ⭐ **LATEST** (Weeks 25-28)
+
+**Support Infrastructure:**
+- ✅ Complete support message system
+- ✅ Event-specific support questions
+- ✅ Priority classification (Low, Medium, High)
+- ✅ Status workflow (Open → In Progress → Resolved)
+- ✅ Admin response system with timestamps
+
+**User Experience:**
+- ✅ Intuitive support form with event selection
+- ✅ Character counters and validation feedback
+- ✅ Success confirmations and error handling
+- ✅ Mobile-responsive support interface
+
+**Admin Management:**
+- ✅ Centralized support dashboard
+- ✅ Priority-based message organization
+- ✅ Complete user and event context display
+- ✅ Response tracking with admin identification
+- ✅ Bulk status updates and management tools
+
+### 📚 Sprint 15-16: Documentation & Optimization (Weeks 29-32)
+
+**Documentation:**
+- ✅ Comprehensive architecture documentation
+- ✅ Complete README with visual diagrams
+- ✅ Code examples and usage patterns
+- ✅ API documentation for all endpoints
+- ✅ Deployment guides and best practices
+
+**Performance & Testing:**
+- ✅ Database indexing optimization
+- ✅ Cache strategy implementation
+- ✅ Unit and integration testing
+- ✅ Performance monitoring and optimization
+- ✅ Security audit and vulnerability assessment
+
+---
             'payment_reference' => $paymentReference,
         ]);
 
@@ -1813,7 +2496,352 @@ A **real-time ticket availability system** that:
 
 ---
 
-## 👥 Contributing
+## � API Documentation
+
+The application exposes several API endpoints for real-time functionality and integration with other services.
+
+### Event & Ticket Management APIs
+
+#### `GET /api/events/{id}/availability`
+
+Retrieves the real-time ticket availability for a specific event. This endpoint is used by the ticket availability widget for automatic updates.
+
+**Response Example:**
+```json
+{
+    "total_capacity": 100,
+    "available_tickets": 45,
+    "tickets_sold": 55,
+    "availability_percentage": 55
+}
+```
+
+#### `POST /api/tickets/purchase`
+
+Creates a new ticket purchase for an event.
+
+**Request Body:**
+```json
+{
+    "event_id": 5,
+    "quantity": 2
+}
+```
+
+**Response Example:**
+```json
+{
+    "success": true,
+    "ticket": {
+        "id": 123,
+        "event_id": 5,
+        "quantity": 2,
+        "total_price": 50.00,
+        "status": "confirmed",
+        "created_at": "2025-10-01T12:34:56Z"
+    },
+    "message": "Ticket purchased successfully!"
+}
+```
+
+### Support System APIs
+
+#### `POST /api/support-messages`
+
+Submits a new support message from a user.
+
+**Request Body:**
+```json
+{
+    "event_id": 12,
+    "subject": "Question about parking",
+    "message": "Is there free parking available at the venue?",
+    "priority": "medium"
+}
+```
+
+**Response Example:**
+```json
+{
+    "success": true,
+    "message": "Your support request has been submitted successfully.",
+    "support_id": 45
+}
+```
+
+#### `GET /api/admin/support-messages`
+
+Admin-only endpoint to retrieve all support messages (with filtering).
+
+**Query Parameters:**
+- `status`: Filter by message status (`open`, `in_progress`, `resolved`)
+- `priority`: Filter by priority (`low`, `medium`, `high`) 
+- `event_id`: Filter by specific event
+
+**Response Example:**
+```json
+{
+    "total": 25,
+    "per_page": 10,
+    "current_page": 1,
+    "data": [
+        {
+            "id": 45,
+            "user": {
+                "id": 12,
+                "name": "John Doe",
+                "email": "john@example.com"
+            },
+            "event": {
+                "id": 5,
+                "title": "Summer Concert"
+            },
+            "subject": "Question about parking",
+            "message": "Is there free parking available at the venue?",
+            "status": "open",
+            "priority": "medium",
+            "created_at": "2025-09-30T15:23:42Z"
+        },
+        // More messages...
+    ]
+}
+```
+
+### Notification APIs
+
+#### `GET /api/notifications`
+
+Retrieves notifications for the authenticated user.
+
+**Query Parameters:**
+- `is_read`: Filter by read status (`true`, `false`)
+- `type`: Filter by notification type
+
+**Response Example:**
+```json
+{
+    "unread_count": 3,
+    "notifications": [
+        {
+            "id": 78,
+            "title": "New Ticket Purchase",
+            "message": "User Jane Smith purchased 2 tickets for your event 'Summer Concert'",
+            "type": "ticket_purchased",
+            "is_read": false,
+            "data": {
+                "event_id": 5,
+                "ticket_id": 123,
+                "quantity": 2
+            },
+            "created_at": "2025-10-01T10:45:23Z"
+        },
+        // More notifications...
+    ]
+}
+```
+
+#### `PATCH /api/notifications/{id}/mark-as-read`
+
+Marks a notification as read.
+
+**Response Example:**
+```json
+{
+    "success": true,
+    "message": "Notification marked as read"
+}
+```
+
+### API Authentication
+
+All API endpoints require authentication with the exception of public event data. The application uses Laravel Sanctum for API authentication:
+
+```php
+// Example API authentication
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::patch('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+    // Admin-only routes
+    Route::middleware('admin')->prefix('admin')->group(function () {
+        Route::get('/support-messages', [SupportMessageController::class, 'index']);
+    });
+});
+```
+
+### API Response Standards
+
+All API responses follow a consistent format:
+
+- Success responses include a `success: true` field
+- Error responses include a `success: false` field and an `errors` object
+- Paginated responses include `total`, `per_page`, `current_page`, and `last_page` fields
+- Timestamps are in ISO 8601 format
+
+---
+
+## ⚡ Performance & Optimization
+
+The application is optimized for performance, scalability, and resource efficiency through several key strategies:
+
+### 1. Database Optimization
+
+#### Strategic Indexing
+```php
+// Migration example
+Schema::table('events', function (Blueprint $table) {
+    $table->index('status');
+    $table->index('approval_status');
+    $table->index('event_date');
+    $table->index('organizer_id');
+});
+
+Schema::table('tickets', function (Blueprint $table) {
+    $table->index(['event_id', 'status']);
+    $table->index('payment_status');
+});
+```
+
+#### Query Optimization
+- **Eager Loading**: All relationships are eagerly loaded to avoid N+1 query issues
+- **Repository Pattern**: Centralized, optimized queries through repository classes
+- **Chunk Processing**: Large datasets are processed in chunks for memory efficiency
+
+### 2. Caching Strategy
+
+The application implements a multi-level caching system to minimize database load and improve response times:
+
+#### Data Caching
+```php
+// Example from BookingService
+public function getBookingStats()
+{
+    return Cache::remember('booking_stats', 300, function () {
+        return [
+            'total_bookings' => Ticket::count(),
+            'confirmed_bookings' => Ticket::where('status', 'confirmed')->count(),
+            'cancelled_bookings' => Ticket::where('status', 'cancelled')->count(),
+            'total_revenue' => Ticket::where('status', 'confirmed')->sum('total_price'),
+            // More statistics...
+        ];
+    });
+}
+```
+
+#### Intelligent Cache Invalidation
+The Observer Pattern automatically clears relevant caches when data changes:
+
+```php
+// Example from TicketObserver
+public function created(Ticket $ticket)
+{
+    // Clear availability cache
+    Cache::forget("event_availability_{$ticket->event_id}");
+    
+    // Clear booking statistics
+    Cache::forget('booking_stats');
+    
+    // Clear event statistics
+    Cache::forget("event_stats_{$ticket->event_id}");
+}
+```
+
+#### Tiered TTL Strategy
+Different types of data are cached with appropriate time-to-live values:
+
+- **Real-time data**: 30-60 seconds (ticket availability)
+- **Semi-dynamic data**: 5-15 minutes (dashboard statistics)
+- **Static data**: 1 hour or more (event details, venue information)
+
+### 3. Frontend Optimization
+
+#### Asset Management
+- **CSS/JS Bundling**: Vite bundles assets to minimize HTTP requests
+- **Code Splitting**: Only necessary JavaScript is loaded per page
+- **Minification**: All production assets are minified and compressed
+
+#### Asynchronous Loading
+```javascript
+// Example of asynchronous data loading
+function updateTicketAvailability(eventId) {
+    fetch(`/api/events/${eventId}/availability`)
+        .then(response => response.json())
+        .then(data => {
+            document.querySelector('.availability-count').textContent = data.available_tickets;
+            document.querySelector('.availability-bar').style.width = data.availability_percentage + '%';
+        });
+}
+
+// Update every 10 seconds
+setInterval(() => {
+    updateTicketAvailability(eventId);
+}, 10000);
+```
+
+#### Resource Hints
+```html
+<!-- Preload critical assets -->
+<link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://api.example.com">
+```
+
+### 4. Real-time Updates Optimization
+
+The system uses efficient AJAX polling instead of WebSockets for simplicity and broad compatibility:
+
+- **Optimized Polling**: 10-second intervals for ticket availability
+- **Conditional Requests**: ETag/If-None-Match headers to minimize transfer
+- **Micro-Updates**: Only transmit changed data, not entire page content
+
+### 5. Performance Monitoring
+
+The application includes built-in performance monitoring:
+
+```php
+// Example from AppServiceProvider
+public function boot()
+{
+    // Track query performance in development
+    if (app()->environment('local')) {
+        DB::listen(function ($query) {
+            if ($query->time > 100) {
+                Log::channel('performance')->warning('Slow query: ' . $query->sql, [
+                    'time' => $query->time,
+                    'bindings' => $query->bindings
+                ]);
+            }
+        });
+    }
+}
+```
+
+### 6. Lazy Loading & Pagination
+
+All large datasets are paginated for optimal performance:
+
+```php
+// Example from EventController
+public function index(Request $request)
+{
+    $sortParams = $this->sortingService->validateEventSortParameters(
+        $request->get('sort'),
+        $request->get('direction')
+    );
+    
+    $events = $this->eventRepository->getPaginatedEventsWithSorting(
+        $sortParams['sort_by'],
+        $sortParams['direction'],
+        15 // Items per page
+    );
+    
+    return view('events.index', compact('events', 'sortParams'));
+}
+```
+
+This combination of strategies ensures the application remains fast and responsive even under heavy load, providing an optimal user experience while maintaining server efficiency.
+
+---
+
+## �👥 Contributing
 
 This project serves as an educational reference for learning Laravel and design patterns. Feel free to fork, experiment, and contribute improvements!
 

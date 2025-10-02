@@ -31,7 +31,7 @@
     <form method="POST" action="{{ route('logout') }}">
       @csrf
       <button type="submit"
-        class="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 
+        class="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400
                shadow-md shadow-cyan-900/40 text-sm font-medium transition">
         Logout
       </button>
@@ -96,19 +96,19 @@
         <div class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md shadow-lg p-6">
           <h3 class="text-lg font-semibold text-cyan-300 mb-4">Quick Actions</h3>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <button class="p-3 rounded-lg bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-sm font-medium shadow-md">
+            <a href="{{ route('events.index') }}" class="p-3 rounded-lg bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-sm font-medium shadow-md text-center">
               Browse Events
-            </button>
-            <button class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20">
+            </a>
+            <a href="{{ route('tickets.my') }}" class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20 text-center">
               My Tickets
-            </button>
+            </a>
             <a href="{{ route('profile.edit') }}"
                class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20 text-center">
               Profile Settings
             </a>
-            <button class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20">
+            <a href="{{ route('support.create') }}" class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-sm font-medium border border-cyan-400/20 text-center">
               Support
-            </button>
+            </a>
           </div>
         </div>
 
