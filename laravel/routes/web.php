@@ -109,3 +109,4 @@ Route::middleware('auth')->group(function () {
 
 // ---------- Public Landing ----------
 Route::view('/welcome', 'welcome')->name('welcome');
+
