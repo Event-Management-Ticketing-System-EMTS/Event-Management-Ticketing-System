@@ -13,24 +13,26 @@ class UserDashboardController extends Controller
     {
         $user = $request->user();
 
-        // Recent tickets (latest 6)
+        // Recent tickets (latest 6, exclude cancelled)
         $tickets = Ticket::with('event')
             ->where('user_id', $user->id)
+            ->where('status', '!=', Ticket::STATUS_CANCELLED)
             ->latest()
             ->limit(6)
             ->get()
             ->map(fn ($t) => [
                 'id'    => $t->id,
-                'code'  => $t->id, // or $t->code if you store codes
-                'status'=> $t->payment_status,                    // paid/pending/refunded
+                'code'  => $t->id, // or $t->code if you generate codes
+                'status'=> $t->payment_status,         // paid/pending/refunded
                 'event' => $t->event?->title ?? '—',
                 'date'  => $t->created_at,
             ])
             ->all();
 
-        // Upcoming events for THIS user (only paid tickets; future events)
+        // Upcoming events (paid + not cancelled + future event date)
         $upcoming = Ticket::with('event')
             ->where('user_id', $user->id)
+            ->where('status', '!=', Ticket::STATUS_CANCELLED)
             ->where('payment_status', 'paid')
             ->whereHas('event', fn ($q) => $q->whereDate('event_date', '>=', now()))
             ->orderBy(
@@ -41,23 +43,26 @@ class UserDashboardController extends Controller
             ->map(fn ($t) => [
                 'id'    => $t->event?->id,
                 'title' => $t->event?->title,
-                'date'  => $t->event?->event_date,  // keep as Carbon/date
+                'date'  => $t->event?->event_date,
                 'venue' => $t->event?->venue ?? 'TBA',
             ])
             ->all();
 
-        // Stats for header cards
+        // Stats for dashboard header (exclude cancelled tickets)
         $stats = [
             'upcoming'      => count($upcoming),
-            'tickets'       => Ticket::where('user_id', $user->id)->count(),
+            'tickets'       => Ticket::where('user_id', $user->id)
+                                     ->where('status', '!=', Ticket::STATUS_CANCELLED)
+                                     ->count(),
             'spent'         => Ticket::where('user_id', $user->id)
+                                     ->where('status', '!=', Ticket::STATUS_CANCELLED)
                                      ->where('payment_status', 'paid')
-                                     ->sum('total_price'), // matches your schema
+                                     ->sum('total_price'),
             'notifications' => Notification::where('user_id', $user->id)
-                                           ->where('is_read', false) // your model uses is_read
+                                           ->where('is_read', false)
                                            ->count(),
         ];
-// Stats for header cards
+
         return view('user.dashboard', compact('stats', 'upcoming', 'tickets'));
     }
 }
