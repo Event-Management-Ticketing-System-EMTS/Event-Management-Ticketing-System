@@ -6,21 +6,21 @@ use App\Models\Event;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\Cache;
 
-/**
- * Simple Ticket Service - Uses Observer Pattern
- *
- * This service automatically updates ticket availability
- * whenever tickets are created, updated, or deleted.
- * It's triggered by the TicketObserver.
- */
 class SimpleTicketService
 {
     /**
-     * Get current ticket availability for an event
+     * Return cached availability for an event.
+     * Structure:
+     * [
+     *   'total_tickets'         => int,
+     *   'sold_quantity'         => int,   // paid & not-cancelled sum(quantity)
+     *   'available_tickets'     => int,
+     *   'availability_percent'  => float,
+     *   'is_sold_out'           => bool,
+     * ]
      */
-    public function getAvailability($eventId)
+    public function getAvailability(int $eventId): ?array
     {
-        // Try to get from cache first (faster!)
         $cacheKey = "event_tickets_{$eventId}";
 
         return Cache::remember($cacheKey, 60, function () use ($eventId) {
@@ -29,65 +29,111 @@ class SimpleTicketService
                 return null;
             }
 
-            $soldTickets = Ticket::where('event_id', $eventId)
-                ->where('status', 'confirmed')
-                ->count();
+            // Sum *quantities* of paid + not-cancelled tickets
+            $soldQty = (int) Ticket::where('event_id', $eventId)
+                ->where('status', '!=', Ticket::STATUS_CANCELLED)
+                ->where('payment_status', 'paid')
+                ->sum('quantity');
 
-            $available = $event->capacity - $soldTickets;
-            $percentage = $event->capacity > 0 ? ($available / $event->capacity) * 100 : 0;
+            $total     = (int) $event->total_tickets;
+            $available = max(0, $total - $soldQty);
+            $percent   = $total > 0 ? round(($available / $total) * 100, 1) : 0.0;
 
             return [
-                'total_capacity' => $event->capacity,
-                'sold_tickets' => $soldTickets,
-                'available_tickets' => max(0, $available),
-                'availability_percentage' => round($percentage, 1),
-                'is_sold_out' => $available <= 0
+                'total_tickets'        => $total,
+                'sold_quantity'        => $soldQty,
+                'available_tickets'    => $available,
+                'availability_percent' => $percent,
+                'is_sold_out'          => $available <= 0,
             ];
         });
     }
 
     /**
-     * Purchase tickets for an event
+     * Create a single ticket row for this purchase.
+     * Returns true on success, false if insufficient inventory.
      */
-    public function purchaseTickets($eventId, $quantity, $userId)
+    public function purchaseTickets(int $eventId, int $quantity, int $userId): bool
     {
         $availability = $this->getAvailability($eventId);
-
-        if (!$availability || $availability['available_tickets'] < $quantity) {
-            return false; // Not enough tickets
+        if (!$availability) {
+            return false;
+        }
+        if ($quantity < 1) {
+            return false;
+        }
+        if ($availability['available_tickets'] < $quantity) {
+            return false; // not enough inventory
         }
 
-        // Create ticket records
-        for ($i = 0; $i < $quantity; $i++) {
-            Ticket::create([
-                'event_id' => $eventId,
-                'user_id' => $userId,
-                'status' => 'confirmed',
-                'purchase_date' => now()
-            ]);
+        $event = Event::find($eventId);
+        if (!$event) {
+            return false;
         }
 
-        // Clear cache so next request gets fresh data
+        // Calculate prices
+        $unit  = (float) $event->price;
+        $total = $unit * $quantity;
+
+        // Create ONE ticket row with quantity
+        Ticket::create([
+            'event_id'         => $eventId,
+            'user_id'          => $userId,
+            'quantity'         => $quantity,
+            'total_price'      => $total,
+            'purchase_date'    => now(),
+            'status'           => Ticket::STATUS_CONFIRMED, // align with observer
+            'payment_status'   => 'paid',                   // mark as paid in this simple flow
+            'payment_amount'   => $total,
+            'paid_at'          => now(),
+            'payment_reference'=> 'OFFLINE-' . strtoupper(str()->random(10)), // simple placeholder
+        ]);
+
+        // Optionally keep a snapshot on the Event (if you use tickets_sold there)
+        $this->syncEventSold($eventId);
+
+        // Bust cache
         $this->clearAvailabilityCache($eventId);
 
         return true;
     }
 
     /**
-     * Update availability (called by Observer)
+     * Observer will call this after create/update/delete to refresh counts and cache.
      */
-    public function updateAvailability($eventId)
+    public function updateAvailability(int $eventId): void
     {
+        $this->syncEventSold($eventId);
         $this->clearAvailabilityCache($eventId);
-        // Recalculate by calling getAvailability
+        // Prime cache (optional)
         $this->getAvailability($eventId);
     }
 
     /**
-     * Clear cached data for an event
+     * Public helper if you need to clear externally.
      */
-    private function clearAvailabilityCache($eventId)
+    public function clearAvailabilityCache(int $eventId): void
     {
         Cache::forget("event_tickets_{$eventId}");
+    }
+
+    /**
+     * Keep events.tickets_sold in sync with actual paid, non-cancelled quantities.
+     * Safe even if you don’t always use this column, but nice for admin reports.
+     */
+    protected function syncEventSold(int $eventId): void
+    {
+        $event = Event::find($eventId);
+        if (!$event) {
+            return;
+        }
+
+        $soldQty = (int) Ticket::where('event_id', $eventId)
+            ->where('status', '!=', Ticket::STATUS_CANCELLED)
+            ->where('payment_status', 'paid')
+            ->sum('quantity');
+
+        // Save quietly to avoid recursion through observers
+        $event->forceFill(['tickets_sold' => $soldQty])->saveQuietly();
     }
 }

@@ -6,122 +6,146 @@ use App\Models\Notification;
 use App\Models\Ticket;
 use App\Models\User;
 
-/**
- * Simple Notification Service - Observer Pattern Helper
- *
- * This service creates notifications for important events.
- * It's called by the TicketObserver when tickets are cancelled.
- *
- * Perfect for beginners: Simple methods, clear purpose!
- */
 class SimpleNotificationService
 {
-    /**
-     * Notify organizer when their event's ticket is cancelled
-     */
-    public function notifyTicketCancellation(Ticket $ticket): void
+    /* ---------- Helpers ---------- */
+
+    private function make(array $attrs): void
     {
-        // Get the event and its organizer
-        $event = $ticket->event;
-        $organizer = $event->organizer; // Assuming Event has organizer relationship
-        $customer = $ticket->user;
-
-        if (!$organizer) {
-            return; // No organizer to notify
-        }
-
-        // Create a simple, clear notification
-        Notification::create([
-            'user_id' => $organizer->id,
-            'title' => 'Ticket Cancelled',
-            'message' => "Customer {$customer->name} cancelled {$ticket->quantity} ticket(s) for your event '{$event->title}'",
-            'type' => Notification::TYPE_TICKET_CANCELLED,
-            'is_read' => false,
-            'data' => [
-                'ticket_id' => $ticket->id,
-                'event_id' => $event->id,
-                'customer_name' => $customer->name,
-                'quantity' => $ticket->quantity,
-                'refund_amount' => $ticket->total_price
-            ]
-        ]);
+        Notification::create($attrs);
     }
 
-    /**
-     * Notify organizer when someone buys their event tickets
-     */
+    private function baseData(Ticket $ticket): array
+    {
+        return [
+            'ticket_id' => $ticket->id,
+            'event_id'  => $ticket->event_id,
+            'quantity'  => (int) $ticket->quantity,
+            'total'     => (float) $ticket->total_price,
+            'paid'      => (string) $ticket->payment_status,
+        ];
+    }
+
+    /* ---------- Organizer notifications ---------- */
+
     public function notifyTicketPurchase(Ticket $ticket): void
     {
-        $event = $ticket->event;
-        $organizer = $event->organizer;
-        $customer = $ticket->user;
+        $event     = $ticket->event;
+        $organizer = $event?->organizer;
+        $buyer     = $ticket->user;
 
-        if (!$organizer) {
+        if (!$event || !$organizer || !$buyer) {
             return;
         }
 
-        Notification::create([
+        $this->make([
             'user_id' => $organizer->id,
-            'title' => 'New Ticket Purchase',
-            'message' => "Great news! {$customer->name} just bought {$ticket->quantity} ticket(s) for your event '{$event->title}'",
-            'type' => Notification::TYPE_TICKET_PURCHASED,
+            'title'   => 'New Ticket Purchase',
+            'message' => "{$buyer->name} bought {$ticket->quantity} ticket(s) for '{$event->title}'.",
+            'type'    => Notification::TYPE_TICKET_PURCHASED,
             'is_read' => false,
-            'data' => [
-                'ticket_id' => $ticket->id,
-                'event_id' => $event->id,
-                'customer_name' => $customer->name,
-                'quantity' => $ticket->quantity,
-                'revenue' => $ticket->total_price
-            ]
+            'data'    => $this->baseData($ticket) + ['buyer' => $buyer->only('id','name','email')],
+        ]);
+
+        // also notify buyer (see below)
+        $this->notifyBuyerPurchase($ticket);
+    }
+
+    public function notifyTicketCancellation(Ticket $ticket): void
+    {
+        $event     = $ticket->event;
+        $organizer = $event?->organizer;
+        $buyer     = $ticket->user;
+
+        if (!$event || !$organizer || !$buyer) {
+            return;
+        }
+
+        $this->make([
+            'user_id' => $organizer->id,
+            'title'   => 'Ticket Cancelled',
+            'message' => "{$buyer->name} cancelled {$ticket->quantity} ticket(s) for '{$event->title}'.",
+            'type'    => Notification::TYPE_TICKET_CANCELLED,
+            'is_read' => false,
+            'data'    => $this->baseData($ticket) + ['buyer' => $buyer->only('id','name','email')],
+        ]);
+
+        // also notify buyer (see below)
+        $this->notifyBuyerCancellation($ticket);
+    }
+
+    /* ---------- Buyer notifications (new) ---------- */
+
+    public function notifyBuyerPurchase(Ticket $ticket): void
+    {
+        $event = $ticket->event;
+        $buyer = $ticket->user;
+
+        if (!$event || !$buyer) return;
+
+        $this->make([
+            'user_id' => $buyer->id,
+            'title'   => 'Purchase Confirmed',
+            'message' => "You purchased {$ticket->quantity} ticket(s) for '{$event->title}'.",
+            'type'    => Notification::TYPE_TICKET_PURCHASED,
+            'is_read' => false,
+            'data'    => $this->baseData($ticket) + [
+                'event_title' => $event->title,
+                'event_date'  => (string) $event->event_date,
+                'venue'       => $event->venue,
+            ],
         ]);
     }
 
-    /**
-     * Get unread notifications for a user
-     */
+    public function notifyBuyerCancellation(Ticket $ticket): void
+    {
+        $event = $ticket->event;
+        $buyer = $ticket->user;
+
+        if (!$event || !$buyer) return;
+
+        $this->make([
+            'user_id' => $buyer->id,
+            'title'   => 'Ticket Cancelled',
+            'message' => "You cancelled {$ticket->quantity} ticket(s) for '{$event->title}'.",
+            'type'    => Notification::TYPE_TICKET_CANCELLED,
+            'is_read' => false,
+            'data'    => $this->baseData($ticket) + [
+                'event_title' => $event->title,
+                'event_date'  => (string) $event->event_date,
+                'venue'       => $event->venue,
+            ],
+        ]);
+    }
+
+    /* ---------- Queries (unchanged) ---------- */
+
     public function getUnreadNotifications(User $user)
     {
         return Notification::where('user_id', $user->id)
             ->where('is_read', false)
-            ->orderBy('created_at', 'desc')
+            ->latest()
             ->get();
     }
 
-    /**
-     * Get all notifications for a user
-     */
     public function getAllNotifications(User $user, int $limit = 20)
     {
         return Notification::where('user_id', $user->id)
-            ->orderBy('created_at', 'desc')
+            ->latest()
             ->limit($limit)
             ->get();
     }
 
-    /**
-     * Mark notification as read
-     */
     public function markAsRead(int $notificationId, User $user): bool
     {
-        $notification = Notification::where('id', $notificationId)
-            ->where('user_id', $user->id)
-            ->first();
-
-        if ($notification) {
-            $notification->markAsRead();
-            return true;
-        }
-
-        return false;
+        $n = Notification::where('id', $notificationId)->where('user_id', $user->id)->first();
+        if (!$n) return false;
+        $n->markAsRead();
+        return true;
     }
 
-    /**
-     * Count unread notifications for a user
-     */
     public function getUnreadCount(User $user): int
     {
-        return Notification::where('user_id', $user->id)
-            ->where('is_read', false)
-            ->count();
+        return Notification::where('user_id', $user->id)->where('is_read', false)->count();
     }
 }

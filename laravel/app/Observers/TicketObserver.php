@@ -3,82 +3,96 @@
 namespace App\Observers;
 
 use App\Models\Ticket;
-use App\Services\SimpleTicketService;
-use App\Services\SimpleNotificationService;
 use App\Services\SimpleBookingService;
+use App\Services\SimpleNotificationService;
+use App\Services\SimpleTicketService;
 
 /**
- * Simple Ticket Observer - Observer Pattern ⭐ BEGINNER FRIENDLY
+ * TicketObserver
  *
- * This automatically handles ticket events:
- * - Updates ticket availability (existing feature)
- * - Sends notifications to organizers (notification feature!)
- * - Clears booking cache (new booking feature!)
- *
- * Perfect example of Observer Pattern: "When something happens, automatically do multiple things"
+ * Keeps inventory in sync and sends notifications on ticket lifecycle
+ * events (purchase, cancellation, refund). Also clears cached booking
+ * views/statistics after relevant changes.
  */
 class TicketObserver
 {
-    protected $ticketService;
-    protected $notificationService;
-    protected $bookingService;
-
     public function __construct(
-        SimpleTicketService $ticketService,
-        SimpleNotificationService $notificationService,
-        SimpleBookingService $bookingService
-    ) {
-        $this->ticketService = $ticketService;
-        $this->notificationService = $notificationService;
-        $this->bookingService = $bookingService;
-    }
+        protected SimpleTicketService $ticketService,
+        protected SimpleNotificationService $notificationService,
+        protected SimpleBookingService $bookingService,
+    ) {}
 
     /**
-     * Handle the Ticket "created" event.
+     * When a ticket is created:
+     *  - refresh availability
+     *  - if paid & confirmed on create, notify purchase
+     *  - clear cached booking reports
      */
     public function created(Ticket $ticket): void
     {
-        // 1. Update availability (existing functionality)
+        // keep availability fresh
         $this->ticketService->updateAvailability($ticket->event_id);
 
-        // 2. Notify organizer about new purchase (notification functionality!)
-        if ($ticket->status === Ticket::STATUS_CONFIRMED) {
+        // notify purchase only if the record is already confirmed & paid
+        if (
+            $ticket->status === Ticket::STATUS_CONFIRMED &&
+            $ticket->payment_status === 'paid'
+        ) {
             $this->notificationService->notifyTicketPurchase($ticket);
         }
 
-        // 3. Clear booking cache (new booking functionality!)
+        // clear cached aggregates
         $this->bookingService->clearCache();
     }
 
     /**
-     * Handle the Ticket "updated" event.
+     * When a ticket is updated:
+     *  - refresh availability on status/payment/quantity changes
+     *  - notify cancellation
+     *  - notify purchase when payment flips to "paid"
+     *  - optionally notify refund (guarded if method not present)
+     *  - clear cached booking reports
      */
     public function updated(Ticket $ticket): void
     {
-        // 1. Update availability when ticket status changes
-        $this->ticketService->updateAvailability($ticket->event_id);
+        if (
+            $ticket->wasChanged('status') ||
+            $ticket->wasChanged('payment_status') ||
+            $ticket->wasChanged('quantity')
+        ) {
+            $this->ticketService->updateAvailability($ticket->event_id);
+        }
 
-        // 2. Check if ticket was cancelled and notify organizer
+        // cancellation → notify organizer + buyer
         if ($ticket->wasChanged('status') && $ticket->status === Ticket::STATUS_CANCELLED) {
             $this->notificationService->notifyTicketCancellation($ticket);
         }
 
-        // 3. Clear booking cache when any ticket changes
+        // payment turned PAID → purchase confirmation
+        if ($ticket->wasChanged('payment_status') && $ticket->payment_status === 'paid') {
+            $this->notificationService->notifyTicketPurchase($ticket);
+        }
+
+        // payment turned REFUNDED → notify if your service supports it
+        if ($ticket->wasChanged('payment_status') && $ticket->payment_status === 'refunded') {
+            if (method_exists($this->notificationService, 'notifyTicketRefund')) {
+                //$this->notificationService->notifyTicketRefund($ticket);
+            }
+        }
+
         $this->bookingService->clearCache();
     }
 
     /**
-     * Handle the Ticket "deleted" event.
+     * When a ticket is deleted:
+     *  - refresh availability
+     *  - treat as cancellation for notification purposes
+     *  - clear cached booking reports
      */
     public function deleted(Ticket $ticket): void
     {
-        // 1. Update availability when ticket is deleted (hard delete/refund)
         $this->ticketService->updateAvailability($ticket->event_id);
-
-        // 2. Notify organizer about deletion (this counts as cancellation)
         $this->notificationService->notifyTicketCancellation($ticket);
-
-        // 3. Clear booking cache when ticket is deleted
         $this->bookingService->clearCache();
     }
 }
