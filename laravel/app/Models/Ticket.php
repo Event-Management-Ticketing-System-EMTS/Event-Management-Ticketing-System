@@ -21,51 +21,56 @@ class Ticket extends Model
     ];
 
     protected $casts = [
-        'purchase_date' => 'datetime',
-        'paid_at' => 'datetime',
-        'total_price' => 'decimal:2',
-        'payment_amount' => 'decimal:2',
-        'quantity' => 'integer',
+        'purchase_date'   => 'datetime',
+        'paid_at'         => 'datetime',
+        'total_price'     => 'decimal:2',
+        'payment_amount'  => 'decimal:2',
+        'quantity'        => 'integer',
     ];
 
+    // ------------------------------
     // Ticket statuses
-    public const STATUS_PENDING = 'pending';
+    // ------------------------------
+    public const STATUS_PENDING   = 'pending';
     public const STATUS_CONFIRMED = 'confirmed';
     public const STATUS_CANCELLED = 'cancelled';
 
-    /**
-     * Get the event this ticket belongs to
-     */
+    // ------------------------------
+    // Relationships
+    // ------------------------------
+
+    /** The event this ticket belongs to */
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
     }
 
-    /**
-     * Get the user who purchased this ticket
-     */
+    /** The user who purchased this ticket */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(User::class);
     }
 
-    // Payment status helper methods (simple and easy to understand)
-    public function isPaid()
+    // ------------------------------
+    // Payment status helpers
+    // ------------------------------
+
+    public function isPaid(): bool
     {
         return $this->payment_status === 'paid';
     }
 
-    public function isPending()
+    public function isPending(): bool
     {
         return $this->payment_status === 'pending';
     }
 
-    public function isFailed()
+    public function isFailed(): bool
     {
         return $this->payment_status === 'failed';
     }
 
-    public function isRefunded()
+    public function isRefunded(): bool
     {
         return $this->payment_status === 'refunded';
     }

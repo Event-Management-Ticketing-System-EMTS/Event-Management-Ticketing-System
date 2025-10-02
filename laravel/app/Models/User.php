@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable
 {
@@ -24,6 +25,7 @@ class User extends Authenticatable
         'email_verified',
         'avatar_path',
     ];
+
     /**
      * Hidden attributes for arrays / JSON.
      *
@@ -83,25 +85,25 @@ class User extends Authenticatable
     // ------------------------------
 
     /** A user can have many login logs */
-    public function loginLogs()
+    public function loginLogs(): HasMany
     {
         return $this->hasMany(LoginLog::class);
     }
 
     /** A user can organize many events */
-    public function events()
+    public function events(): HasMany
     {
         return $this->hasMany(Event::class, 'organizer_id');
     }
 
     /** A user can have many tickets */
-    public function tickets()
+    public function tickets(): HasMany
     {
         return $this->hasMany(Ticket::class);
     }
 
     /** A user can receive many notifications */
-    public function notifications()
+    public function notifications(): HasMany
     {
         return $this->hasMany(Notification::class)->orderBy('created_at', 'desc');
     }

@@ -118,11 +118,11 @@
                 <div>
                     <label for="admin_response" class="block text-sm font-medium text-gray-300 mb-2">Your Response</label>
                     <textarea id="admin_response"
-                              name="admin_response"
-                              rows="6"
-                              required
-                              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
-                              placeholder="Type your response to the user...">{{ old('admin_response', $message->admin_response) }}</textarea>
+                            name="admin_response"
+                            rows="6"
+                            required
+                            class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500"
+                            placeholder="Type your response to the user...">{{ old('admin_response', $message->admin_response) }}</textarea>
                     @error('admin_response')
                         <p class="text-red-400 text-sm mt-1">{{ $message }}</p>
                     @enderror
