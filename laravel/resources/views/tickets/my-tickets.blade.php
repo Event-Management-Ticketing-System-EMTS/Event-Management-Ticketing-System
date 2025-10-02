@@ -122,10 +122,11 @@
                   Payment: {{ ucfirst($ticket->payment_status) }}
                 </span>
 
-                {{-- Cancel button --}}
+                {{-- Cancel button (uses named route via data-url) --}}
                 @if($ticket->status !== 'cancelled' && $ticket->event->event_date > now())
                   <button
-                    onclick="cancelTicket({{ $ticket->id }})"
+                    data-url="{{ route('tickets.cancel', $ticket->id) }}"
+                    onclick="cancelTicket(this)"
                     class="px-4 py-2 rounded-lg text-sm font-medium bg-rose-600 hover:bg-rose-500
                            ring-1 ring-rose-300/30 shadow-sm transition">
                     Cancel Ticket
@@ -156,26 +157,44 @@
     @endif
   </div>
 </div>
+@endsection
 
-{{-- Cancel via fetch (kept your endpoint) --}}
+@push('scripts')
 <script>
-function cancelTicket(ticketId) {
+function cancelTicket(btn) {
+  const url = btn.dataset.url;
+  if (!url) return alert('Missing cancel URL.');
+
   if (!confirm('Are you sure you want to cancel this ticket?')) return;
 
-  fetch(`/api/tickets/${ticketId}/cancel`, {
+  const tokenTag = document.querySelector('meta[name="csrf-token"]');
+  const token = tokenTag ? tokenTag.getAttribute('content') : '';
+
+  fetch(url, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token']`)?.getAttribute('content') ||
-                      document.querySelector('input[name=_token]')?.value || ''
-    }
+      'X-CSRF-TOKEN': token,
+      'X-Requested-With': 'XMLHttpRequest',
+      'Accept': 'application/json'
+    },
+    credentials: 'same-origin'
   })
-  .then(r => r.json())
-  .then(data => {
-    alert(data.message || (data.success ? 'Ticket cancelled' : 'Failed to cancel ticket'));
+  .then(async (r) => {
+    // If backend returns HTML (419/500), avoid JSON parse crash
+    if (!r.ok) {
+      const text = await r.text();
+      throw new Error(`HTTP ${r.status} – ${text.slice(0, 200)}`);
+    }
+    return r.json();
+  })
+  .then((data) => {
+    alert(data.message || 'Ticket cancelled.');
     if (data.success) location.reload();
   })
-  .catch(() => alert('An error occurred while canceling the ticket.'));
+  .catch((err) => {
+    console.error(err);
+    alert('Could not cancel ticket. Please refresh and try again.');
+  });
 }
 </script>
-@endsection
+@endpush

@@ -14,10 +14,20 @@
   <!-- Styles -->
   @vite('resources/css/app.css')
 
-  <!-- Scripts -->
+  <!-- Alpine.js -->
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="h-full font-sans antialiased">
-  @yield('content')
+<body class="h-full font-sans antialiased bg-slate-950 text-slate-100">
+
+  {{-- Global container --}}
+  <div id="app" class="min-h-screen flex flex-col">
+    {{-- Content from child views --}}
+    <main class="flex-1">
+      @yield('content')
+    </main>
+  </div>
+
+  {{-- Allow pushing extra scripts from child views --}}
+  @stack('scripts')
 </body>
 </html>

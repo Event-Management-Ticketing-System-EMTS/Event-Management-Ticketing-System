@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Ticket;
 use App\Services\SimpleTicketService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 /**
  * Simple Ticket Controller
- * Handles ticket availability and purchases
+ * Handles ticket availability, purchase, and cancellation
  */
 class SimpleTicketController extends Controller
 {
@@ -68,7 +69,7 @@ class SimpleTicketController extends Controller
      */
     public function cancelTicket(Request $request, $ticketId)
     {
-        $ticket = \App\Models\Ticket::where('id', $ticketId)
+        $ticket = Ticket::where('id', $ticketId)
             ->where('user_id', Auth::id())
             ->first();
 
@@ -79,16 +80,15 @@ class SimpleTicketController extends Controller
             ], 404);
         }
 
-        if ($ticket->status === \App\Models\Ticket::STATUS_CANCELLED) {
+        if ($ticket->status === Ticket::STATUS_CANCELLED) {
             return response()->json([
                 'success' => false,
                 'message' => 'Ticket is already cancelled'
             ], 400);
         }
 
-        // Update ticket status to cancelled
-        // This will trigger the TicketObserver which will send notification!
-        $ticket->update(['status' => \App\Models\Ticket::STATUS_CANCELLED]);
+        // ✅ Cancel ticket
+        $ticket->update(['status' => Ticket::STATUS_CANCELLED]);
 
         return response()->json([
             'success' => true,
@@ -102,7 +102,7 @@ class SimpleTicketController extends Controller
      */
     public function myTickets()
     {
-        $tickets = \App\Models\Ticket::where('user_id', Auth::id())
+        $tickets = Ticket::where('user_id', Auth::id())
             ->with('event')
             ->orderBy('created_at', 'desc')
             ->get();

@@ -112,6 +112,9 @@ Route::middleware('auth')->group(function () {
 
     // My Tickets page for users
     Route::get('/my-tickets', [SimpleTicketController::class, 'myTickets'])->name('tickets.my');
+    Route::post('/api/tickets/{ticket}/cancel', [SimpleTicketController::class, 'cancelTicket'])
+    ->name('tickets.cancel');
+
 
     // Support system
     Route::get('/support', [SupportController::class, 'create'])->name('support.create');
