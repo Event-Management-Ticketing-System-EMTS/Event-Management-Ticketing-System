@@ -6,6 +6,20 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 
+// Models & Observer
+use App\Models\Ticket;
+use App\Observers\TicketObserver;
+
+// Repositories
+use App\Repositories\EventRepository;
+use App\Repositories\UserRepository;
+
+// Services
+use App\Services\SortingService;
+use App\Services\SimpleTicketService;
+use App\Services\SimpleNotificationService;
+use App\Services\SimpleBookingService;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -13,25 +27,26 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Register Repository bindings
-        $this->app->bind(
-            \App\Repositories\EventRepository::class,
-            function ($app) {
-                return new \App\Repositories\EventRepository($app->make(\App\Models\Event::class));
-            }
-        );
+        /* ------------------------------
+         * Repository bindings
+         * ------------------------------ */
+        $this->app->bind(EventRepository::class, function ($app) {
+            return new EventRepository($app->make(\App\Models\Event::class));
+        });
 
-        $this->app->bind(
-            \App\Repositories\UserRepository::class,
-            function ($app) {
-                return new \App\Repositories\UserRepository($app->make(\App\Models\User::class));
-            }
-        );
+        $this->app->bind(UserRepository::class, function ($app) {
+            return new UserRepository($app->make(\App\Models\User::class));
+        });
 
-        // Register Service bindings
-        $this->app->singleton(\App\Services\SortingService::class);
-        $this->app->singleton(\App\Services\SimpleTicketService::class);
-        $this->app->singleton(\App\Services\SimpleNotificationService::class);
+        /* ------------------------------
+         * Service singletons
+         * ------------------------------ */
+        $this->app->singleton(SortingService::class);
+        $this->app->singleton(SimpleTicketService::class);
+        $this->app->singleton(SimpleNotificationService::class);
+
+        // Needed by TicketObserver (to clear cached booking stats/lists)
+        $this->app->singleton(SimpleBookingService::class);
     }
 
     /**
@@ -39,19 +54,25 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Register Observer Pattern for automatic ticket updates
-        \App\Models\Ticket::observe(\App\Observers\TicketObserver::class);
+        /* ------------------------------
+         * Observers
+         * ------------------------------ */
+        Ticket::observe(TicketObserver::class);
 
-        // Force "remember me" cookies to expire in 10 minutes (instead of default ~5 years)
+        /* ------------------------------
+         * Optional: shorten "remember me" cookie lifetime to 10 minutes
+         * ------------------------------ */
+        // This line only checks if the current auth session is via "remember me"
+        // (it doesn’t change cookie lifetime by itself, the queue below does).
         Auth::viaRemember();
 
         $recallerName = Auth::getRecallerName(); // default: remember_web_xxxxx
 
-        // If Laravel sets a remember cookie, reset its lifetime to 10 minutes
         if (Cookie::has($recallerName)) {
             $value = Cookie::get($recallerName);
 
-            // Re-queue it with 10 minutes expiration
+            // Re-queue the cookie with a 10-minute expiration
+            // Note: minutes are integer minutes, not seconds.
             Cookie::queue($recallerName, $value, 10);
         }
     }

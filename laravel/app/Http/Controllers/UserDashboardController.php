@@ -21,11 +21,11 @@ class UserDashboardController extends Controller
             ->limit(6)
             ->get()
             ->map(fn ($t) => [
-                'id'    => $t->id,
-                'code'  => $t->id, // or $t->code if you generate codes
-                'status'=> $t->payment_status,         // paid/pending/refunded
-                'event' => $t->event?->title ?? '—',
-                'date'  => $t->created_at,
+                'id'     => $t->id,
+                'code'   => $t->id, // or $t->code if you generate codes
+                'status' => $t->payment_status,        // paid/pending/refunded
+                'event'  => $t->event?->title ?? '—',
+                'date'   => $t->created_at,
             ])
             ->all();
 
@@ -63,6 +63,19 @@ class UserDashboardController extends Controller
                                            ->count(),
         ];
 
-        return view('user.dashboard', compact('stats', 'upcoming', 'tickets'));
+        // Short notifications list for the dashboard panel (latest 6)
+        $alerts = Notification::where('user_id', $user->id)
+            ->latest()
+            ->limit(6)
+            ->get()
+            ->map(fn ($n) => [
+                'title'   => $n->title,
+                'time'    => $n->created_at,
+                'link'    => $n->data['link'] ?? null, // optional deep-link
+                'is_read' => (bool) $n->is_read,
+            ])
+            ->all();
+
+        return view('user.dashboard', compact('stats', 'upcoming', 'tickets', 'alerts'));
     }
 }
