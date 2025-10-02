@@ -55,179 +55,231 @@
       @endif
     </div>
 
+    {{-- Search & Filters --}}
+    <form method="GET" action="{{ route('events.index') }}" class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-5 shadow-lg">
+      <div class="grid grid-cols-1 md:grid-cols-6 gap-3">
+        <div class="md:col-span-2">
+          <label class="block text-xs text-slate-400 mb-1">Search</label>
+          <input type="text" name="q" value="{{ $q ?? '' }}" placeholder="Title, description, venue, city…"
+                 class="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">City</label>
+          <select name="city" class="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+            <option value="">Any</option>
+            @foreach(($cities ?? []) as $c)
+              <option value="{{ $c }}" @selected(($city ?? null) === $c)>{{ $c }}</option>
+            @endforeach
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Status</label>
+          <select name="status" class="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+            <option value="">Any</option>
+            @foreach(($statuses ?? []) as $key => $label)
+              <option value="{{ $key }}" @selected(($status ?? null) === $key)>{{ $label }}</option>
+            @endforeach
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">From</label>
+          <input type="date" name="date_from" value="{{ $dateFrom ?? '' }}" class="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+        </div>
+
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">To</label>
+          <input type="date" name="date_to" value="{{ $dateTo ?? '' }}" class="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-6 gap-3 mt-3">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Min Price</label>
+          <input type="number" step="0.01" name="price_min" value="{{ $priceMin ?? '' }}" class="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1">Max Price</label>
+          <input type="number" step="0.01" name="price_max" value="{{ $priceMax ?? '' }}" class="w-full rounded-lg bg-slate-800 border border-slate-700 px-3 py-2">
+        </div>
+
+        <div class="md:col-span-4 flex items-end gap-2">
+          <button type="submit" class="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 font-medium">
+            Search
+          </button>
+          <a href="{{ route('events.index') }}" class="px-4 py-2 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700">
+            Reset
+          </a>
+        </div>
+      </div>
+    </form>
+
     {{-- Sorting Controls --}}
     <x-sorting-controls
-        :action="route('events.index')"
-        :sort-options="$sortOptions"
-        :current-sort="$sortBy"
-        :current-direction="$sortDirection"
-        :total-count="$events->count()"
-        :show-reset="!$isDefaultSort"
+      :action="route('events.index')"
+      :sort-options="$sortOptions"
+      :current-sort="$sortBy"
+      :current-direction="$sortDirection"
+      :total-count="$events->total()"
+      :show-reset="!$isDefaultSort"
     />
 
-    {{-- Status messages --}}
+    {{-- Flash message --}}
     @if (session('success'))
-    <div class="rounded-xl border border-green-400/30 bg-green-400/10 p-4">
-      <div class="flex">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
-          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-        </svg>
-        <span class="text-green-300">{{ session('success') }}</span>
+      <div class="rounded-xl border border-green-400/30 bg-green-400/10 p-4">
+        <div class="flex">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-400 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+          </svg>
+          <span class="text-green-300">{{ session('success') }}</span>
+        </div>
       </div>
-    </div>
     @endif
+
+    {{-- Build a helper array so sort links keep current filters --}}
+    @php($qParams = request()->all())
 
     {{-- Events table --}}
     <div class="rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md p-6 shadow-lg overflow-x-auto">
       @if($events->isEmpty())
         <div class="text-center py-8">
-          <p class="text-slate-400 mb-4">No events found.</p>
-          <a href="{{ route('events.create') }}" class="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-white font-medium shadow-md">
-            Create Your First Event
-          </a>
+          <p class="text-slate-400 mb-4">No events match your filters.</p>
+          @if(auth()->check() && auth()->user()->role === 'admin')
+            <a href="{{ route('events.create') }}" class="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-sky-500 hover:from-cyan-400 hover:to-sky-400 text-white font-medium shadow-md">
+              Create Your First Event
+            </a>
+          @endif
         </div>
       @else
         <table class="w-full" id="eventsTable">
           <thead>
             <tr class="border-b border-slate-800">
               <th class="px-4 py-3 text-left">
-                <a href="{{ route('events.index', ['sort' => 'title', 'direction' => $sortBy === 'title' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
+                <a href="{{ route('events.index', array_merge($qParams, ['sort' => 'title', 'direction' => $sortBy === 'title' && $sortDirection === 'asc' ? 'desc' : 'asc'])) }}"
                    class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
                   Event
                   @if($sortBy === 'title')
                     @if($sortDirection === 'asc')
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
                     @else
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     @endif
                   @endif
                 </a>
               </th>
+
               <th class="px-4 py-3 text-left">
-                <a href="{{ route('events.index', ['sort' => 'event_date', 'direction' => $sortBy === 'event_date' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
+                <a href="{{ route('events.index', array_merge($qParams, ['sort' => 'event_date', 'direction' => $sortBy === 'event_date' && $sortDirection === 'asc' ? 'desc' : 'asc'])) }}"
                    class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
                   Date
                   @if($sortBy === 'event_date')
                     @if($sortDirection === 'asc')
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
                     @else
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     @endif
                   @endif
                 </a>
               </th>
+
               <th class="px-4 py-3 text-left text-sm font-semibold text-cyan-300">Venue</th>
+
               <th class="px-4 py-3 text-left">
-                <a href="{{ route('events.index', ['sort' => 'price', 'direction' => $sortBy === 'price' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
+                <a href="{{ route('events.index', array_merge($qParams, ['sort' => 'price', 'direction' => $sortBy === 'price' && $sortDirection === 'asc' ? 'desc' : 'asc'])) }}"
                    class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
                   Price
                   @if($sortBy === 'price')
                     @if($sortDirection === 'asc')
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
                     @else
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     @endif
                   @endif
                 </a>
               </th>
+
               <th class="px-4 py-3 text-left">
-                <a href="{{ route('events.index', ['sort' => 'tickets_sold', 'direction' => $sortBy === 'tickets_sold' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
+                <a href="{{ route('events.index', array_merge($qParams, ['sort' => 'tickets_sold', 'direction' => $sortBy === 'tickets_sold' && $sortDirection === 'asc' ? 'desc' : 'asc'])) }}"
                    class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
                   Tickets
                   @if($sortBy === 'tickets_sold')
                     @if($sortDirection === 'asc')
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
                     @else
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     @endif
                   @endif
                 </a>
               </th>
+
               <th class="px-4 py-3 text-left">
-                <a href="{{ route('events.index', ['sort' => 'status', 'direction' => $sortBy === 'status' && $sortDirection === 'asc' ? 'desc' : 'asc']) }}"
+                <a href="{{ route('events.index', array_merge($qParams, ['sort' => 'status', 'direction' => $sortBy === 'status' && $sortDirection === 'asc' ? 'desc' : 'asc'])) }}"
                    class="flex items-center gap-1 text-sm font-semibold text-cyan-300 hover:text-cyan-200 transition-colors">
                   Status
                   @if($sortBy === 'status')
                     @if($sortDirection === 'asc')
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
                     @else
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                      </svg>
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     @endif
                   @endif
                 </a>
               </th>
+
               <th class="px-4 py-3 text-left text-sm font-semibold text-cyan-300">Approval</th>
               <th class="px-4 py-3 text-right text-sm font-semibold text-cyan-300">Actions</th>
             </tr>
           </thead>
+
           <tbody>
             @foreach($events as $event)
-            <tr class="border-b border-slate-800">
-              <td class="px-4 py-3">
-                <div class="font-medium">{{ $event->title }}</div>
-                <div class="text-sm text-slate-400">{{ Str::limit($event->description, 50) }}</div>
-              </td>
-              <td class="px-4 py-3 whitespace-nowrap">{{ $event->event_date->format('M d, Y') }}</td>
-              <td class="px-4 py-3">{{ $event->venue }}</td>
-              <td class="px-4 py-3 whitespace-nowrap">${{ number_format($event->price, 2) }}</td>
-              <td class="px-4 py-3">{{ $event->tickets_sold }}/{{ $event->total_tickets }}</td>
-              <td class="px-4 py-3">
-                @if($event->status === 'published')
-                  <span class="inline-flex rounded-full bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400 ring-1 ring-inset ring-green-500/30">Published</span>
-                @elseif($event->status === 'draft')
-                  <span class="inline-flex rounded-full bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-400 ring-1 ring-inset ring-amber-500/30">Draft</span>
-                @else
-                  <span class="inline-flex rounded-full bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/30">Cancelled</span>
-                @endif
-              </td>
-              <td class="px-4 py-3">
-                @if($event->approval_status === 'approved')
-                  <span class="inline-flex rounded-full bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400 ring-1 ring-inset ring-green-500/30">Approved</span>
-                @elseif($event->approval_status === 'pending')
-                  <span class="inline-flex rounded-full bg-yellow-500/10 px-2 py-1 text-xs font-medium text-yellow-400 ring-1 ring-inset ring-yellow-500/30">Pending</span>
-                @else
-                  <span class="inline-flex rounded-full bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/30">Rejected</span>
-                @endif
-              </td>
-              <td class="px-4 py-3 text-right space-x-1 whitespace-nowrap">
-                <a href="{{ route('events.edit', $event->id) }}" class="inline-flex items-center px-2 py-1 rounded text-xs font-medium text-cyan-400 hover:bg-slate-800">
-                  Edit
-                </a>
-                <a href="{{ route('events.show', $event->id) }}" class="inline-flex items-center px-2 py-1 rounded text-xs font-medium text-slate-300 hover:bg-slate-800">
-                  View
-                </a>
-                <form class="inline-block" method="POST" action="{{ route('events.destroy', $event->id) }}" onsubmit="return confirm('Are you sure you want to delete this event?');">
-                  @csrf
-                  @method('DELETE')
-                  <button type="submit" class="inline-flex items-center px-2 py-1 rounded text-xs font-medium text-red-400 hover:bg-slate-800">
-                    Delete
-                  </button>
-                </form>
-              </td>
-            </tr>
+              <tr class="border-b border-slate-800">
+                <td class="px-4 py-3">
+                  <div class="font-medium">{{ $event->title }}</div>
+                  <div class="text-sm text-slate-400">{{ Str::limit($event->description, 50) }}</div>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">{{ \Carbon\Carbon::parse($event->event_date)->format('M d, Y') }}</td>
+                <td class="px-4 py-3">{{ $event->venue }}</td>
+                <td class="px-4 py-3 whitespace-nowrap">${{ number_format($event->price, 2) }}</td>
+                <td class="px-4 py-3">{{ $event->tickets_sold }}/{{ $event->total_tickets }}</td>
+                <td class="px-4 py-3">
+                  @if($event->status === 'published')
+                    <span class="inline-flex rounded-full bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400 ring-1 ring-inset ring-green-500/30">Published</span>
+                  @elseif($event->status === 'draft')
+                    <span class="inline-flex rounded-full bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-400 ring-1 ring-inset ring-amber-500/30">Draft</span>
+                  @else
+                    <span class="inline-flex rounded-full bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/30">Cancelled</span>
+                  @endif
+                </td>
+                <td class="px-4 py-3">
+                  @if($event->approval_status === 'approved')
+                    <span class="inline-flex rounded-full bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400 ring-1 ring-inset ring-green-500/30">Approved</span>
+                  @elseif($event->approval_status === 'pending')
+                    <span class="inline-flex rounded-full bg-yellow-500/10 px-2 py-1 text-xs font-medium text-yellow-400 ring-1 ring-inset ring-yellow-500/30">Pending</span>
+                  @else
+                    <span class="inline-flex rounded-full bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/30">Rejected</span>
+                  @endif
+                </td>
+                <td class="px-4 py-3 text-right space-x-1 whitespace-nowrap">
+                  <a href="{{ route('events.edit', $event->id) }}" class="inline-flex items-center px-2 py-1 rounded text-xs font-medium text-cyan-400 hover:bg-slate-800">Edit</a>
+                  <a href="{{ route('events.show', $event->id) }}" class="inline-flex items-center px-2 py-1 rounded text-xs font-medium text-slate-300 hover:bg-slate-800">View</a>
+                  <form class="inline-block" method="POST" action="{{ route('events.destroy', $event->id) }}" onsubmit="return confirm('Are you sure you want to delete this event?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="inline-flex items-center px-2 py-1 rounded text-xs font-medium text-red-400 hover:bg-slate-800">Delete</button>
+                  </form>
+                </td>
+              </tr>
             @endforeach
           </tbody>
         </table>
+
+        {{-- Pagination --}}
+        <div class="mt-6">
+          {{ $events->links() }}
+        </div>
       @endif
     </div>
   </main>
