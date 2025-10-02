@@ -57,7 +57,7 @@ class UserDashboardController extends Controller
                                            ->where('is_read', false) // your model uses is_read
                                            ->count(),
         ];
-
+// Stats for header cards
         return view('user.dashboard', compact('stats', 'upcoming', 'tickets'));
     }
 }
