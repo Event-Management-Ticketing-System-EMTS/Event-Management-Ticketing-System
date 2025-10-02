@@ -60,10 +60,10 @@
   <main class="max-w-7xl mx-auto px-6 py-8 space-y-8">
     @php
       $user      = auth()->user();
-      /** These are expected from controller; safe fallbacks for view-only previews */
+      // Expect these from controller; safe fallbacks keep the view usable if opened directly.
       $stats     = $stats     ?? ['upcoming'=>0, 'tickets'=>0, 'spent'=>0, 'notifications'=>0];
-      $upcoming  = $upcoming  ?? [];   // array of ['title','date','venue']
-      $tickets   = $tickets   ?? [];   // array of ['code','event','date','status']
+      $upcoming  = $upcoming  ?? [];   // array of ['id','title','date','venue']
+      $tickets   = $tickets   ?? [];   // array of ['id','event_id','code','event','date','status']
       $alerts    = $alerts    ?? [];   // array of ['title','time','link?']
     @endphp
 
@@ -97,15 +97,15 @@
         <dl class="mt-6 grid grid-cols-2 gap-4 text-center">
           <div class="rounded-xl bg-slate-800/70 ring-1 ring-cyan-400/10 p-4">
             <dt class="text-xs text-slate-400">Upcoming</dt>
-            <dd class="mt-1 text-xl font-semibold text-cyan-300">{{ $stats['upcoming'] }}</dd>
+            <dd class="mt-1 text-xl font-semibold text-cyan-300">{{ (int)($stats['upcoming'] ?? 0) }}</dd>
           </div>
           <div class="rounded-xl bg-slate-800/70 ring-1 ring-cyan-400/10 p-4">
             <dt class="text-xs text-slate-400">Tickets Owned</dt>
-            <dd class="mt-1 text-xl font-semibold text-cyan-300">{{ $stats['tickets'] }}</dd>
+            <dd class="mt-1 text-xl font-semibold text-cyan-300">{{ (int)($stats['tickets'] ?? 0) }}</dd>
           </div>
           <div class="rounded-xl bg-slate-800/70 ring-1 ring-cyan-400/10 p-4 col-span-2">
             <dt class="text-xs text-slate-400">Total Spent</dt>
-            <dd class="mt-1 text-xl font-semibold text-cyan-300">৳ {{ number_format((float)$stats['spent'], 2) }}</dd>
+            <dd class="mt-1 text-xl font-semibold text-cyan-300">৳ {{ number_format((float)($stats['spent'] ?? 0), 2) }}</dd>
           </div>
         </dl>
       </div>
@@ -119,7 +119,7 @@
               <svg viewBox="0 0 24 24" class="h-3.5 w-3.5"><path d="M7 11h10M7 15h6M7 7h10" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
             </span>
           </div>
-          <p class="mt-3 text-3xl font-semibold text-cyan-300">{{ $stats['upcoming'] }}</p>
+          <p class="mt-3 text-3xl font-semibold text-cyan-300">{{ (int)($stats['upcoming'] ?? 0) }}</p>
           <a href="{{ route('events.index') }}" class="mt-4 inline-block text-sm text-cyan-300/80 hover:text-cyan-300">View all →</a>
         </div>
 
@@ -130,7 +130,7 @@
               <svg viewBox="0 0 24 24" class="h-3.5 w-3.5"><path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2zM18 16V11a6 6 0 1 0-12 0v5l-2 2h16l-2-2z" fill="currentColor"/></svg>
             </span>
           </div>
-          <p class="mt-3 text-3xl font-semibold text-cyan-300">{{ $stats['notifications'] }}</p>
+          <p class="mt-3 text-3xl font-semibold text-cyan-300">{{ (int)($stats['notifications'] ?? 0) }}</p>
           <a href="{{ route('notifications.index') }}" class="mt-4 inline-block text-sm text-cyan-300/80 hover:text-cyan-300">Open inbox →</a>
         </div>
 
@@ -141,13 +141,13 @@
               <svg viewBox="0 0 24 24" class="h-3.5 w-3.5"><path d="M4 8h16v8H4zM8 8V6h8v2" stroke="currentColor" stroke-width="2" fill="none"/></svg>
             </span>
           </div>
-          <p class="mt-3 text-3xl font-semibold text-cyan-300">{{ $stats['tickets'] }}</p>
+          <p class="mt-3 text-3xl font-semibold text-cyan-300">{{ (int)($stats['tickets'] ?? 0) }}</p>
           <a href="{{ route('tickets.my') }}" class="mt-4 inline-block text-sm text-cyan-300/80 hover:text-cyan-300">Manage tickets →</a>
         </div>
       </div>
     </section>
 
-    {{-- Row 2: Upcoming list + Recent tickets + Notifications --}}
+    {{-- Row 2: Upcoming list + Recent tickets --}}
     <section class="grid grid-cols-1 xl:grid-cols-12 gap-6">
       {{-- Upcoming Events --}}
       <div class="xl:col-span-5 rounded-2xl border border-cyan-400/20 bg-slate-900/80 backdrop-blur-md shadow-lg">
@@ -160,16 +160,26 @@
           @forelse($upcoming as $e)
             <li class="p-5 flex items-center justify-between gap-3">
               <div class="min-w-0">
-                <p class="font-medium truncate">{{ $e['title'] }}</p>
+                <p class="font-medium truncate">{{ $e['title'] ?? '—' }}</p>
                 <p class="text-xs text-slate-400 truncate">{{ $e['venue'] ?? '—' }}</p>
               </div>
               <div class="text-right">
-                <p class="text-sm text-slate-300">{{ \Carbon\Carbon::parse($e['date'])->format('d M Y') }}</p>
-                <a href="{{ route('events.show', $e['id'] ?? null) }}" class="text-xs text-cyan-300/80 hover:text-cyan-300">Details</a>
+                <p class="text-sm text-slate-300">
+                  @if(!empty($e['date']))
+                    {{ \Carbon\Carbon::parse($e['date'])->format('d M Y') }}
+                  @else
+                    —
+                  @endif
+                </p>
+                @if(!empty($e['id']))
+                  <a href="{{ route('events.show', $e['id']) }}" class="text-xs text-cyan-300/80 hover:text-cyan-300">Details</a>
+                @endif
               </div>
             </li>
           @empty
-            <li class="p-8 text-center text-sm text-slate-400">No upcoming events. <a class="text-cyan-300" href="{{ route('events.index') }}">Browse events</a>.</li>
+            <li class="p-8 text-center text-sm text-slate-400">
+              No upcoming events. <a class="text-cyan-300" href="{{ route('events.index') }}">Browse events</a>.
+            </li>
           @endforelse
         </ul>
       </div>
@@ -195,22 +205,32 @@
             <tbody class="divide-y divide-slate-800">
               @forelse($tickets as $t)
                 <tr>
-                  <td class="py-4 px-6 font-medium">{{ $t['code'] }}</td>
-                  <td class="py-4 px-6">{{ $t['event'] }}</td>
-                  <td class="py-4 px-6">{{ \Carbon\Carbon::parse($t['date'])->format('d M Y') }}</td>
+                  <td class="py-4 px-6 font-medium">{{ $t['code'] ?? $t['id'] ?? '—' }}</td>
+                  <td class="py-4 px-6">{{ $t['event'] ?? '—' }}</td>
                   <td class="py-4 px-6">
-                    @php $status = strtolower($t['status']); @endphp
+                    @if(!empty($t['date']))
+                      {{ \Carbon\Carbon::parse($t['date'])->format('d M Y') }}
+                    @else
+                      —
+                    @endif
+                  </td>
+                  <td class="py-4 px-6">
+                    @php $status = strtolower($t['status'] ?? ''); @endphp
                     <span @class([
                       'px-2.5 py-1 rounded-full text-xs ring-1',
                       'bg-emerald-500/15 text-emerald-300 ring-emerald-400/20' => $status === 'paid',
                       'bg-yellow-500/15 text-yellow-300 ring-yellow-400/20' => $status === 'pending',
-                      'bg-rose-500/15 text-rose-300 ring-rose-400/20' => $status === 'refunded',
-                      'bg-slate-500/15 text-slate-300 ring-slate-400/20' => !in_array($status, ['paid','pending','refunded']),
-                    ])>{{ ucfirst($t['status']) }}</span>
+                      'bg-rose-500/15 text-rose-300 ring-rose-400/20'        => $status === 'refunded',
+                      'bg-slate-500/15 text-slate-300 ring-slate-400/20'      => !in_array($status, ['paid','pending','refunded']),
+                    ])>{{ $t['status'] ? ucfirst($t['status']) : '—' }}</span>
                   </td>
                   <td class="py-4 px-6 text-right">
-                    <a href="{{ route('tickets.show', $t['id'] ?? null) }}"
-                       class="text-cyan-300/80 hover:text-cyan-300">Open</a>
+                    {{-- changed: link to event if available; otherwise to My Tickets --}}
+                    @if(!empty($t['event_id']))
+                      <a href="{{ route('events.show', $t['event_id']) }}" class="text-cyan-300/80 hover:text-cyan-300">Open</a>
+                    @else
+                      <a href="{{ route('tickets.my') }}" class="text-cyan-300/80 hover:text-cyan-300">Open</a>
+                    @endif
                   </td>
                 </tr>
               @empty
@@ -242,8 +262,14 @@
                 <svg viewBox="0 0 24 24" class="h-3.5 w-3.5"><path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2zM18 16V11a6 6 0 1 0-12 0v5l-2 2h16l-2-2z" fill="currentColor"/></svg>
               </span>
               <div class="min-w-0">
-                <p class="font-medium">{{ $n['title'] }}</p>
-                <p class="text-xs text-slate-400">{{ \Carbon\Carbon::parse($n['time'])->diffForHumans() }}</p>
+                <p class="font-medium">{{ $n['title'] ?? '—' }}</p>
+                <p class="text-xs text-slate-400">
+                  @if(!empty($n['time']))
+                    {{ \Carbon\Carbon::parse($n['time'])->diffForHumans() }}
+                  @else
+                    —
+                  @endif
+                </p>
               </div>
               @if(!empty($n['link']))
                 <a href="{{ $n['link'] }}" class="ml-auto text-sm text-cyan-300/80 hover:text-cyan-300">View</a>
