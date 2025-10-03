@@ -1,4 +1,4 @@
-{{-- Professional Registration (small entrance animation, no Alpine) --}}
+{{-- Professional Registration (with eye toggle for password fields) --}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -106,10 +106,21 @@
           {{-- Password --}}
           <div>
             <label for="password" class="block text-sm mb-1 text-slate-300">Password</label>
-            <input id="password" name="password" type="password" required autocomplete="new-password"
-                   class="w-full rounded-lg bg-slate-800/70 border border-cyan-400/20 px-3 py-2.5
-                          focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                   placeholder="Create a password" />
+            <div class="relative">
+              <input id="password" name="password" type="password" required autocomplete="new-password"
+                     class="w-full rounded-lg bg-slate-800/70 border border-cyan-400/20 px-3 pr-10 py-2.5
+                            focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                     placeholder="Create a password" />
+              <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-cyan-300"
+                      onclick="togglePassword('password', this)">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 eye-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              </button>
+            </div>
             <div class="mt-2">
               <div class="h-2 w-full rounded bg-slate-800/70 overflow-hidden">
                 <div class="h-2 w-3/5 bg-cyan-400"></div>
@@ -121,10 +132,21 @@
           {{-- Confirm Password --}}
           <div>
             <label for="password_confirmation" class="block text-sm mb-1 text-slate-300">Confirm password</label>
-            <input id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password"
-                   class="w-full rounded-lg bg-slate-800/70 border border-cyan-400/20 px-3 py-2.5
-                          focus:outline-none focus:ring-2 focus:ring-cyan-400"
-                   placeholder="Re-type your password" />
+            <div class="relative">
+              <input id="password_confirmation" name="password_confirmation" type="password" required autocomplete="new-password"
+                     class="w-full rounded-lg bg-slate-800/70 border border-cyan-400/20 px-3 pr-10 py-2.5
+                            focus:outline-none focus:ring-2 focus:ring-cyan-400"
+                     placeholder="Re-type your password" />
+              <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-cyan-300"
+                      onclick="togglePassword('password_confirmation', this)">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 eye-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                </svg>
+              </button>
+            </div>
           </div>
 
           {{-- Submit --}}
@@ -143,18 +165,36 @@
     </div>
   </main>
 
-  {{-- tiny script to reveal with animation --}}
+  {{-- animations + password toggle --}}
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       const header = document.getElementById('reg-header');
       const card = document.getElementById('reg-card');
       requestAnimationFrame(() => {
         header.classList.remove('opacity-0','translate-y-2');
-        const icon = header.querySelector('div'); // the logo block
+        const icon = header.querySelector('div'); 
         icon && icon.classList.remove('scale-95');
         card.classList.remove('opacity-0','translate-y-4','scale-[.98]');
       });
     });
+
+    function togglePassword(id, btn) {
+      const input = document.getElementById(id);
+      const svg = btn.querySelector('svg');
+      if (input.type === 'password') {
+        input.type = 'text';
+        svg.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.956 9.956 0 012.519-4.362m3.617-2.367A9.956 9.956 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.956 9.956 0 01-4.132 5.411M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>`;
+      } else {
+        input.type = 'password';
+        svg.innerHTML = `
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
+      }
+    }
   </script>
 </body>
 </html>
