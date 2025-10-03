@@ -52,7 +52,9 @@ Route::view('/welcome', 'welcome')->name('welcome');
 
 // Public event browsing (view-only)
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
-Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+Route::get('/events/{event}', [EventController::class, 'show'])
+    ->whereNumber('event') // ✅ Fix: prevents conflict with /events/create
+    ->name('events.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -113,8 +115,7 @@ Route::middleware('auth')->group(function () {
     // My Tickets page for users
     Route::get('/my-tickets', [SimpleTicketController::class, 'myTickets'])->name('tickets.my');
     Route::post('/api/tickets/{ticket}/cancel', [SimpleTicketController::class, 'cancelTicket'])
-    ->name('tickets.cancel');
-
+        ->name('tickets.cancel');
 
     // Support system
     Route::get('/support', [SupportController::class, 'create'])->name('support.create');
