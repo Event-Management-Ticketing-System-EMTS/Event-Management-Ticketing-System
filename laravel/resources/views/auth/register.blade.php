@@ -1,4 +1,4 @@
-{{-- Professional Registration (with eye toggle for password fields) --}}
+{{-- Professional Registration (with eye toggle + dynamic password strength) --}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -121,11 +121,12 @@
                 </svg>
               </button>
             </div>
+            {{-- Dynamic strength bar --}}
             <div class="mt-2">
               <div class="h-2 w-full rounded bg-slate-800/70 overflow-hidden">
-                <div class="h-2 w-3/5 bg-cyan-400"></div>
+                <div id="password-strength" class="h-2 w-0 bg-red-500 transition-all duration-300"></div>
               </div>
-              <p class="mt-1 text-xs text-slate-400">Use 8+ chars with upper/lowercase, a number, and a symbol.</p>
+              <p class="mt-1 text-xs text-slate-400">Use 8+ chars with uppercase, lowercase, number, and symbol.</p>
             </div>
           </div>
 
@@ -165,8 +166,9 @@
     </div>
   </main>
 
-  {{-- animations + password toggle --}}
+  {{-- animations + password toggle + dynamic strength --}}
   <script>
+    // Animate header and card
     document.addEventListener('DOMContentLoaded', () => {
       const header = document.getElementById('reg-header');
       const card = document.getElementById('reg-card');
@@ -178,6 +180,7 @@
       });
     });
 
+    // Eye toggle
     function togglePassword(id, btn) {
       const input = document.getElementById(id);
       const svg = btn.querySelector('svg');
@@ -195,6 +198,31 @@
                 d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
       }
     }
+
+    // Password strength
+    const passwordInput = document.getElementById('password');
+    const strengthBar = document.getElementById('password-strength');
+
+    passwordInput.addEventListener('input', () => {
+      const value = passwordInput.value;
+      let strength = 0;
+
+      if (value.length >= 8) strength += 1;
+      if (/[A-Z]/.test(value)) strength += 1;
+      if (/[0-9]/.test(value)) strength += 1;
+      if (/[\W_]/.test(value)) strength += 1;
+
+      // Set width %
+      const width = (strength / 4) * 100;
+      strengthBar.style.width = width + '%';
+
+      // Color
+      strengthBar.classList.remove('bg-red-500','bg-yellow-400','bg-green-400','bg-cyan-400');
+      if (strength <= 1) strengthBar.classList.add('bg-red-500');
+      else if (strength === 2) strengthBar.classList.add('bg-yellow-400');
+      else if (strength === 3) strengthBar.classList.add('bg-green-400');
+      else strengthBar.classList.add('bg-cyan-400');
+    });
   </script>
 </body>
 </html>
