@@ -58,21 +58,24 @@
 
     ---
 
-    {{-- Search & Filters: Rounded corners, slight border glow on hover --}}
-    <form method="GET" action="{{ route('events.index') }}" class="rounded-3xl border border-cyan-400/10 bg-slate-900/70 backdrop-blur-lg p-6 shadow-2xl transition duration-300 hover:border-cyan-400/20">
-      <div class="grid grid-cols-1 md:grid-cols-6 gap-5">
-        {{-- Input/Select Styling --}}
-        @php
-            $input_classes = "w-full rounded-xl bg-slate-800 border border-slate-700 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition duration-200";
-            $label_classes = "block text-xs font-semibold uppercase text-cyan-400 mb-1 tracking-wider";
-        @endphp
+    {{-- Search & Filters: Re-ordered for the requested flow --}}
+    <form method="GET" action="{{ route('events.index') }}" class="rounded-3xl border border-cyan-400/10 bg-slate-900/70 backdrop-blur-lg p-6 shadow-2xl transition duration-300 hover:border-cyan-400/20 space-y-5">
+      {{-- Input/Select Styling --}}
+      @php
+          $input_classes = "w-full rounded-xl bg-slate-800 border border-slate-700 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition duration-200";
+          $label_classes = "block text-xs font-semibold uppercase text-cyan-400 mb-1 tracking-wider";
+      @endphp
 
-        <div class="md:col-span-2">
-          <label class="{{ $label_classes }}">Search</label>
-          <input type="text" name="q" value="{{ $q ?? '' }}" placeholder="Title, venue, city…"
-                 class="{{ $input_classes }}">
-        </div>
+      {{-- 1. Full-width Search bar at the top --}}
+      <div>
+        <label class="{{ $label_classes }} text-base text-white">Search</label>
+        <input type="text" name="q" value="{{ $q ?? '' }}" placeholder="Title, description, venue, city…"
+               class="w-full rounded-xl bg-slate-800 border border-slate-700 px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition duration-200">
+      </div>
 
+      {{-- 2. Filtering methods (City, Status, Dates, Prices) --}}
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pt-3 border-t border-slate-800">
+        {{-- Row 1: City and Status --}}
         <div>
           <label class="{{ $label_classes }}">City</label>
           <select name="city" class="{{ $input_classes }}">
@@ -93,6 +96,7 @@
           </select>
         </div>
 
+        {{-- Row 2: Date Range --}}
         <div>
           <label class="{{ $label_classes }}">From Date</label>
           <input type="date" name="date_from" value="{{ $dateFrom ?? '' }}" class="{{ $input_classes }}">
@@ -102,9 +106,8 @@
           <label class="{{ $label_classes }}">To Date</label>
           <input type="date" name="date_to" value="{{ $dateTo ?? '' }}" class="{{ $input_classes }}">
         </div>
-      </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-6 gap-5 mt-5">
+        {{-- Row 3: Price Range --}}
         <div>
           <label class="{{ $label_classes }}">Min Price</label>
           <input type="number" step="0.01" name="price_min" value="{{ $priceMin ?? '' }}" placeholder="0.00" class="{{ $input_classes }}">
@@ -113,15 +116,16 @@
           <label class="{{ $label_classes }}">Max Price</label>
           <input type="number" step="0.01" name="price_max" value="{{ $priceMax ?? '' }}" placeholder="999.99" class="{{ $input_classes }}">
         </div>
-
-        <div class="md:col-span-4 flex items-end gap-3">
-          <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 font-semibold text-white shadow-md transition duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-cyan-500">
-            🔍 Apply Filters
-          </button>
-          <a href="{{ route('events.index') }}" class="px-6 py-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 font-medium transition duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-slate-500">
-            Clear Filters
-          </a>
-        </div>
+      </div>
+      
+      {{-- 3. Action Buttons at the bottom right --}}
+      <div class="flex items-center gap-3 justify-end pt-3 border-t border-slate-800">
+        <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 font-semibold text-white shadow-md transition duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-cyan-500">
+          🔍 Apply Filters
+        </button>
+        <a href="{{ route('events.index') }}" class="px-6 py-2.5 rounded-xl bg-slate-800 border border-slate-700 hover:bg-slate-700 font-medium transition duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-slate-500">
+          Clear Filters
+        </a>
       </div>
     </form>
 
