@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Event;
 use App\Models\Ticket;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth; // ✅ use the Auth facade
 use Carbon\Carbon;
 
 class CheckoutController extends Controller
@@ -76,7 +77,7 @@ class CheckoutController extends Controller
 
                 // Create the ticket (same fields you used before)
                 $ticket = Ticket::create([
-                    'user_id'        => auth()->id(),
+                    'user_id'        => Auth::id(),   // ✅ use Auth facade
                     'event_id'       => $ev->id,
                     'quantity'       => $qty,
                     'total_price'    => $ev->price * $qty,
@@ -86,8 +87,8 @@ class CheckoutController extends Controller
                 ]);
                 $ticketId = $ticket->id;
 
-                // Update stock
-                // If event has an 'available_tickets' column -> decrement it
+                // Update stock:
+                // If event has 'available_tickets' -> decrement it
                 // Else, if it has 'tickets_sold' -> increment it
                 $attrs = $ev->getAttributes();
                 if (array_key_exists('available_tickets', $attrs)) {
