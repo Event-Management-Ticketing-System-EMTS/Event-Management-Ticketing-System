@@ -10,6 +10,18 @@
       <i class="fa fa-arrow-left mr-2"></i> Back to Event
     </a>
 
+    {{-- Flash (in case of server-side redirects) --}}
+    @if(session('error'))
+      <div class="mb-4 rounded-lg bg-red-500/10 border border-red-500/30 p-3 text-red-300">
+        {{ session('error') }}
+      </div>
+    @endif
+    @if(session('success'))
+      <div class="mb-4 rounded-lg bg-emerald-500/10 border border-emerald-500/30 p-3 text-emerald-300">
+        {{ session('success') }}
+      </div>
+    @endif
+
     <div class="bg-slate-900/70 border border-slate-700 rounded-2xl p-6 shadow-xl">
       <h1 class="text-2xl font-bold text-cyan-300 mb-4">Checkout</h1>
 
@@ -26,7 +38,11 @@
 
         <!-- Payment methods -->
         <div class="rounded-xl bg-slate-800/60 border border-slate-700 p-5">
-          <form id="checkoutForm" action="{{ route('checkout.process', $event->id) }}" method="POST" class="space-y-5">
+          <form id="checkoutForm"
+                action="{{ route('checkout.process', $event->id) }}"
+                method="POST"
+                data-redirect="{{ route('tickets.my') }}"
+                class="space-y-5">
             @csrf
             <input type="hidden" name="qty" value="{{ $qty }}">
 
@@ -72,19 +88,58 @@
   <div id="processingOverlay" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50">
     <div class="text-center">
       <div class="animate-spin h-12 w-12 border-4 border-sky-400 border-t-transparent rounded-full mx-auto mb-4"></div>
-      <p class="text-slate-200">Processing payment…</p>
+      <p id="processingText" class="text-slate-200">Processing payment…</p>
     </div>
   </div>
 </div>
 
+{{-- Handle submit via fetch so we can show success + force redirect --}}
 <script>
-  // Show a processing overlay while the POST happens
   const form = document.getElementById('checkoutForm');
   const overlay = document.getElementById('processingOverlay');
+  const textEl = document.getElementById('processingText');
+  const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-  form.addEventListener('submit', function () {
-    overlay.classList.remove('hidden');
-    overlay.classList.add('flex');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    overlay.classList.remove('hidden'); overlay.classList.add('flex');
+    textEl.textContent = 'Processing payment…';
+
+    try {
+      const formData = new FormData(form);
+      const r = await fetch(form.action, {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': token,
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json'
+        },
+        body: formData,
+        credentials: 'same-origin'
+      });
+
+      let data = {};
+      const ct = r.headers.get('content-type') || '';
+      if (ct.includes('application/json')) {
+        data = await r.json();
+      } else {
+        // If server returned a redirect page, just go to My Tickets
+        textEl.textContent = 'Payment complete. Redirecting…';
+        return setTimeout(() => window.location.href = form.dataset.redirect, 600);
+      }
+
+      if (r.ok && (data.success ?? true)) {
+        textEl.textContent = 'Payment successful! Redirecting…';
+        setTimeout(() => window.location.href = (data.redirect || form.dataset.redirect), 800);
+      } else {
+        overlay.classList.add('hidden'); overlay.classList.remove('flex');
+        alert(data.message || 'Payment failed. Please try again.');
+      }
+    } catch (err) {
+      overlay.classList.add('hidden'); overlay.classList.remove('flex');
+      console.error(err);
+      alert('Network error. Please try again.');
+    }
   });
 </script>
 @endsection
