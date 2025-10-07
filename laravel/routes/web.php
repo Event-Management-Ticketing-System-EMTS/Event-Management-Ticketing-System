@@ -20,7 +20,7 @@ use App\Http\Controllers\SimplePaymentController;
 use App\Http\Controllers\SimpleTicketController;
 use App\Http\Controllers\TestNotificationController;
 use App\Http\Controllers\UserDashboardController;
-
+use App\Http\Controllers\CheckoutController;
 /*
 |--------------------------------------------------------------------------
 | Public (guest-only)
@@ -169,4 +169,18 @@ Route::middleware('auth')->group(function () {
 
     // Shared demo page (optional)
     Route::view('/tailwind-demo', 'tailwind-demo')->name('tailwind.demo');
+});
+
+
+Route::middleware('auth')->group(function () {
+    // existing...
+    Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+
+    // ✅ new checkout routes
+    Route::get('/events/{event}/checkout', [CheckoutController::class, 'show'])
+        ->name('checkout.show');
+    Route::post('/events/{event}/checkout', [CheckoutController::class, 'process'])
+        ->name('checkout.process');
+
+    // your tickets page etc...
 });

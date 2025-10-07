@@ -115,6 +115,15 @@
         <div class="md:col-span-1">
           <div class="bg-slate-800/80 backdrop-blur-sm rounded-lg p-6 border border-slate-700/50">
             <h2 class="text-xl font-semibold text-cyan-300 mb-4">Ticket Information</h2>
+
+            @php
+              $available = max(0, ($event->total_tickets - $event->tickets_sold));
+              $isPublished = ($event->status === 'published');
+              $isPast = \Carbon\Carbon::parse($event->event_date)->isPast();
+              $canBuy = $isPublished && !$isPast && $available > 0;
+              $maxQty = $available > 0 ? min(10, $available) : 1;
+            @endphp
+
             <div class="space-y-4">
               <div class="flex justify-between items-center">
                 <span class="text-slate-400">Price:</span>
@@ -126,13 +135,15 @@
                   @endif
                 </span>
               </div>
+
               <div class="flex justify-between items-center">
                 <span class="text-slate-400">Available Tickets:</span>
-                <span class="font-bold text-cyan-300">{{ $event->total_tickets - $event->tickets_sold }}</span>
+                <span class="font-bold text-cyan-300">{{ $available }}</span>
               </div>
+
               <div class="flex justify-between items-center">
                 <span class="text-slate-400">Status:</span>
-                @if($event->status == 'published')
+                @if($isPublished)
                   <span class="inline-flex rounded-full bg-green-500/10 px-2 py-1 text-xs font-medium text-green-400 ring-1 ring-inset ring-green-500/30">Published</span>
                 @elseif($event->status == 'cancelled')
                   <span class="inline-flex rounded-full bg-red-500/10 px-2 py-1 text-xs font-medium text-red-400 ring-1 ring-inset ring-red-500/30">Cancelled</span>
@@ -140,26 +151,47 @@
                   <span class="inline-flex rounded-full bg-amber-500/10 px-2 py-1 text-xs font-medium text-amber-400 ring-1 ring-inset ring-amber-500/30">Draft</span>
                 @endif
               </div>
+
               <div class="flex justify-between items-center">
                 <span class="text-slate-400">Created by:</span>
                 <span class="font-bold text-cyan-300">{{ $event->organizer->name ?? 'Unknown' }}</span>
               </div>
             </div>
 
-            {{-- Buy form --}}
+            {{-- Checkout link (replaces instant purchase) --}}
             <div class="mt-6">
-              <form method="POST" action="{{ route('tickets.purchase', $event->id) }}">
-                @csrf
-                <div class="flex items-center gap-2 mb-4">
+              <form method="GET" action="{{ route('checkout.show', $event->id) }}" class="space-y-4">
+                <div class="flex items-center gap-2">
                   <label for="qty" class="text-slate-400 text-sm">Quantity:</label>
-                  <input type="number" id="qty" name="qty" value="1" min="1" max="10"
-                         class="w-20 rounded-lg border border-slate-600 bg-slate-900 text-center text-slate-100">
+                  <input
+                      type="number"
+                      id="qty"
+                      name="qty"
+                      value="1"
+                      min="1"
+                      max="{{ $maxQty }}"
+                      {{ $canBuy ? '' : 'disabled' }}
+                      class="w-20 rounded-lg border border-slate-600 bg-slate-900 text-center text-slate-100 disabled:opacity-60 disabled:cursor-not-allowed">
                 </div>
+
                 <button type="submit"
-                        class="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-bold hover:from-cyan-400 hover:to-blue-400 transition-all shadow-md">
-                  Buy Tickets
+                        {{ $canBuy ? '' : 'disabled' }}
+                        class="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-bold hover:from-cyan-400 hover:to-blue-400 transition-all shadow-md disabled:opacity-60 disabled:cursor-not-allowed">
+                  {{ $canBuy ? 'Buy Tickets' : ($available < 1 ? 'Sold Out' : ($isPast ? 'Event Passed' : 'Unavailable')) }}
                 </button>
               </form>
+
+              @if(!$canBuy)
+                <p class="mt-3 text-xs text-slate-400">
+                  @if($available < 1)
+                    This event is currently sold out.
+                  @elseif($isPast)
+                    This event has already taken place.
+                  @else
+                    This event is not published yet.
+                  @endif
+                </p>
+              @endif
             </div>
           </div>
         </div>
