@@ -56,19 +56,17 @@ class EventController extends Controller
         if (!empty($status)) {
             $query->where('status', $status);
         } else {
-            // Default: show only published events if no status filter
-            $query->where('status', 'published');
+            // Default: show both published AND draft events (exclude cancelled)
+            $query->whereIn('status', ['published', 'draft']);
         }
 
         // Filter by approval status (pending, approved, rejected)
         if (!empty($approvalStatus)) {
             $query->where('approval_status', $approvalStatus);
         } else {
-            // Default: show only approved events if no approval filter
-            // BUT if user explicitly selected a status, show all approval statuses
-            if (empty($status)) {
-                $query->where('approval_status', 'approved');
-            }
+            // Default: show all approval statuses when no filter is applied
+            // This allows users to see draft events that are pending approval
+            // Users can still filter by approval status if needed
         }
 
         // 4) Apply filters
