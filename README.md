@@ -986,7 +986,8 @@ Each PNG is previewed below, and each SVG link opens a zoomable version.
 A high-level sequence diagram combining all core flows (user registration, event creation, ticket booking, admin approval, and notification).
 
 ![Combined Overview](docs/diagrams/seq_0_combined_overview.png)  
-[View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/use_case_diagram.svg)
+[View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/seq_0_combined_overview.svg)
+
 
 
 
@@ -1003,7 +1004,8 @@ Covers both registration and login flows — showing how the `RegisterController
 
 #### 2️⃣ Browse Events & View Details
 ![Browse Events & View Details](docs/diagrams/seq_2_browse_events.png)  
-🔗 [View in SVG (Zoomable)](docs/diagrams/seq_2_browse_events.svg)
+
+🔗 [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/seq_2_browse_events.svg)
 
 **Description:**  
 Depicts how the `EventController` retrieves event lists and displays details through the MVC rendering process.
@@ -1012,7 +1014,9 @@ Depicts how the `EventController` retrieves event lists and displays details thr
 
 #### 3️⃣ Ticket Purchase
 ![Ticket Purchase](docs/diagrams/seq_3_ticket_purchase.png)  
-🔗 [View in SVG (Zoomable)](docs/diagrams/seq_3_ticket_purchase.svg)
+
+🔗 [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/seq_3_ticket_purchase.svg)
+
 
 **Description:**  
 Covers the entire purchase flow — checking availability, booking, marking payment, and sending notifications via `TicketObserver`.
@@ -1021,7 +1025,8 @@ Covers the entire purchase flow — checking availability, booking, marking paym
 
 #### 4️⃣ Admin Event Approval
 ![Admin Event Approval](docs/diagrams/seq_4_admin_approval.png)  
-🔗 [View in SVG (Zoomable)](docs/diagrams/seq_4_admin_approval.svg)
+
+🔗 [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/seq_4_admin_approval.svg)
 
 **Description:**  
 Demonstrates how the `SimpleEventApprovalController` handles admin decisions (approve/reject) and triggers notifications.
@@ -1076,7 +1081,7 @@ These diagrams show how data moves between processes, entities, and data stores 
 
 ### ⚙️ Activity Diagram
 ![Activity Diagram](docs/diagrams/activity_diagram.png)  
-🔗 [View in SVG (Zoomable)](docs/diagrams/activity_diagram.svg)
+🔗 [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/activity_diagram.svg)
 
 **Description:**  
 Describes the flow of control from login and event creation to ticket purchase, approval, and notifications.
@@ -1085,7 +1090,9 @@ Describes the flow of control from login and event creation to ticket purchase, 
 
 ### 🧩 Class Diagram
 ![Class Diagram](docs/diagrams/class_diagram.png)  
-🔗 [View in SVG (Zoomable)](docs/diagrams/class_diagram.svg)
+
+🔗 [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/class_diagram.svg)
+
 
 **Description:**  
 Shows the structure of the EMTS architecture, including relationships between Controllers, Models, Services, and Observers under the MVC + Service Layer pattern.
