@@ -26,6 +26,7 @@ use App\Http\Controllers\CheckoutController;
 | Public (guest-only)
 |--------------------------------------------------------------------------
 */
+
 Route::middleware('guest')->group(function () {
     // Login (both route names for compatibility)
     Route::get('/', [AuthController::class, 'showLogin'])->name('login');
@@ -52,9 +53,6 @@ Route::view('/welcome', 'welcome')->name('welcome');
 
 // Public event browsing (view-only)
 Route::get('/events', [EventController::class, 'index'])->name('events.index');
-Route::get('/events/{event}', [EventController::class, 'show'])
-    ->whereNumber('event') // ✅ Fix: prevents conflict with /events/create
-    ->name('events.show');
 
 /*
 |--------------------------------------------------------------------------
@@ -76,6 +74,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Event management (CRUD except index/show which are public)
+    // ⚠️ IMPORTANT: Define resource BEFORE the public show route to prevent conflicts
     Route::resource('events', EventController::class)->except(['index', 'show']);
 
     // Event statistics
@@ -171,10 +170,21 @@ Route::middleware('auth')->group(function () {
     Route::view('/tailwind-demo', 'tailwind-demo')->name('tailwind.demo');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Public event detail page (must come AFTER authenticated routes)
+|--------------------------------------------------------------------------
+*/
+Route::get('/events/{event}', [EventController::class, 'show'])
+    ->whereNumber('event')
+    ->name('events.show');
 
+/*
+|--------------------------------------------------------------------------
+| Authenticated checkout routes
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth')->group(function () {
-    // existing...
-    Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
 
     // ✅ new checkout routes
     Route::get('/events/{event}/checkout', [CheckoutController::class, 'show'])

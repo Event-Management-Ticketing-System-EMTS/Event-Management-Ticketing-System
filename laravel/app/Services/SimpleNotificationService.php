@@ -44,7 +44,7 @@ class SimpleNotificationService
             'message' => "{$buyer->name} bought {$ticket->quantity} ticket(s) for '{$event->title}'.",
             'type'    => Notification::TYPE_TICKET_PURCHASED,
             'is_read' => false,
-            'data'    => $this->baseData($ticket) + ['buyer' => $buyer->only('id','name','email')],
+            'data'    => $this->baseData($ticket) + ['buyer' => $buyer->only('id', 'name', 'email')],
         ]);
 
         // also notify buyer (see below)
@@ -67,7 +67,7 @@ class SimpleNotificationService
             'message' => "{$buyer->name} cancelled {$ticket->quantity} ticket(s) for '{$event->title}'.",
             'type'    => Notification::TYPE_TICKET_CANCELLED,
             'is_read' => false,
-            'data'    => $this->baseData($ticket) + ['buyer' => $buyer->only('id','name','email')],
+            'data'    => $this->baseData($ticket) + ['buyer' => $buyer->only('id', 'name', 'email')],
         ]);
 
         // also notify buyer (see below)
@@ -114,6 +114,66 @@ class SimpleNotificationService
                 'event_title' => $event->title,
                 'event_date'  => (string) $event->event_date,
                 'venue'       => $event->venue,
+            ],
+        ]);
+    }
+
+    /* ---------- Event approval notifications ---------- */
+
+    public function notifyEventApproval(\App\Models\Event $event, ?string $comments = null): void
+    {
+        $organizer = $event->organizer;
+
+        if (!$organizer) {
+            return;
+        }
+
+        $message = "Your event '{$event->title}' has been approved and is now published!";
+        if ($comments) {
+            $message .= " Admin comments: {$comments}";
+        }
+
+        $this->make([
+            'user_id' => $organizer->id,
+            'title'   => 'Event Approved ✅',
+            'message' => $message,
+            'type'    => Notification::TYPE_EVENT_APPROVED,
+            'is_read' => false,
+            'data'    => [
+                'event_id'    => $event->id,
+                'event_title' => $event->title,
+                'event_date'  => (string) $event->event_date,
+                'venue'       => $event->venue,
+                'admin_comments' => $comments,
+            ],
+        ]);
+    }
+
+    public function notifyEventRejection(\App\Models\Event $event, ?string $comments = null): void
+    {
+        $organizer = $event->organizer;
+
+        if (!$organizer) {
+            return;
+        }
+
+        $message = "Your event '{$event->title}' has been rejected.";
+        if ($comments) {
+            $message .= " Reason: {$comments}";
+        }
+
+        $this->make([
+            'user_id' => $organizer->id,
+            'title'   => 'Event Rejected ❌',
+            'message' => $message,
+            'type'    => Notification::TYPE_EVENT_REJECTED,
+            'is_read' => false,
+            'data'    => [
+                'event_id'    => $event->id,
+                'event_title' => $event->title,
+                'event_date'  => (string) $event->event_date,
+                'venue'       => $event->venue,
+                'admin_comments' => $comments,
             ],
         ]);
     }

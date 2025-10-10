@@ -30,6 +30,8 @@ class Notification extends Model
     public const TYPE_TICKET_CANCELLED  = 'ticket_cancelled';
     public const TYPE_TICKET_PURCHASED  = 'ticket_purchased';
     public const TYPE_EVENT_UPDATE      = 'event_update';
+    public const TYPE_EVENT_APPROVED    = 'event_approved';  // ✅ New type
+    public const TYPE_EVENT_REJECTED    = 'event_rejected';  // ✅ New type
     public const TYPE_SYSTEM            = 'system'; // fallback type
 
     /**

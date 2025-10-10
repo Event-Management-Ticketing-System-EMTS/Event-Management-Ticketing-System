@@ -12,10 +12,17 @@ use Illuminate\Support\Facades\Auth;
  */
 class SimpleEventApprovalService
 {
+    protected $notificationService;
+
+    public function __construct(SimpleNotificationService $notificationService)
+    {
+        $this->notificationService = $notificationService;
+    }
     /**
      * Approve an event
+     * When approved, automatically publish the event so it appears in browse section
      */
-    public function approve(Event $event, string $comments = null): bool
+    public function approve(Event $event, ?string $comments = null): bool
     {
         $admin = Auth::user();
 
@@ -26,10 +33,14 @@ class SimpleEventApprovalService
 
         $event->update([
             'approval_status' => 'approved',
+            'status' => 'published', // ✅ Auto-publish when approved
             'admin_comments' => $comments,
             'reviewed_by' => $admin->id,
             'reviewed_at' => now(),
         ]);
+
+        // ✅ Notify the organizer that their event is now live
+        $this->notificationService->notifyEventApproval($event, $comments);
 
         return true;
     }
@@ -37,7 +48,7 @@ class SimpleEventApprovalService
     /**
      * Reject an event
      */
-    public function reject(Event $event, string $comments = null): bool
+    public function reject(Event $event, ?string $comments = null): bool
     {
         $admin = Auth::user();
 
@@ -52,6 +63,9 @@ class SimpleEventApprovalService
             'reviewed_by' => $admin->id,
             'reviewed_at' => now(),
         ]);
+
+        // ✅ Notify the organizer about the rejection
+        $this->notificationService->notifyEventRejection($event, $comments);
 
         return true;
     }

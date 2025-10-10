@@ -164,15 +164,3 @@
   </main>
 </div>
 @endsection
-                </div>
-
-                <div class="flex justify-end">
-                    <button type="submit" class="px-6 py-2 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-lg font-bold hover:from-cyan-600 hover:to-blue-600 transition-all">
-                        Update Event
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-@endsection
