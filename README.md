@@ -1820,38 +1820,19 @@ class AdvancedTicketStrategy implements TicketUpdateStrategyInterface
 #### Strategy Selection Flow
 
 ```mermaid
-classDiagram
-    class TicketAvailabilityService {
-        -strategy: TicketUpdateStrategyInterface
-        +setStrategy(strategy) void
-        +updateEventAvailability(eventId) bool
-        +purchaseTickets(eventId, userId, quantity) array
-    }
-
-    class TicketUpdateStrategyInterface {
-        <<interface>>
-        +updateAvailability(event) bool
-        +isAvailable(event, quantity) bool
-        +getAvailableCount(event) int
-    }
-
-    class SimpleTicketStrategy {
-        +updateAvailability(event) bool
-        +isAvailable(event, quantity) bool
-        +getAvailableCount(event) int
-    }
-
-    class AdvancedTicketStrategy {
-        -BUFFER_PERCENTAGE: float
-        +updateAvailability(event) bool
-        +isAvailable(event, quantity) bool
-        +getAvailableCount(event) int
-    }
-
-    TicketAvailabilityService --> TicketUpdateStrategyInterface : uses
-    TicketUpdateStrategyInterface <|-- SimpleTicketStrategy
-    TicketUpdateStrategyInterface <|-- AdvancedTicketStrategy
+flowchart TD
+    subgraph "Strategy Selection Process"
+        A[Check Event Type] --> B{High-Demand Event?}
+        B -->|Yes| C[Use Advanced Strategy]
+        B -->|No| D[Use Simple Strategy]
+        C --> E[Apply Buffer for Availability]
+        D --> F[Direct Availability Calculation]
+        E --> G[Return Strategy Result]
+        F --> G
+    end
 ```
+
+This diagram shows how the system selects between simple and advanced ticket availability strategies based on the event demand level. High-demand events use a more complex strategy with buffer allocation.
 
 ### 11. Real-time Component Pattern - Ticket Availability Widget
 
