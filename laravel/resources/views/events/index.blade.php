@@ -45,7 +45,7 @@
   </header>
 
   <main class="max-w-7xl mx-auto p-6 lg:p-10 space-y-8">
-    
+
     {{-- Page header: Updated typography and button style --}}
     <div class="flex justify-between items-center pb-4 border-b border-slate-800">
       <h1 class="text-4xl font-extrabold text-white">Browse Events ✨</h1>
@@ -75,7 +75,7 @@
 
       {{-- 2. Filtering methods (City, Status, Dates, Prices) --}}
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 pt-3 border-t border-slate-800">
-        {{-- Row 1: City and Status --}}
+        {{-- Row 1: City, Status, and Approval Status --}}
         <div>
           <label class="{{ $label_classes }}">City</label>
           <select name="city" class="{{ $input_classes }}">
@@ -87,11 +87,21 @@
         </div>
 
         <div>
-          <label class="{{ $label_classes }}">Status</label>
+          <label class="{{ $label_classes }}">Event Status</label>
           <select name="status" class="{{ $input_classes }}">
-            <option value="">Any</option>
+            <option value="">Any (Default: Published)</option>
             @foreach(($statuses ?? []) as $key => $label)
               <option value="{{ $key }}" @selected(($status ?? null) === $key)>{{ $label }}</option>
+            @endforeach
+          </select>
+        </div>
+
+        <div>
+          <label class="{{ $label_classes }}">Approval Status</label>
+          <select name="approval_status" class="{{ $input_classes }}">
+            <option value="">Any (Default: Approved)</option>
+            @foreach(($approvalStatuses ?? []) as $key => $label)
+              <option value="{{ $key }}" @selected(($approvalStatus ?? null) === $key)>{{ $label }}</option>
             @endforeach
           </select>
         </div>
@@ -117,7 +127,7 @@
           <input type="number" step="0.01" name="price_max" value="{{ $priceMax ?? '' }}" placeholder="999.99" class="{{ $input_classes }}">
         </div>
       </div>
-      
+
       {{-- 3. Action Buttons at the bottom right --}}
       <div class="flex items-center gap-3 justify-end pt-3 border-t border-slate-800">
         <button type="submit" class="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 font-semibold text-white shadow-md transition duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-cyan-500">
