@@ -40,39 +40,50 @@ class EventController extends Controller
         );
 
         // 2) Filters (read from query string)
-        $q        = trim((string) $request->get('q', ''));
-        $city     = $request->get('city');
-        $status   = $request->get('status');     // optional — if omitted, we default to published+approved
-        $from     = $request->get('date_from');
-        $to       = $request->get('date_to');
-        $minPrice = $request->get('price_min');
-        $maxPrice = $request->get('price_max');
+        $q              = trim((string) $request->get('q', ''));
+        $city           = $request->get('city');
+        $status         = $request->get('status');          // draft, published, cancelled
+        $approvalStatus = $request->get('approval_status'); // pending, approved, rejected
+        $from           = $request->get('date_from');
+        $to             = $request->get('date_to');
+        $minPrice       = $request->get('price_min');
+        $maxPrice       = $request->get('price_max');
 
-        // 3) Base query: public should only see published + approved
-        $query = Event::query()
-            ->when(empty($status), function ($q) {
-                $q->where('status', 'published')
-                  ->where('approval_status', 'approved');
-            }, function ($q) use ($status) {
-                // If status filter is explicitly given, respect it (useful for admin screens)
-                $q->where('status', $status);
-            });
+        // 3) Base query with smart filtering
+        $query = Event::query();
+
+        // Filter by status (draft, published, cancelled)
+        if (!empty($status)) {
+            $query->where('status', $status);
+        } else {
+            // Default: show both published AND draft events (exclude cancelled)
+            $query->whereIn('status', ['published', 'draft']);
+        }
+
+        // Filter by approval status (pending, approved, rejected)
+        if (!empty($approvalStatus)) {
+            $query->where('approval_status', $approvalStatus);
+        } else {
+            // Default: show all approval statuses when no filter is applied
+            // This allows users to see draft events that are pending approval
+            // Users can still filter by approval status if needed
+        }
 
         // 4) Apply filters
         $query
             ->when($q, function ($qb) use ($q) {
                 $qb->where(function ($inner) use ($q) {
                     $inner->where('title', 'like', "%{$q}%")
-                          ->orWhere('description', 'like', "%{$q}%")
-                          ->orWhere('venue', 'like', "%{$q}%")
-                          ->orWhere('city', 'like', "%{$q}%");
+                        ->orWhere('description', 'like', "%{$q}%")
+                        ->orWhere('venue', 'like', "%{$q}%")
+                        ->orWhere('city', 'like', "%{$q}%");
                 });
             })
-            ->when($city, fn ($qb) => $qb->where('city', $city))
-            ->when($from, fn ($qb) => $qb->whereDate('event_date', '>=', $from))
-            ->when($to, fn ($qb)   => $qb->whereDate('event_date', '<=', $to))
-            ->when(strlen((string)$minPrice) > 0, fn ($qb) => $qb->where('price', '>=', (float) $minPrice))
-            ->when(strlen((string)$maxPrice) > 0, fn ($qb) => $qb->where('price', '<=', (float) $maxPrice));
+            ->when($city, fn($qb) => $qb->where('city', $city))
+            ->when($from, fn($qb) => $qb->whereDate('event_date', '>=', $from))
+            ->when($to, fn($qb)   => $qb->whereDate('event_date', '<=', $to))
+            ->when(strlen((string)$minPrice) > 0, fn($qb) => $qb->where('price', '>=', (float) $minPrice))
+            ->when(strlen((string)$maxPrice) > 0, fn($qb) => $qb->where('price', '<=', (float) $maxPrice));
 
         // 5) Sorting + pagination
         $events = $query
@@ -81,8 +92,9 @@ class EventController extends Controller
             ->withQueryString();
 
         // 6) Options for filters (dropdowns)
-        $cities   = Event::select('city')->whereNotNull('city')->distinct()->orderBy('city')->pluck('city');
-        $statuses = ['published' => 'Published', 'draft' => 'Draft', 'cancelled' => 'Cancelled'];
+        $cities          = Event::select('city')->whereNotNull('city')->distinct()->orderBy('city')->pluck('city');
+        $statuses        = ['published' => 'Published', 'draft' => 'Draft', 'cancelled' => 'Cancelled'];
+        $approvalStatuses = ['approved' => 'Approved', 'pending' => 'Pending', 'rejected' => 'Rejected'];
 
         return view('events.index', [
             // Data
@@ -96,12 +108,14 @@ class EventController extends Controller
             'q'             => $q,
             'city'          => $city,
             'status'        => $status,
+            'approvalStatus' => $approvalStatus,
             'dateFrom'      => $from,
             'dateTo'        => $to,
             'priceMin'      => $minPrice,
             'priceMax'      => $maxPrice,
             'cities'        => $cities,
             'statuses'      => $statuses,
+            'approvalStatuses' => $approvalStatuses,
         ]);
     }
 
