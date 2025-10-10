@@ -1851,7 +1851,7 @@ classDiagram
     TicketAvailabilityService --> TicketUpdateStrategyInterface : uses
     TicketUpdateStrategyInterface <|-- SimpleTicketStrategy
     TicketUpdateStrategyInterface <|-- AdvancedTicketStrategy
-
+```
 
 ### 11. Real-time Component Pattern - Ticket Availability Widget
 
