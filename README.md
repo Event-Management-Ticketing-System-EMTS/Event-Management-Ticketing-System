@@ -2154,66 +2154,65 @@ The system supports different notification types with rich data:
  }
 }
 ```
-```
 
 ### Entity Relationship Diagram
 
 ```mermaid
 erDiagram
     USERS {
-    bigint id PK
-    string name
-    string email
-    string password
-    enum role
-    boolean email_verified
-    string avatar_path
-    timestamp created_at
-    timestamp updated_at
- }
- 
+        bigint id PK
+        string name
+        string email
+        string password
+        enum role
+        boolean email_verified
+        string avatar_path
+        timestamp created_at
+        timestamp updated_at
+    }
+    
     EVENTS {
-    bigint id PK
-    string title
-    text description
-    date event_date
-    time start_time
-    time end_time
-    string venue
-    string address
-    string city
-    int total_tickets
-    int tickets_sold
-    decimal price
-    enum status
-    bigint organizer_id FK
-    string image_path
-    timestamp created_at
-    timestamp updated_at
- }
- 
+        bigint id PK
+        string title
+        text description
+        date event_date
+        time start_time
+        time end_time
+        string venue
+        string address
+        string city
+        int total_tickets
+        int tickets_sold
+        decimal price
+        enum status
+        bigint organizer_id FK
+        string image_path
+        timestamp created_at
+        timestamp updated_at
+    }
+    
     TICKETS {
-    bigint id PK
-    bigint event_id FK
-    bigint user_id FK
-    int quantity
-    decimal total_price
-    timestamp purchase_date
-    enum status
-    timestamp created_at
-    timestamp updated_at
- }
- 
+        bigint id PK
+        bigint event_id FK
+        bigint user_id FK
+        int quantity
+        decimal total_price
+        timestamp purchase_date
+        enum status
+        timestamp created_at
+        timestamp updated_at
+    }
+    
     LOGIN_LOGS {
-    bigint id PK
-    bigint user_id FK
-    string email
-    boolean success
-    string ip
-    text user_agent
-    timestamp created_at
- }
- 
+        bigint id PK
+        bigint user_id FK
+        string email
+        boolean success
+        string ip
+        text user_agent
+        timestamp created_at
+    }
+    
     USERS ||--o{ EVENTS : organizes
     USERS ||--o{ LOGIN_LOGS : generates
     USERS ||--o{ TICKETS : purchases
@@ -2221,9 +2220,7 @@ erDiagram
 ```
 
 ---
-
 ## 🎨 UI/UX Design System
-
 ### Design Philosophy
 Our design system follows a **dark theme with cyan accents** approach, emphasizing:
 
