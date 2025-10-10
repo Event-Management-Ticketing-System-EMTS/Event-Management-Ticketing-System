@@ -965,7 +965,40 @@ It includes both **static** and **dynamic** modeling through UML and DFD represe
 ### 🎯 Use Case Diagram
 The use case diagram provides an overview of all actors and their interactions with the system.
 
-![Use Case Diagram](docs/diagrams/use_case_diagram.png)  
+
+```mermaid
+%%{init: {"theme": "neutral", "themeVariables": { "actorBorder": "#333", "actorTextColor": "#000", "mainBkg": "#f9f9f9"}}}%%
+usecaseDiagram
+actor User
+actor Organizer
+actor Admin
+actor "Notification System" as NS
+
+rectangle EMTS {
+  User --> (Register/Login)
+  User --> (Browse Events)
+  User --> (Purchase Ticket)
+  User --> (Cancel Ticket)
+  User --> (Reset Password)
+  User --> (View Notifications)
+
+  Organizer --> (Create Event)
+  Organizer --> (Edit Event)
+  Organizer --> (Delete Event)
+  Organizer --> (View Event Status)
+  Organizer --> (Receive Notifications)
+
+  Admin --> (Approve/Reject Event)
+  Admin --> (Manage Users)
+  Admin --> (View Reports)
+  Admin --> (Respond to Support Queries)
+  Admin --> (Generate System Reports)
+
+  NS --> (Send Purchase Notification)
+  NS --> (Send Cancellation Notice)
+  NS --> (Send Approval Update)
+}
+
 🔗 [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/use_case_diagram.svg)
 
 
