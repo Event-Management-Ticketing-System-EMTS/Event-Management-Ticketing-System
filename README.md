@@ -1779,40 +1779,90 @@ setInterval(() => {
 -✅ **Real-time updates** -Always shows current availability
 -✅ **User-friendly** -Clear visual feedback
 -✅ **Mobile responsive** -Works on phones and tablets
+
+### Strategy Pattern - Ticket Availability Management
+
+#### Strategy Interface
+
+```php
+interface TicketUpdateStrategyInterface {
+    public function updateAvailability(Event $event): bool;
+    public function isAvailable(Event $event, int $requestedQuantity): bool;
     public function getAvailableCount(Event $event): int;
 }
+```
 
-// Simple Strategy -Basic calculation
+#### Simple Ticket Strategy
+
+```php
+// Simple Strategy - Basic calculation
 class SimpleTicketStrategy implements TicketUpdateStrategyInterface
 {
     public function updateAvailability(Event $event): bool
- {
- $soldTickets = Ticket::where('event_id', $event->id)
- ->where('status', 'confirmed')
- ->sum('quantity');
- 
- $event->update(['tickets_sold' => $soldTickets]);
-    return true;
- }
+    {
+        $soldTickets = Ticket::where('event_id', $event->id)
+            ->where('status', 'confirmed')
+            ->sum('quantity');
+        
+        $event->update(['tickets_sold' => $soldTickets]);
+        return true;
+    }
+    
+    public function isAvailable(Event $event, int $requestedQuantity): bool
+    {
+        $availableCount = $this->getAvailableCount($event);
+        return $availableCount >= $requestedQuantity;
+    }
+    
+    public function getAvailableCount(Event $event): int
+    {
+        return $event->total_tickets - $event->tickets_sold;
+    }
 }
+```
 
-// Advanced Strategy -Includes pending tickets and buffers
+#### Advanced Ticket Strategy
+
+```php
+// Advanced Strategy - Includes pending tickets and buffers
 class AdvancedTicketStrategy implements TicketUpdateStrategyInterface
 {
     private const BUFFER_PERCENTAGE = 0.05; // 5% buffer for high-demand events
- 
+    
+    public function updateAvailability(Event $event): bool
+    {
+        $soldTickets = Ticket::where('event_id', $event->id)
+            ->where('status', 'confirmed')
+            ->sum('quantity');
+            
+        // Also count pending tickets that are less than 15 minutes old
+        $pendingTickets = Ticket::where('event_id', $event->id)
+            ->where('status', 'pending')
+            ->where('created_at', '>', now()->subMinutes(15))
+            ->sum('quantity');
+            
+        $event->update(['tickets_sold' => $soldTickets + $pendingTickets]);
+        return true;
+    }
+    
     public function isAvailable(Event $event, int $requestedQuantity): bool
- {
- $availableCount = $this->getAvailableCount($event);
- 
- // Apply buffer for high-demand events (>80% sold)
-    if ($event->tickets_sold / $event->total_tickets > 0.8) {
- $buffer = (int) ($event->total_tickets * self::BUFFER_PERCENTAGE);
- $availableCount -= $buffer;
- }
- 
-    return $availableCount >= $requestedQuantity;
-
+    {
+        $availableCount = $this->getAvailableCount($event);
+        
+        // Apply buffer for high-demand events (>80% sold)
+        if ($event->tickets_sold / $event->total_tickets > 0.8) {
+            $buffer = (int) ($event->total_tickets * self::BUFFER_PERCENTAGE);
+            $availableCount -= $buffer;
+        }
+        
+        return $availableCount >= $requestedQuantity;
+    }
+    
+    public function getAvailableCount(Event $event): int
+    {
+        return $event->total_tickets - $event->tickets_sold;
+    }
+}
 ```
 
 #### Strategy Selection Flow 
