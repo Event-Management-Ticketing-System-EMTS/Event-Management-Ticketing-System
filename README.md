@@ -1817,7 +1817,7 @@ class AdvancedTicketStrategy implements TicketUpdateStrategyInterface
 
 ```
 
-**Strategy Selection Flow**:
+#### Strategy Selection Flow :
 
 ```mermaid
 classDiagram
