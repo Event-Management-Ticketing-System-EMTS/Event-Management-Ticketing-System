@@ -157,7 +157,6 @@ We followed a comprehensive, iterative approach to building this enterprise-leve
 ### Phase 1: Foundation & Security (Weeks 1-2)
 
 ```mermaid
-```mermaid
 graph TD
     A[Requirements Analysis] --> B[Database Design]
     B --> C[Authentication System]
