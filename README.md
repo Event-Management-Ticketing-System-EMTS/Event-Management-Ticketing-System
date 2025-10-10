@@ -954,6 +954,145 @@ classDiagram
 - **Security**: Prevents self-role modification and validates permissions
 - **UX Optimized**: Silent error handling, no intrusive popups
 
+
+## 🧠 System Diagrams & Visual Models
+
+The following section presents the visual system documentation of the **Event Management & Ticketing System (EMTS)**.  
+It includes both **static** and **dynamic** modeling through UML and DFD representations to illustrate the complete workflow and architecture of the system.
+
+---
+
+### 🎯 Use Case Diagram
+The use case diagram provides an overview of all actors and their interactions with the system.
+
+![Use Case Diagram](docs/diagrams/use_case_diagram.png)  
+🔗 [View in SVG (Zoomable)](docs/diagrams/use_case_diagram.svg)
+
+**Description:**  
+Represents how Users, Organizers, and Admins interact with the EMTS through key functionalities like event creation, booking, and management.
+
+---
+
+### 🔄 Sequence Diagrams
+The following sequence diagrams illustrate the interaction between users, controllers, services, and the database in EMTS (Event Management & Ticketing System).  
+Each PNG is previewed below, and each SVG link opens a zoomable version.
+
+---
+
+#### 🧩 Combined Overview
+A high-level sequence diagram combining all core flows (user registration, event creation, ticket booking, admin approval, and notification).
+
+![Combined Overview](docs/diagrams/seq_0_combined_overview.png)  
+🔗 [View in SVG (Zoomable)](docs/diagrams/seq_0_combined_overview.svg)
+
+---
+
+#### 1️⃣ Registration & Login
+![Registration & Login](docs/diagrams/seq_1_user_registration.png)  
+🔗 [View in SVG (Zoomable)](docs/diagrams/seq_1_user_registration.svg)
+
+**Description:**  
+Covers both registration and login flows — showing how the `RegisterController` and `AuthController` interact with the session and database.
+
+---
+
+#### 2️⃣ Browse Events & View Details
+![Browse Events & View Details](docs/diagrams/seq_2_browse_events.png)  
+🔗 [View in SVG (Zoomable)](docs/diagrams/seq_2_browse_events.svg)
+
+**Description:**  
+Depicts how the `EventController` retrieves event lists and displays details through the MVC rendering process.
+
+---
+
+#### 3️⃣ Ticket Purchase
+![Ticket Purchase](docs/diagrams/seq_3_ticket_purchase.png)  
+🔗 [View in SVG (Zoomable)](docs/diagrams/seq_3_ticket_purchase.svg)
+
+**Description:**  
+Covers the entire purchase flow — checking availability, booking, marking payment, and sending notifications via `TicketObserver`.
+
+---
+
+#### 4️⃣ Admin Event Approval
+![Admin Event Approval](docs/diagrams/seq_4_admin_approval.png)  
+🔗 [View in SVG (Zoomable)](docs/diagrams/seq_4_admin_approval.svg)
+
+**Description:**  
+Demonstrates how the `SimpleEventApprovalController` handles admin decisions (approve/reject) and triggers notifications.
+
+---
+
+#### 5️⃣ Ticket Cancellation
+![Ticket Cancellation](docs/diagrams/seq_5_ticket_cancellation.png)  
+🔗 [View in SVG (Zoomable)](docs/diagrams/seq_5_ticket_cancellation.svg)
+
+**Description:**  
+Explains how ticket cancellations are processed, events updated, and users notified through `SimpleBookingService` and `TicketObserver`.
+
+---
+
+#### 6️⃣ Password Reset Flow
+![Password Reset Flow](docs/diagrams/seq_6_password_reset.png)  
+🔗 [View in SVG (Zoomable)](docs/diagrams/seq_6_password_reset.svg)
+
+**Description:**  
+Shows the full password reset lifecycle — from token generation and email dispatch to password update and confirmation.
+
+---
+
+### 🧾 Data Flow Diagrams (DFD)
+These diagrams show how data moves between processes, entities, and data stores in EMTS.
+
+#### 🌐 Context Level DFD
+![Context Level DFD](docs/diagrams/dfd_context.png)  
+🔗 [View in SVG (Zoomable)](docs/diagrams/dfd_context.svg)
+
+---
+
+#### ⚙️ Level-0 DFD
+![Level-0 DFD](docs/diagrams/dfd_level0.png)  
+🔗 [View in SVG (Zoomable)](docs/diagrams/dfd_level0.svg)
+
+---
+
+#### 🔹 Level-1 DFDs
+
+| Process | PNG | SVG |
+|----------|------|------|
+| 1. User Management | ![User DFD](docs/diagrams/dfd_level1_user.png) | [View SVG](docs/diagrams/dfd_level1_user.svg) |
+| 2. Event Management | ![Event DFD](docs/diagrams/dfd_level1_event.png) | [View SVG](docs/diagrams/dfd_level1_event.svg) |
+| 3. Ticket Management | ![Ticket DFD](docs/diagrams/dfd_level1_ticket.png) | [View SVG](docs/diagrams/dfd_level1_ticket.svg) |
+| 4. Notification Management | ![Notification DFD](docs/diagrams/dfd_level1_notification.png) | [View SVG](docs/diagrams/dfd_level1_notification.svg) |
+| 5. Admin Management | ![Admin DFD](docs/diagrams/dfd_level1_admin.png) | [View SVG](docs/diagrams/dfd_level1_admin.svg) |
+| 6. Support & Reports | ![Support DFD](docs/diagrams/dfd_level1_support.png) | [View SVG](docs/diagrams/dfd_level1_support.svg) |
+
+---
+
+### ⚙️ Activity Diagram
+![Activity Diagram](docs/diagrams/activity_diagram.png)  
+🔗 [View in SVG (Zoomable)](docs/diagrams/activity_diagram.svg)
+
+**Description:**  
+Describes the flow of control from login and event creation to ticket purchase, approval, and notifications.
+
+---
+
+### 🧩 Class Diagram
+![Class Diagram](docs/diagrams/class_diagram.png)  
+🔗 [View in SVG (Zoomable)](docs/diagrams/class_diagram.svg)
+
+**Description:**  
+Shows the structure of the EMTS architecture, including relationships between Controllers, Models, Services, and Observers under the MVC + Service Layer pattern.
+
+---
+
+### ✅ Tips
+- All PNGs will **display directly on GitHub**.  
+- Clicking any SVG link opens a **zoomable version** for clarity.  
+- Make sure your files are inside `docs/diagrams/` exactly as named above.
+
+
 ## 🗄️ Database Schema & Relationships
 
 ### Complete Entity Relationship Diagram
