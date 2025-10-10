@@ -965,39 +965,7 @@ It includes both **static** and **dynamic** modeling through UML and DFD represe
 ### 🎯 Use Case Diagram
 The use case diagram provides an overview of all actors and their interactions with the system.
 
-
-```mermaid
-%%{init: {"theme": "neutral", "themeVariables": { "actorBorder": "#333", "actorTextColor": "#000", "mainBkg": "#f9f9f9"}}}%%
-usecaseDiagram
-actor User
-actor Organizer
-actor Admin
-actor "Notification System" as NS
-
-rectangle EMTS {
-  User --> (Register/Login)
-  User --> (Browse Events)
-  User --> (Purchase Ticket)
-  User --> (Cancel Ticket)
-  User --> (Reset Password)
-  User --> (View Notifications)
-
-  Organizer --> (Create Event)
-  Organizer --> (Edit Event)
-  Organizer --> (Delete Event)
-  Organizer --> (View Event Status)
-  Organizer --> (Receive Notifications)
-
-  Admin --> (Approve/Reject Event)
-  Admin --> (Manage Users)
-  Admin --> (View Reports)
-  Admin --> (Respond to Support Queries)
-  Admin --> (Generate System Reports)
-
-  NS --> (Send Purchase Notification)
-  NS --> (Send Cancellation Notice)
-  NS --> (Send Approval Update)
-}
+![Use Case Diagram](docs/diagrams/use_case_diagram.png)  
 
 🔗 [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/use_case_diagram.svg)
 
@@ -1018,14 +986,15 @@ Each PNG is previewed below, and each SVG link opens a zoomable version.
 A high-level sequence diagram combining all core flows (user registration, event creation, ticket booking, admin approval, and notification).
 
 ![Combined Overview](docs/diagrams/seq_0_combined_overview.png)  
-[View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/seq_0_combined_overview.svg)
+[View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/use_case_diagram.svg)
+
 
 
 ---
 
 #### 1️⃣ Registration & Login
 ![Registration & Login](docs/diagrams/seq_1_user_registration.png)  
-🔗 [View in SVG (Zoomable)](docs/diagrams/seq_1_user_registration.svg)
+
 
 **Description:**  
 Covers both registration and login flows — showing how the `RegisterController` and `AuthController` interact with the session and database.
@@ -1061,7 +1030,7 @@ Demonstrates how the `SimpleEventApprovalController` handles admin decisions (ap
 
 #### 5️⃣ Ticket Cancellation
 ![Ticket Cancellation](docs/diagrams/seq_5_ticket_cancellation.png)  
-🔗 [View in SVG (Zoomable)](docs/diagrams/seq_5_ticket_cancellation.svg)
+
 
 **Description:**  
 Explains how ticket cancellations are processed, events updated, and users notified through `SimpleBookingService` and `TicketObserver`.
@@ -1070,7 +1039,7 @@ Explains how ticket cancellations are processed, events updated, and users notif
 
 #### 6️⃣ Password Reset Flow
 ![Password Reset Flow](docs/diagrams/seq_6_password_reset.png)  
-🔗 [View in SVG (Zoomable)](docs/diagrams/seq_6_password_reset.svg)
+
 
 **Description:**  
 Shows the full password reset lifecycle — from token generation and email dispatch to password update and confirmation.
@@ -1082,13 +1051,13 @@ These diagrams show how data moves between processes, entities, and data stores 
 
 #### 🌐 Context Level DFD
 ![Context Level DFD](docs/diagrams/dfd_context.png)  
-🔗 [View in SVG (Zoomable)](docs/diagrams/dfd_context.svg)
+
 
 ---
 
 #### ⚙️ Level-0 DFD
 ![Level-0 DFD](docs/diagrams/dfd_level0.png)  
-🔗 [View in SVG (Zoomable)](docs/diagrams/dfd_level0.svg)
+
 
 ---
 
