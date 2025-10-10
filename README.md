@@ -1812,8 +1812,6 @@ class AdvancedTicketStrategy implements TicketUpdateStrategyInterface
  }
  
     return $availableCount >= $requestedQuantity;
- }
-}
 
 ```
 
