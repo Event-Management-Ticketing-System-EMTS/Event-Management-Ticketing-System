@@ -966,7 +966,9 @@ It includes both **static** and **dynamic** modeling through UML and DFD represe
 The use case diagram provides an overview of all actors and their interactions with the system.
 
 ![Use Case Diagram](docs/diagrams/use_case_diagram.png)  
-🔗 [View in SVG (Zoomable)](docs/diagrams/use_case_diagram.svg)
+🔗 [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/use_case_diagram.svg)
+
+
 
 **Description:**  
 Represents how Users, Organizers, and Admins interact with the EMTS through key functionalities like event creation, booking, and management.
