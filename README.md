@@ -1677,32 +1677,35 @@ Performance & Testing:
 -✅ Performance monitoring and optimization
 -✅ Security audit and vulnerability assessment
 
----
- 'payment_reference' => $paymentReference,
- ]);
+```php
+public function markAsPaid(Ticket $ticket, ?float $paymentAmount = null, ?string $paymentReference = null): bool
+{
+    // State validation: only pending tickets can be marked as paid
+    if (!$ticket->isPending()) {
+        return false;
+    }
+
+    $ticket->update([
+        'payment_status' => 'paid',
+        'payment_amount' => $paymentAmount ?? $ticket->total_price,
+        'payment_reference' => $paymentReference,
+        'paid_at' => now(),
+    ]);
 
     return true;
- }
+}
 
- /**
+/**
  * Refund a ticket
  * This changes the payment status from 'paid' to 'refunded'
  */
-    public function refundTicket(Ticket $ticket, $refundReference = null)
- {
- // Only allow refund if ticket is paid
+public function refundTicket(Ticket $ticket, ?string $refundReference = null): bool
+{
+    // Only allow refund if ticket is paid
     if (!$ticket->isPaid()) {
-    return false;
- }
-
- $ticket->update([
- 'payment_status' => 'refunded',
- 'payment_reference' => $refundReference ?? 'Refunded at ' . now(),
- ]);
-
-    return true;
- }
-}
+        return false;
+    }
+}    
 ```
 
 **State Pattern Implementation**:
