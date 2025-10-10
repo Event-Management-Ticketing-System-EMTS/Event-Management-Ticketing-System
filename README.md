@@ -1817,7 +1817,7 @@ class AdvancedTicketStrategy implements TicketUpdateStrategyInterface
 
 ```
 
-#### Strategy Selection Flow :
+#### Strategy Selection Flow
 
 ```mermaid
 classDiagram
@@ -1827,31 +1827,31 @@ classDiagram
         +updateEventAvailability(eventId) bool
         +purchaseTickets(eventId, userId, quantity) array
     }
-    
+
     class TicketUpdateStrategyInterface {
         <<interface>>
         +updateAvailability(event) bool
         +isAvailable(event, quantity) bool
         +getAvailableCount(event) int
     }
-    
+
     class SimpleTicketStrategy {
         +updateAvailability(event) bool
         +isAvailable(event, quantity) bool
         +getAvailableCount(event) int
     }
-    
+
     class AdvancedTicketStrategy {
         -BUFFER_PERCENTAGE: float
         +updateAvailability(event) bool
         +isAvailable(event, quantity) bool
         +getAvailableCount(event) int
     }
-    
+
     TicketAvailabilityService --> TicketUpdateStrategyInterface : uses
     TicketUpdateStrategyInterface <|-- SimpleTicketStrategy
     TicketUpdateStrategyInterface <|-- AdvancedTicketStrategy
-```
+
 
 ### 11. Real-time Component Pattern - Ticket Availability Widget
 
