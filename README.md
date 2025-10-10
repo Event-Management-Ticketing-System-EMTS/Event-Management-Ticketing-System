@@ -31,36 +31,41 @@ The Event Management & Ticketing System (EMTS) is a complete full-stack web appl
 ### Core Features
 
 #### User Management & Authentication
--Multi-role Authentication (Admin, Organizer, User)
--Advanced User Management (Admin-only access with role transitions)
--Dynamic Role Management (Real-time role changes with validation)
--Security Features (Login tracking, secure password reset, role-based access control)
+
+- Multi-role Authentication (Admin, Organizer, User)
+- Advanced User Management (Admin-only access with role transitions)
+- Dynamic Role Management (Real-time role changes with validation)
+- Security Features (Login tracking, secure password reset, role-based access control)
 
 #### Event Management System
--Event Management (CRUD operations with sorting/filtering)
--Event Approval System (Admin-controlled event approval/rejection workflow)
--Real-time Ticket System (Live availability with automatic updates)
--Analytics Dashboard (Event statistics and insights)
+
+- Event Management (CRUD operations with sorting/filtering)
+- Event Approval System (Admin-controlled event approval/rejection workflow)
+- Real-time Ticket System (Live availability with automatic updates)
+- Analytics Dashboard (Event statistics and insights)
 
 #### Booking & Notification System
--Smart Notification System (Automatic organizer notifications via Observer Pattern)
--Advanced Booking Management (Complete booking lifecycle with filters & export)
--Real-time Updates (Live ticket availability and inventory tracking)
--Booking Analytics (Revenue tracking, booking statistics, export functionality)
+
+- Smart Notification System (Automatic organizer notifications via Observer Pattern)
+- Advanced Booking Management (Complete booking lifecycle with filters & export)
+- Real-time Updates (Live ticket availability and inventory tracking)
+- Booking Analytics (Revenue tracking, booking statistics, export functionality)
 
 #### Support Communication System
--User-Admin Support Communication (Direct messaging between users and organizers/admins)
--Event-Specific Support (Link support messages to specific events)
--Admin Support Dashboard (Centralized support message management)
--Status Tracking (Open → In Progress → Resolved workflow)
--Priority System (Low, Medium, High priority handling)
+
+- User-Admin Support Communication (Direct messaging between users and organizers/admins)
+- Event-Specific Support (Link support messages to specific events)
+- Admin Support Dashboard (Centralized support message management)
+- Status Tracking (Open → In Progress → Resolved workflow)
+- Priority System (Low, Medium, High priority handling)
 
 #### Technical Features
--Component-based UI (Reusable interface components)
--Design Patterns (Observer, Service Layer, Strategy, Component, Command, State patterns)
--Payment Processing (State-based payment lifecycle management)
--Password Reset System (Command-based secure password reset workflow)
--Responsive Design (Mobile-first approach with Tailwind CSS)
+
+- Component-based UI (Reusable interface components)
+- Design Patterns (Observer, Service Layer, Strategy, Component, Command, State patterns)
+- Payment Processing (State-based payment lifecycle management)
+- Password Reset System (Command-based secure password reset workflow)
+- Responsive Design (Mobile-first approach with Tailwind CSS)
 
 ---
 
@@ -72,24 +77,24 @@ Complete User-Admin Communication Platform
 
 ```mermaid
 graph LR
- A[User Question] --> B[Support Form]
- B --> C[Database Storage]
- C --> D[Admin Dashboard]
- D --> E[Admin Response]
- E --> F[User Notification]
- 
- style A fill:#e1f5fe
- style D fill:#f3e5f5
- style F fill:#e8f5e8
+    A[User Question] --> B[Support Form]
+    B --> C[Database Storage]
+    C --> D[Admin Dashboard]
+    D --> E[Admin Response]
+    E --> F[User Notification]
+    
+    style A fill:#e1f5fe
+    style D fill:#f3e5f5
+    style F fill:#e8f5e8
 ```
 
 Key Support Features:
 
--**Event-Specific Questions**: Users can link questions to specific events
--**Priority System**: Low, Medium, High priority classification
--**Admin Response System**: Complete response workflow with status tracking
--**Status Management**: Open → In Progress → Resolved lifecycle
--**Role-Based Access**: Only admins can view and respond to support messages
+- **Event-Specific Questions**: Users can link questions to specific events
+- **Priority System**: Low, Medium, High priority classification
+- **Admin Response System**: Complete response workflow with status tracking
+- **Status Management**: Open → In Progress → Resolved lifecycle
+- **Role-Based Access**: Only admins can view and respond to support messages
 
 ### Advanced Ticket Management
 
@@ -97,26 +102,26 @@ Real-Time Ticket Availability with Observer Pattern
 
 ```mermaid
 sequenceDiagram
- participant U as User
- participant T as Ticket System
- participant O as Observer
- participant N as Notifications
- participant A as Admin
+    participant U as User
+    participant T as Ticket System
+    participant O as Observer
+    participant N as Notifications
+    participant A as Admin
 
- U->>T: Purchase/Cancel Ticket
- T->>O: Trigger Event
- O->>T: Update Availability
- O->>N: Create Notification
- N->>A: Alert Organizer
+    U->>T: Purchase/Cancel Ticket
+    T->>O: Trigger Event
+    O->>T: Update Availability
+    O->>N: Create Notification
+    N->>A: Alert Organizer
 ```
 
 Ticket System Features:
 
--**Real-Time Updates**: AJAX polling every 10 seconds
--**Automatic Notifications**: Organizers get instant alerts
--**Observer Pattern**: Automatic availability updates
--**My Tickets**: Users can view and cancel their tickets
--**Progress Bars**: Visual availability indicators
+- **Real-Time Updates**: AJAX polling every 10 seconds
+- **Automatic Notifications**: Organizers get instant alerts
+- **Observer Pattern**: Automatic availability updates
+- **My Tickets**: Users can view and cancel their tickets
+- **Progress Bars**: Visual availability indicators
 
 ### Event Approval Workflow
 
@@ -124,24 +129,24 @@ Admin-Controlled Event Publishing System
 
 ```mermaid
 stateDiagram-v2
- [*] --> Pending: Organizer Creates Event
- Pending --> Approved: Admin Approves
- Pending --> Rejected: Admin Rejects
- Approved --> Published: Auto-Published
- Rejected --> [*]: Organizer Notified
- 
- note right of Pending: Admin Review Required
- note right of Approved: Visible to Users
- note right of Rejected: Feedback Provided
+    [*] --> Pending: Organizer Creates Event
+    Pending --> Approved: Admin Approves
+    Pending --> Rejected: Admin Rejects
+    Approved --> Published: Auto-Published
+    Rejected --> [*]: Organizer Notified
+    
+    note right of Pending: Admin Review Required
+    note right of Approved: Visible to Users
+    note right of Rejected: Feedback Provided
 ```
 
 Approval System Features:
 
--**Three-State Workflow**: Pending → Approved/Rejected
--**Admin Comments**: Required feedback for rejections
--**Audit Trail**: Complete approval history tracking
--**Dashboard Integration**: Pending approvals counter
--**Organizer Notifications**: Automatic approval/rejection alerts
+- **Three-State Workflow**: Pending → Approved/Rejected
+- **Admin Comments**: Required feedback for rejections
+- **Audit Trail**: Complete approval history tracking
+- **Dashboard Integration**: Pending approvals counter
+- **Organizer Notifications**: Automatic approval/rejection alerts
 
 ---
 
@@ -152,97 +157,98 @@ We followed a comprehensive, iterative approach to building this enterprise-leve
 ### Phase 1: Foundation & Security (Weeks 1-2)
 
 ```mermaid
+```mermaid
 graph TD
- A[Requirements Analysis] --> B[Database Design]
- B --> C[Authentication System]
- C --> D[Role-based Access Control]
- D --> E[Factory Pattern Implementation]
- E --> F[Security Middleware]
+    A[Requirements Analysis] --> B[Database Design]
+    B --> C[Authentication System]
+    C --> D[Role-based Access Control]
+    D --> E[Factory Pattern Implementation]
+    E --> F[Security Middleware]
 ```
 
 Completed Features:
 
--Multi-role authentication system
--Factory pattern for user creation
--Role-based access control
--Login security tracking
--Database schema design
+- Multi-role authentication system
+- Factory pattern for user creation
+- Role-based access control
+- Login security tracking
+- Database schema design
 
 ### Phase 2: Core Event System (Weeks 3-4)
 
 ```mermaid
 graph TD
- A[Event Model Design] --> B[CRUD Operations]
- B --> C[Repository Pattern]
- C --> D[Service Layer]
- D --> E[Strategy Pattern for Dashboards]
- E --> F[Event Approval Workflow]
+    A[Event Model Design] --> B[CRUD Operations]
+    B --> C[Repository Pattern]
+    C --> D[Service Layer]
+    D --> E[Strategy Pattern for Dashboards]
+    E --> F[Event Approval Workflow]
 ```
 
 Completed Features:
 
--Complete event management CRUD
--Admin approval system for events
--Repository pattern for data access
--Service layer for business logic
--Dashboard routing strategies
+- Complete event management CRUD
+- Admin approval system for events
+- Repository pattern for data access
+- Service layer for business logic
+- Dashboard routing strategies
 
 ### Phase 3: Real-Time Features (Weeks 5-6)
 
 ```mermaid
 graph TD
- A[Observer Pattern Design] --> B[Ticket System]
- B --> C[Real-time Updates]
- C --> D[Notification System]
- D --> E[Performance Optimization]
- E --> F[Caching Strategy]
+    A[Observer Pattern Design] --> B[Ticket System]
+    B --> C[Real-time Updates]
+    C --> D[Notification System]
+    D --> E[Performance Optimization]
+    E --> F[Caching Strategy]
 ```
 
 Completed Features:
 
--Observer pattern for automatic updates
--Real-time ticket availability
--Automatic organizer notifications
--AJAX polling for live updates
--Intelligent caching system
+- Observer pattern for automatic updates
+- Real-time ticket availability
+- Automatic organizer notifications
+- AJAX polling for live updates
+- Intelligent caching system
 
 ### Phase 4: Advanced Management (Weeks 7-8)
 
 ```mermaid
 graph TD
- A[Booking Management] --> B[Advanced Filtering]
- B --> C[Export Functionality]
- C --> D[Admin Dashboard]
- D --> E[Role Management]
- E --> F[User Analytics]
+    A[Booking Management] --> B[Advanced Filtering]
+    B --> C[Export Functionality]
+    C --> D[Admin Dashboard]
+    D --> E[Role Management]
+    E --> F[User Analytics]
 ```
 
 Completed Features:
 
--Complete booking management system
--Advanced filtering and search
--CSV export functionality
--Real-time role management
--User analytics and statistics
+- Complete booking management system
+- Advanced filtering and search
+- CSV export functionality
+- Real-time role management
+- User analytics and statistics
 
 ### Phase 5: Communication System (Weeks 9-10)
 
 ```mermaid
 graph TD
- A[Support System Design] --> B[User-Admin Communication]
- B --> C[Status Workflow]
- C --> D[Priority Management]
- D --> E[Admin Response System]
- E --> F[Integration Testing]
+    A[Support System Design] --> B[User-Admin Communication]
+    B --> C[Status Workflow]
+    C --> D[Priority Management]
+    D --> E[Admin Response System]
+    E --> F[Integration Testing]
 ```
 
 Completed Features:
 
--Complete support communication system
--Event-specific support messages
--Priority classification system
--Admin response workflow
--Status tracking (Open → In Progress → Resolved)
+- Complete support communication system
+- Event-specific support messages
+- Priority classification system
+- Admin response workflow
+- Status tracking (Open → In Progress → Resolved)
 
 ---
 
@@ -264,41 +270,41 @@ Model Layer → Eloquent ORM + Relationships
 
 ```mermaid
 graph TB
- subgraph "Presentation Layer"
- A[Blade Components]
- B[AJAX Controllers]
- C[Real-time UI]
- end
+    subgraph "Presentation Layer"
+    A[Blade Components]
+    B[AJAX Controllers]
+    C[Real-time UI]
+    end
  
- subgraph "Business Logic Layer"
- D[Service Classes]
- E[Observer Pattern]
- F[Strategy Pattern]
- G[Command Pattern]
- H[State Pattern]
- end
+    subgraph "Business Logic Layer"
+    D[Service Classes]
+    E[Observer Pattern]
+    F[Strategy Pattern]
+    G[Command Pattern]
+    H[State Pattern]
+    end
  
- subgraph "Data Access Layer"
- I[Repository Pattern]
- J[Eloquent Models]
- K[Database Relationships]
- end
+    subgraph "Data Access Layer"
+    I[Repository Pattern]
+    J[Eloquent Models]
+    K[Database Relationships]
+    end
  
- subgraph "Infrastructure Layer"
- L[MySQL Database]
- M[Cache Layer]
- N[File Storage]
- end
+    subgraph "Infrastructure Layer"
+    L[MySQL Database]
+    M[Cache Layer]
+    N[File Storage]
+    end
  
- A --> D
- B --> E
- C --> F
- D --> I
- E --> J
- F --> K
- I --> L
- J --> M
- K --> N
+    A --> D
+    B --> E
+    C --> F
+    D --> I
+    E --> J
+    F --> K
+    I --> L
+    J --> M
+    K --> N
 ```
 
 ### 3. Event-Driven Architecture
@@ -307,18 +313,18 @@ Using Laravel's Observer Pattern for real-time features:
 
 ```mermaid
 graph LR
- A[Data Change] --> B[Observer Triggered]
- B --> C[Service Called]
- C --> D[Cache Updated]
- D --> E[Notifications Sent]
- E --> F[UI Refreshed]
+    A[Data Change] --> B[Observer Triggered]
+    B --> C[Service Called]
+    C --> D[Cache Updated]
+    D --> E[Notifications Sent]
+    E --> F[UI Refreshed]
 ```
 
 ---
 
 ## Design Patterns Implementation
 
-### 1. Observer Pattern -Real-Time System
+### 1. Observer Pattern - Real-Time System
 
 Location: `app/Observers/TicketObserver.php`
 
@@ -328,37 +334,37 @@ Purpose: Automatically handle ticket availability, notifications, and booking up
 // app/Observers/TicketObserver.php
 class TicketObserver
 {
- public function created(Ticket $ticket): void
- {
- // Automatic availability update
- $this->ticketService->updateAvailability($ticket->event_id);
- 
- // Automatic organizer notification
- $this->notificationService->notifyTicketPurchase($ticket);
- 
- // Clear booking cache for real-time updates
- $this->bookingService->clearCache();
- }
- 
- public function updated(Ticket $ticket): void
- {
- if ($ticket->wasChanged('status') && $ticket->status === 'cancelled') {
- $this->notificationService->notifyTicketCancellation($ticket);
- }
- 
- $this->ticketService->updateAvailability($ticket->event_id);
- }
+    public function created(Ticket $ticket): void
+    {
+        // Automatic availability update
+        $this->ticketService->updateAvailability($ticket->event_id);
+        
+        // Automatic organizer notification
+        $this->notificationService->notifyTicketPurchase($ticket);
+        
+        // Clear booking cache for real-time updates
+        $this->bookingService->clearCache();
+    }
+    
+    public function updated(Ticket $ticket): void
+    {
+        if ($ticket->wasChanged('status') && $ticket->status === 'cancelled') {
+            $this->notificationService->notifyTicketCancellation($ticket);
+        }
+        
+        $this->ticketService->updateAvailability($ticket->event_id);
+    }
 }
 ```
 
 Observer Pattern Benefits:
 
--**Automatic Processing**: No manual triggers needed
--**Real-time Updates**: Instant availability changes
--**Loose Coupling**: Services don't need to know about each other
--**Extensible**: Easy to add new automatic behaviors
+- **Automatic Processing**: No manual triggers needed
+- **Real-time Updates**: Instant availability changes
+- **Loose Coupling**: Services don't need to know about each other
+- **Extensible**: Easy to add new automatic behaviors
 
-### 2. Service Layer Pattern -Business Logic Separation
+### 2. Service Layer Pattern - Business Logic Separation
 
 Location: `app/Services/`
 
@@ -368,15 +374,15 @@ Purpose: Clean separation of business logic from controllers and models.
 // app/Services/SimpleTicketService.php
 class SimpleTicketService
 {
- public function getAvailability($eventId): array
+    public function getAvailability($eventId): array
  {
- return Cache::remember("event_tickets_{$eventId}", 60, function () use ($eventId) {
+    return Cache::remember("event_tickets_{$eventId}", 60, function () use ($eventId) {
  $event = Event::find($eventId);
  $soldTickets = Ticket::where('event_id', $eventId)
  ->where('status', 'confirmed')
  ->sum('quantity');
  
- return [
+    return [
  'total_capacity' => $event->capacity,
  'available_tickets' => max(0, $event->capacity -$soldTickets),
  'tickets_sold' => $soldTickets,
@@ -385,13 +391,13 @@ class SimpleTicketService
  });
  }
  
- public function purchaseTickets($eventId, $quantity, $userId): bool
+    public function purchaseTickets($eventId, $quantity, $userId): bool
  {
- return DB::transaction(function () use ($eventId, $quantity, $userId) {
+    return DB::transaction(function () use ($eventId, $quantity, $userId) {
  $availability = $this->getAvailability($eventId);
  
- if ($availability['available_tickets'] < $quantity) {
- throw new \Exception('Not enough tickets available');
+    if ($availability['available_tickets'] < $quantity) {
+    throw new \Exception('Not enough tickets available');
  }
  
  $event = Event::find($eventId);
@@ -404,7 +410,7 @@ class SimpleTicketService
  ]);
  
  // Observer will automatically handle availability and notifications
- return true;
+    return true;
  });
  }
 }
@@ -421,35 +427,35 @@ class SimpleTicketService
 class RoleManagementService
 {
  // Strategy: Define allowed role transitions
- public const ROLE_TRANSITIONS = [
+    public const ROLE_TRANSITIONS = [
  'user' => ['organizer'],
  'organizer' => ['user', 'admin'],
  'admin' => ['organizer']
  ];
  
- public function changeUserRole(User $user, string $newRole, User $admin): bool
+    public function changeUserRole(User $user, string $newRole, User $admin): bool
  {
  // Strategy 1: Admin permission validation
- if (!$this->validateAdminAccess($admin)) {
- throw new \Exception('Only admins can change user roles');
+    if (!$this->validateAdminAccess($admin)) {
+    throw new \Exception('Only admins can change user roles');
  }
  
  // Strategy 2: Self-modification prevention
- if (!$this->validateSelfModification($user, $admin)) {
- throw new \Exception('Cannot change your own role');
+    if (!$this->validateSelfModification($user, $admin)) {
+    throw new \Exception('Cannot change your own role');
  }
  
  // Strategy 3: Role transition validation
- if (!$this->validateRoleTransition($user->role, $newRole)) {
- throw new \Exception("Cannot transition from {$user->role} to {$newRole}");
+    if (!$this->validateRoleTransition($user->role, $newRole)) {
+    throw new \Exception("Cannot transition from {$user->role} to {$newRole}");
  }
  
- return $user->update(['role' => $newRole]);
+    return $user->update(['role' => $newRole]);
  }
  
- private function validateRoleTransition(string $currentRole, string $newRole): bool
+    private function validateRoleTransition(string $currentRole, string $newRole): bool
  {
- return in_array($newRole, self::ROLE_TRANSITIONS[$currentRole] ?? []);
+    return in_array($newRole, self::ROLE_TRANSITIONS[$currentRole] ?? []);
  }
 }
 ```
@@ -467,21 +473,21 @@ class SimplePasswordResetService
  /**
  * Command: Send Reset Token
  */
- public function sendResetToken(string $email): array
+    public function sendResetToken(string $email): array
  {
  $user = User::where('email', $email)->first();
  
- if (!$user) {
- return ['success' => false, 'message' => 'User not found'];
+    if (!$user) {
+    return ['success' => false, 'message' => 'User not found'];
  }
  
  $token = Str::random(60);
  $expiresAt = Carbon::now()->addHours(2);
  
  // Store token
- DB::table('password_reset_tokens')->updateOrInsert(
- ['email' => $email],
- [
+    DB::table('password_reset_tokens')->updateOrInsert(
+    ['email' => $email],
+    [
  'token' => Hash::make($token),
  'created_at' => Carbon::now(),
  'expires_at' => $expiresAt,
@@ -491,25 +497,25 @@ class SimplePasswordResetService
  // Send email
  $this->sendResetEmail($user, $token);
  
- return ['success' => true, 'message' => 'Reset link sent'];
+    return ['success' => true, 'message' => 'Reset link sent'];
  }
  
  /**
  * Command: Reset Password
  */
- public function resetPassword(string $email, string $token, string $newPassword): array
+    public function resetPassword(string $email, string $token, string $newPassword): array
  {
- if (!$this->verifyResetToken($email, $token)) {
- return ['success' => false, 'message' => 'Invalid or expired token'];
+    if (!$this->verifyResetToken($email, $token)) {
+    return ['success' => false, 'message' => 'Invalid or expired token'];
  }
  
  $user = User::where('email', $email)->first();
  $user->update(['password' => Hash::make($newPassword)]);
  
  // Clean up used token
- DB::table('password_reset_tokens')->where('email', $email)->delete();
+    DB::table('password_reset_tokens')->where('email', $email)->delete();
  
- return ['success' => true, 'message' => 'Password reset successful'];
+    return ['success' => true, 'message' => 'Password reset successful'];
  }
 }
 ```
@@ -522,27 +528,27 @@ class SimplePasswordResetService
 
 ```mermaid
 stateDiagram-v2
- [*] --> Pending: Create Ticket
- Pending --> Paid: markAsPaid()
- Pending --> Failed: markAsFailed()
- Paid --> Refunded: refundTicket()
- Failed --> Pending: retryPayment()
+    [*] --> Pending: Create Ticket
+    Pending --> Paid: markAsPaid()
+    Pending --> Failed: markAsFailed()
+    Paid --> Refunded: refundTicket()
+    Failed --> Pending: retryPayment()
  
- note right of Pending: Initial state -awaiting payment
- note right of Paid: Payment confirmed -ticket valid
- note right of Failed: Payment failed -can retry
- note right of Refunded: Refund processed -terminal state
+    note right of Pending: Initial state -awaiting payment
+    note right of Paid: Payment confirmed -ticket valid
+    note right of Failed: Payment failed -can retry
+    note right of Refunded: Refund processed -terminal state
 ```
 
 ```php
 // app/Services/SimplePaymentService.php
 class SimplePaymentService
 {
- public function markAsPaid(Ticket $ticket, ?float $paymentAmount = null, ?string $reference = null): bool
+    public function markAsPaid(Ticket $ticket, ?float $paymentAmount = null, ?string $reference = null): bool
  {
  // State validation: only pending tickets can be marked as paid
- if (!$ticket->isPending()) {
- return false;
+    if (!$ticket->isPending()) {
+    return false;
  }
  
  $ticket->update([
@@ -552,14 +558,14 @@ class SimplePaymentService
  'paid_at' => now(),
  ]);
  
- return true;
+    return true;
  }
  
- public function refundTicket(Ticket $ticket, ?string $refundReference = null): bool
+    public function refundTicket(Ticket $ticket, ?string $refundReference = null): bool
  {
  // State validation: only paid tickets can be refunded
- if (!$ticket->isPaid()) {
- return false;
+    if (!$ticket->isPaid()) {
+    return false;
  }
  
  $ticket->update([
@@ -567,7 +573,7 @@ class SimplePaymentService
  'payment_reference' => $refundReference ?? 'Refunded at ' . now(),
  ]);
  
- return true;
+    return true;
  }
 }
 ```
@@ -582,35 +588,35 @@ class SimplePaymentService
 // app/Repositories/EventRepository.php
 class EventRepository
 {
- public function getPublishedAndApprovedWithSorting(string $sortBy = 'created_at', string $direction = 'desc'): Collection
+    public function getPublishedAndApprovedWithSorting(string $sortBy = 'created_at', string $direction = 'desc'): Collection
  {
- return Event::where('status', 'published')
+    return Event::where('status', 'published')
  ->where('approval_status', 'approved')
  ->orderBy($sortBy, $direction)
  ->get();
  }
  
- public function getPendingApprovalEvents(): Collection
+    public function getPendingApprovalEvents(): Collection
  {
- return Event::where('approval_status', 'pending')
+    return Event::where('approval_status', 'pending')
  ->with(['organizer'])
  ->orderBy('created_at', 'asc')
  ->get();
  }
  
- public function getEventsByOrganizer(int $organizerId, array $filters = []): Collection
+    public function getEventsByOrganizer(int $organizerId, array $filters = []): Collection
  {
  $query = Event::where('organizer_id', $organizerId);
  
- if (!empty($filters['status'])) {
+    if (!empty($filters['status'])) {
  $query->where('status', $filters['status']);
  }
  
- if (!empty($filters['approval_status'])) {
+    if (!empty($filters['approval_status'])) {
  $query->where('approval_status', $filters['approval_status']);
  }
  
- return $query->orderBy('created_at', 'desc')->get();
+    return $query->orderBy('created_at', 'desc')->get();
  }
 }
 ```
@@ -626,7 +632,7 @@ class EventRepository
 @props(['event'])
 
 <div class="ticket-availability-widget bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6" 
- data-event-id="{{ $event->id }}">
+    data-event-id="{{ $event->id }}">
  
  {{--Availability Display --}}
  <div class="availability-display mb-4">
@@ -640,7 +646,7 @@ class EventRepository
  {{--Progress Bar --}}
  <div class="w-full bg-slate-700 rounded-full h-3">
  <div class="availability-bar bg-gradient-to-r from-cyan-500 to-blue-500 h-3 rounded-full transition-all duration-500" 
- style="width: {{ $event->availability_percentage ?? 0 }}%"></div>
+    style="width: {{ $event->availability_percentage ?? 0 }}%"></div>
  </div>
  </div>
  
@@ -655,7 +661,7 @@ class EventRepository
  @endfor
  </select>
  <button type="submit" class="purchase-btn bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 px-6 py-2 rounded-lg text-white font-medium transition-all">
- Buy Now
+    Buy Now
  </button>
  </div>
  </form>
@@ -669,15 +675,15 @@ class EventRepository
 <script>
 // Real-time updates every 10 seconds
 setInterval(() => {
- updateTicketAvailability({{ $event->id }});
+    updateTicketAvailability({{ $event->id }});
 }, 10000);
 
 function updateTicketAvailability(eventId) {
- fetch(`/api/events/${eventId}/availability`)
+    fetch(`/api/events/${eventId}/availability`)
  .then(response => response.json())
  .then(data => {
- document.querySelector('.available-count').textContent = data.available_tickets;
- document.querySelector('.availability-bar').style.width = data.availability_percentage + '%';
+    document.querySelector('.available-count').textContent = data.available_tickets;
+    document.querySelector('.availability-bar').style.width = data.availability_percentage + '%';
  });
 }
 </script>
@@ -686,21 +692,21 @@ function updateTicketAvailability(eventId) {
 ---
  }
  
- class AdminDashboardStrategy {
+    class AdminDashboardStrategy {
  +getDashboardRoute() string
  }
  
- class UserDashboardStrategy {
+    class UserDashboardStrategy {
  +getDashboardRoute() string
  }
  
- class OrganizerDashboardStrategy {
+    class OrganizerDashboardStrategy {
  +getDashboardRoute() string
  }
  
- DashboardStrategy <|--AdminDashboardStrategy
- DashboardStrategy <|--UserDashboardStrategy
- DashboardStrategy <|--OrganizerDashboardStrategy
+    DashboardStrategy <|--AdminDashboardStrategy
+    DashboardStrategy <|--UserDashboardStrategy
+    DashboardStrategy <|--OrganizerDashboardStrategy
 ```
 
 ### 3. **Repository Pattern** -Event Data Management
@@ -713,16 +719,16 @@ function updateTicketAvailability(eventId) {
 // app/Repositories/EventRepository.php
 class EventRepository
 {
- protected $model;
+    protected $model;
 
- public function __construct(Event $model)
+    public function __construct(Event $model)
  {
  $this->model = $model;
  }
 
- public function getAllWithSorting(string $sortBy = 'created_at', string $direction = 'desc'): Collection
+    public function getAllWithSorting(string $sortBy = 'created_at', string $direction = 'desc'): Collection
  {
- return $this->model
+    return $this->model
  ->orderBy($sortBy, $direction)
  ->get();
  }
@@ -811,16 +817,16 @@ class SortingService
 // app/Http/Controllers/EventController.php
 class EventController extends Controller
 {
- protected $eventRepository;
- protected $sortingService;
+    protected $eventRepository;
+    protected $sortingService;
 
- public function __construct(EventRepository $eventRepository, SortingService $sortingService)
+    public function __construct(EventRepository $eventRepository, SortingService $sortingService)
  {
  $this->eventRepository = $eventRepository;
  $this->sortingService = $sortingService;
  }
 
- public function index(Request $request)
+    public function index(Request $request)
  {
  $sortParams = $this->sortingService->validateEventSortParameters(
  $request->get('sort'),
@@ -832,7 +838,7 @@ class EventController extends Controller
  $sortParams['direction']
  );
 
- return view('events.index', [
+    return view('events.index', [
  'events' => $events,
  'sortBy' => $sortParams['sort_by'],
  'sortDirection' => $sortParams['direction'],
@@ -854,37 +860,37 @@ class EventController extends Controller
 class RoleManagementService
 {
  // Define role transition strategies
- public const ROLE_TRANSITIONS = [
+    public const ROLE_TRANSITIONS = [
  'user' => ['organizer'],
  'organizer' => ['user', 'admin'],
  'admin' => ['organizer']
  ];
 
- public function changeUserRole(User $user, string $newRole, User $admin): bool
+    public function changeUserRole(User $user, string $newRole, User $admin): bool
  {
  // Strategy: Admin permission validation
- if ($admin->role !== 'admin') {
- throw new \Exception('Only admins can change user roles');
+    if ($admin->role !== 'admin') {
+    throw new \Exception('Only admins can change user roles');
  }
 
  // Strategy: Self-role prevention
- if ($user->id === $admin->id) {
- throw new \Exception('Cannot change your own role');
+    if ($user->id === $admin->id) {
+    throw new \Exception('Cannot change your own role');
  }
 
  // Strategy: Role transition validation
- if (!$this->canTransitionToRole($user->role, $newRole)) {
- throw new \Exception("Cannot transition from {$user->role} to {$newRole}");
+    if (!$this->canTransitionToRole($user->role, $newRole)) {
+    throw new \Exception("Cannot transition from {$user->role} to {$newRole}");
  }
 
- return DB::transaction(function () use ($user, $newRole) {
- return $user->update(['role' => $newRole]);
+    return DB::transaction(function () use ($user, $newRole) {
+    return $user->update(['role' => $newRole]);
  });
  }
 
- private function canTransitionToRole(string $currentRole, string $newRole): bool
+    private function canTransitionToRole(string $currentRole, string $newRole): bool
  {
- return in_array($newRole, self::ROLE_TRANSITIONS[$currentRole] ?? []);
+    return in_array($newRole, self::ROLE_TRANSITIONS[$currentRole] ?? []);
  }
 }
 ```
@@ -892,28 +898,28 @@ class RoleManagementService
 **Role Management Strategy Implementation**:
 ```mermaid
 classDiagram
- class RoleTransitionStrategy {
+    class RoleTransitionStrategy {
  <<interface>>
  +canTransition(from, to) bool
  +execute(user, newRole) bool
  }
  
- class UserToOrganizerStrategy {
+    class UserToOrganizerStrategy {
  +canTransition(from, to) bool
  +execute(user, newRole) bool
  }
  
- class OrganizerToAdminStrategy {
+    class OrganizerToAdminStrategy {
  +canTransition(from, to) bool
  +execute(user, newRole) bool
  }
  
- class AdminToOrganizerStrategy {
+    class AdminToOrganizerStrategy {
  +canTransition(from, to) bool
  +execute(user, newRole) bool
  }
  
- class RoleManagementService {
+    class RoleManagementService {
  -strategies: Map
  +changeUserRole(user, newRole, admin) bool
  +getAvailableRoles(currentRole) array
@@ -921,10 +927,10 @@ classDiagram
  +getRoleIcon(role) string
  }
  
- RoleTransitionStrategy <|--UserToOrganizerStrategy
- RoleTransitionStrategy <|--OrganizerToAdminStrategy
- RoleTransitionStrategy <|--AdminToOrganizerStrategy
- RoleManagementService --> RoleTransitionStrategy : uses
+    RoleTransitionStrategy <|--UserToOrganizerStrategy
+    RoleTransitionStrategy <|--OrganizerToAdminStrategy
+    RoleTransitionStrategy <|--AdminToOrganizerStrategy
+    RoleManagementService --> RoleTransitionStrategy : uses
 ```
 
 ### 8. **Component Pattern** -Role Selector Component
@@ -966,10 +972,10 @@ classDiagram
 ```
 
 **Features**:
--**Real-time Role Updates**: AJAX-based role changes without page refresh
--**Visual Feedback**: Success/error notifications with smooth animations
--**Security**: Prevents self-role modification and validates permissions
--**UX Optimized**: Silent error handling, no intrusive popups
+- **Real-time Role Updates**: AJAX-based role changes without page refresh
+- **Visual Feedback**: Success/error notifications with smooth animations
+- **Security**: Prevents self-role modification and validates permissions
+- **UX Optimized**: Silent error handling, no intrusive popups
 
 
 ## System Diagrams & Visual Models
@@ -1043,7 +1049,7 @@ Covers the entire purchase flow — checking availability, booking, marking paym
 #### Admin Event Approval
 ![Admin Event Approval](docs/diagrams/seq_4_admin_approval.png) 
 
- [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/seq_4_admin_approval.svg)
+    [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/seq_4_admin_approval.svg)
 
 Description: 
 Demonstrates how the `SimpleEventApprovalController` handles admin decisions (approve/reject) and triggers notifications.
@@ -1141,9 +1147,9 @@ Shows the structure of the EMTS architecture, including relationships between Co
 ---
 
 ### Tips
--All PNGs will **display directly on GitHub**. 
--Clicking any SVG link opens a **zoomable version** for clarity. 
--Make sure your files are inside `docs/diagrams/` exactly as named above.
+- All PNGs will **display directly on GitHub**. 
+- Clicking any SVG link opens a **zoomable version** for clarity. 
+- Make sure your files are inside `docs/diagrams/` exactly as named above.
 
 
 ## 🗄️ Database Schema & Relationships
@@ -1154,132 +1160,132 @@ Our comprehensive database schema supports all system features including support
 
 ```mermaid
 erDiagram
- USERS {
- bigint id PK
- string name
- string email UK
- string password
- enum role "user, organizer, admin"
- boolean email_verified
- string avatar_path
- string remember_token
- timestamp created_at
- timestamp updated_at
+    USERS {
+    bigint id PK
+    string name
+    string email UK
+    string password
+    enum role "user, organizer, admin"
+    boolean email_verified
+    string avatar_path
+    string remember_token
+    timestamp created_at
+    timestamp updated_at
  }
  
- EVENTS {
- bigint id PK
- string title
- text description
- date event_date
- time start_time
- time end_time
- string venue
- string address
- string city
- integer capacity
- decimal price
- enum status "draft, published, cancelled"
- enum approval_status "pending, approved, rejected"
- text admin_comments "Admin feedback for approval/rejection"
- bigint reviewed_by FK "Admin who reviewed the event"
- timestamp reviewed_at "When the event was reviewed"
- bigint organizer_id FK
- string image_path
- timestamp created_at
- timestamp updated_at
+    EVENTS {
+    bigint id PK
+    string title
+    text description
+    date event_date
+    time start_time
+    time end_time
+    string venue
+    string address
+    string city
+    integer capacity
+    decimal price
+    enum status "draft, published, cancelled"
+    enum approval_status "pending, approved, rejected"
+    text admin_comments "Admin feedback for approval/rejection"
+    bigint reviewed_by FK "Admin who reviewed the event"
+    timestamp reviewed_at "When the event was reviewed"
+    bigint organizer_id FK
+    string image_path
+    timestamp created_at
+    timestamp updated_at
  }
  
- TICKETS {
- bigint id PK
- bigint event_id FK
- bigint user_id FK
- integer quantity
- decimal total_price
- timestamp purchase_date
- enum status "pending, confirmed, cancelled"
- enum payment_status "pending, paid, failed, refunded"
- decimal payment_amount
- string payment_reference
- timestamp paid_at
- timestamp created_at
- timestamp updated_at
+    TICKETS {
+    bigint id PK
+    bigint event_id FK
+    bigint user_id FK
+    integer quantity
+    decimal total_price
+    timestamp purchase_date
+    enum status "pending, confirmed, cancelled"
+    enum payment_status "pending, paid, failed, refunded"
+    decimal payment_amount
+    string payment_reference
+    timestamp paid_at
+    timestamp created_at
+    timestamp updated_at
  }
  
- NOTIFICATIONS {
- bigint id PK
- bigint user_id FK "Organizer who receives notification"
- string title
- text message
- string type "ticket_purchased, ticket_cancelled, event_approved, event_rejected"
- boolean is_read
- json data "Additional notification data"
- timestamp created_at
- timestamp updated_at
+    NOTIFICATIONS {
+    bigint id PK
+    bigint user_id FK "Organizer who receives notification"
+    string title
+    text message
+    string type "ticket_purchased, ticket_cancelled, event_approved, event_rejected"
+    boolean is_read
+    json data "Additional notification data"
+    timestamp created_at
+    timestamp updated_at
  }
  
- SUPPORT_MESSAGES {
- bigint id PK
- bigint user_id FK "User who sent the message"
- bigint event_id FK "Related event (optional)"
- bigint admin_id FK "Admin who responded (optional)"
- string subject "Message subject line"
- text message "User's detailed message"
- text admin_response "Admin's response to the message"
- enum status "open, in_progress, resolved"
- enum priority "low, medium, high"
- timestamp admin_responded_at "When admin responded"
- timestamp created_at
- timestamp updated_at
+    SUPPORT_MESSAGES {
+    bigint id PK
+    bigint user_id FK "User who sent the message"
+    bigint event_id FK "Related event (optional)"
+    bigint admin_id FK "Admin who responded (optional)"
+    string subject "Message subject line"
+    text message "User's detailed message"
+    text admin_response "Admin's response to the message"
+    enum status "open, in_progress, resolved"
+    enum priority "low, medium, high"
+    timestamp admin_responded_at "When admin responded"
+    timestamp created_at
+    timestamp updated_at
  }
  
- LOGIN_LOGS {
- bigint id PK
- bigint user_id FK
- string email
- boolean success
- string ip_address
- text user_agent
- timestamp created_at
+    LOGIN_LOGS {
+    bigint id PK
+    bigint user_id FK
+    string email
+    boolean success
+    string ip_address
+    text user_agent
+    timestamp created_at
  }
  
- PASSWORD_RESET_TOKENS {
- string email PK
- string token
- timestamp created_at
- timestamp expires_at
+    PASSWORD_RESET_TOKENS {
+    string email PK
+    string token
+    timestamp created_at
+    timestamp expires_at
  }
  
  %% Relationships
- USERS ||--o{ EVENTS : "organizes"
- USERS ||--o{ TICKETS : "purchases"
- USERS ||--o{ NOTIFICATIONS : "receives"
- USERS ||--o{ LOGIN_LOGS : "generates"
- USERS ||--o{ SUPPORT_MESSAGES : "sends"
- USERS ||--o{ SUPPORT_MESSAGES : "responds as admin"
- USERS ||--o{ EVENTS : "reviews as admin"
- USERS ||--o{ PASSWORD_RESET_TOKENS : "requests"
- EVENTS ||--o{ TICKETS : "has bookings"
- EVENTS ||--o{ SUPPORT_MESSAGES : "relates to"
+    USERS ||--o{ EVENTS : "organizes"
+    USERS ||--o{ TICKETS : "purchases"
+    USERS ||--o{ NOTIFICATIONS : "receives"
+    USERS ||--o{ LOGIN_LOGS : "generates"
+    USERS ||--o{ SUPPORT_MESSAGES : "sends"
+    USERS ||--o{ SUPPORT_MESSAGES : "responds as admin"
+    USERS ||--o{ EVENTS : "reviews as admin"
+    USERS ||--o{ PASSWORD_RESET_TOKENS : "requests"
+    EVENTS ||--o{ TICKETS : "has bookings"
+    EVENTS ||--o{ SUPPORT_MESSAGES : "relates to"
 ```
 
 ### Database Design Principles
 
 #### **1. Normalized Design**
--**Third Normal Form (3NF)**: Eliminates data redundancy
--**Proper Relationships**: Foreign keys maintain data integrity
--**Indexing Strategy**: Optimized for common queries
+- **Third Normal Form (3NF)**: Eliminates data redundancy
+- **Proper Relationships**: Foreign keys maintain data integrity
+- **Indexing Strategy**: Optimized for common queries
 
 #### **2. Audit Trail System**
--**User Actions**: Login logs track all authentication attempts
--**Admin Actions**: Event approval/rejection tracking with comments
--**Support Communication**: Complete message history with timestamps
--**Payment History**: Full payment lifecycle tracking
+- **User Actions**: Login logs track all authentication attempts
+- **Admin Actions**: Event approval/rejection tracking with comments
+- **Support Communication**: Complete message history with timestamps
+- **Payment History**: Full payment lifecycle tracking
 
 #### **3. Performance Optimization**
--**Strategic Indexing**: Foreign keys and frequently queried columns
--**Caching Layer**: Redis/File cache for frequently accessed data
--**Query Optimization**: Repository pattern with optimized queries
+- **Strategic Indexing**: Foreign keys and frequently queried columns
+- **Caching Layer**: Redis/File cache for frequently accessed data
+- **Query Optimization**: Repository pattern with optimized queries
 
 ### Key Database Features
 
@@ -1288,26 +1294,26 @@ erDiagram
 Support Messages Table:
 ```sql
 CREATE TABLE support_messages (
- id BIGINT PRIMARY KEY AUTO_INCREMENT,
- user_id BIGINT NOT NULL,
- event_id BIGINT NULL,
- admin_id BIGINT NULL,
- subject VARCHAR(255) NOT NULL,
- message TEXT NOT NULL,
- admin_response TEXT NULL,
- status ENUM('open', 'in_progress', 'resolved') DEFAULT 'open',
- priority ENUM('low', 'medium', 'high') DEFAULT 'medium',
- admin_responded_at TIMESTAMP NULL,
- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
- updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    event_id BIGINT NULL,
+    admin_id BIGINT NULL,
+    subject VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    admin_response TEXT NULL,
+    status ENUM('open', 'in_progress', 'resolved') DEFAULT 'open',
+    priority ENUM('low', 'medium', 'high') DEFAULT 'medium',
+    admin_responded_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
  
- FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
- FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE SET NULL,
- FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE SET NULL,
+    FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE SET NULL,
  
- INDEX idx_status (status),
- INDEX idx_priority (priority),
- INDEX idx_created_at (created_at)
+    INDEX idx_status (status),
+    INDEX idx_priority (priority),
+    INDEX idx_created_at (created_at)
 );
 ```
 
@@ -1316,30 +1322,30 @@ CREATE TABLE support_messages (
 Enhanced Events Table:
 ```sql
 CREATE TABLE events (
- id BIGINT PRIMARY KEY AUTO_INCREMENT,
- title VARCHAR(255) NOT NULL,
- description TEXT,
- event_date DATE NOT NULL,
- start_time TIME NOT NULL,
- end_time TIME NOT NULL,
- venue VARCHAR(255) NOT NULL,
- capacity INTEGER NOT NULL,
- price DECIMAL(10,2) NOT NULL,
- status ENUM('draft', 'published', 'cancelled') DEFAULT 'draft',
- approval_status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
- admin_comments TEXT NULL,
- reviewed_by BIGINT NULL,
- reviewed_at TIMESTAMP NULL,
- organizer_id BIGINT NOT NULL,
- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
- updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    event_date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    venue VARCHAR(255) NOT NULL,
+    capacity INTEGER NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    status ENUM('draft', 'published', 'cancelled') DEFAULT 'draft',
+    approval_status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
+    admin_comments TEXT NULL,
+    reviewed_by BIGINT NULL,
+    reviewed_at TIMESTAMP NULL,
+    organizer_id BIGINT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
  
- FOREIGN KEY (organizer_id) REFERENCES users(id) ON DELETE CASCADE,
- FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL,
+    FOREIGN KEY (organizer_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL,
  
- INDEX idx_status_approval (status, approval_status),
- INDEX idx_event_date (event_date),
- INDEX idx_organizer (organizer_id)
+    INDEX idx_status_approval (status, approval_status),
+    INDEX idx_event_date (event_date),
+    INDEX idx_organizer (organizer_id)
 );
 ```
 
@@ -1348,26 +1354,26 @@ CREATE TABLE events (
 Enhanced Tickets Table:
 ```sql
 CREATE TABLE tickets (
- id BIGINT PRIMARY KEY AUTO_INCREMENT,
- event_id BIGINT NOT NULL,
- user_id BIGINT NOT NULL,
- quantity INTEGER NOT NULL,
- total_price DECIMAL(10,2) NOT NULL,
- status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
- payment_status ENUM('pending', 'paid', 'failed', 'refunded') DEFAULT 'pending',
- payment_amount DECIMAL(10,2) NULL,
- payment_reference VARCHAR(255) NULL,
- paid_at TIMESTAMP NULL,
- purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
- created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
- updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    event_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    quantity INTEGER NOT NULL,
+    total_price DECIMAL(10,2) NOT NULL,
+    status ENUM('pending', 'confirmed', 'cancelled') DEFAULT 'pending',
+    payment_status ENUM('pending', 'paid', 'failed', 'refunded') DEFAULT 'pending',
+    payment_amount DECIMAL(10,2) NULL,
+    payment_reference VARCHAR(255) NULL,
+    paid_at TIMESTAMP NULL,
+    purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
  
- FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
- FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (event_id) REFERENCES events(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
  
- INDEX idx_event_status (event_id, status),
- INDEX idx_user_tickets (user_id),
- INDEX idx_payment_status (payment_status)
+    INDEX idx_event_status (event_id, status),
+    INDEX idx_user_tickets (user_id),
+    INDEX idx_payment_status (payment_status)
 );
 ```
 
@@ -1380,11 +1386,11 @@ CREATE TABLE tickets (
 Our **premium dark theme with cyan accents** creates a modern, professional aesthetic that's both visually appealing and highly functional:
 
 #### **Core Design Principles**
--**Dark Theme Excellence**: Reduced eye strain for extended use
--**Glassmorphism Effects**: Modern blur and transparency effects
--**Gradient Aesthetics**: Sophisticated color transitions
--**Accessibility First**: High contrast ratios and semantic HTML
--**Mobile Responsive**: Mobile-first design approach
+- **Dark Theme Excellence**: Reduced eye strain for extended use
+- **Glassmorphism Effects**: Modern blur and transparency effects
+- **Gradient Aesthetics**: Sophisticated color transitions
+- **Accessibility First**: High contrast ratios and semantic HTML
+- **Mobile Responsive**: Mobile-first design approach
 
 ### Color Palette & Theming
 
@@ -1420,10 +1426,10 @@ Our **premium dark theme with cyan accents** creates a modern, professional aest
 ```css
 .form-input {
  @apply px-4 py-3 rounded-xl bg-slate-800/50 border border-slate-700/50 
- text-slate-300 placeholder-slate-500
- focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 
- focus:outline-none transition-all duration-200
- backdrop-blur-sm;
+    text-slate-300 placeholder-slate-500
+    focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 
+    focus:outline-none transition-all duration-200
+    backdrop-blur-sm;
 }
 
 .form-label {
@@ -1439,21 +1445,21 @@ Our **premium dark theme with cyan accents** creates a modern, professional aest
 ```css
 .btn-primary {
  @apply px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 
- hover:from-cyan-400 hover:to-blue-400 text-white font-medium
- shadow-lg shadow-cyan-500/25 hover:shadow-cyan-400/30
- transform hover:scale-105 transition-all duration-200;
+    hover:from-cyan-400 hover:to-blue-400 text-white font-medium
+    shadow-lg shadow-cyan-500/25 hover:shadow-cyan-400/30
+    transform hover:scale-105 transition-all duration-200;
 }
 
 .btn-secondary {
  @apply px-6 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 
- border border-cyan-400/20 hover:border-cyan-400/40 text-slate-300
- backdrop-blur-sm transition-all duration-200;
+    border border-cyan-400/20 hover:border-cyan-400/40 text-slate-300
+    backdrop-blur-sm transition-all duration-200;
 }
 
 .btn-success {
  @apply px-4 py-2 rounded-lg bg-gradient-to-r from-emerald-500 to-green-500 
- hover:from-emerald-400 hover:to-green-400 text-white font-medium
- shadow-lg shadow-emerald-500/25 transition-all duration-200;
+    hover:from-emerald-400 hover:to-green-400 text-white font-medium
+    shadow-lg shadow-emerald-500/25 transition-all duration-200;
 }
 ```
 
@@ -1461,7 +1467,7 @@ Our **premium dark theme with cyan accents** creates a modern, professional aest
 ```css
 .card {
  @apply rounded-2xl border border-slate-700/50 bg-slate-900/80 
- backdrop-blur-md shadow-xl shadow-slate-900/50;
+    backdrop-blur-md shadow-xl shadow-slate-900/50;
 }
 
 .card-header {
@@ -1474,8 +1480,8 @@ Our **premium dark theme with cyan accents** creates a modern, professional aest
 
 .glass-card {
  @apply rounded-2xl border border-cyan-400/20 bg-slate-900/60 
- backdrop-blur-xl shadow-2xl shadow-slate-900/50
- hover:border-cyan-400/30 transition-all duration-300;
+    backdrop-blur-xl shadow-2xl shadow-slate-900/50
+    hover:border-cyan-400/30 transition-all duration-300;
 }
 ```
 
@@ -1483,27 +1489,27 @@ Our **premium dark theme with cyan accents** creates a modern, professional aest
 ```css
 .badge-open {
  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
- bg-amber-900/20 text-amber-400 border border-amber-700/30;
+    bg-amber-900/20 text-amber-400 border border-amber-700/30;
 }
 
 .badge-resolved {
  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
- bg-emerald-900/20 text-emerald-400 border border-emerald-700/30;
+    bg-emerald-900/20 text-emerald-400 border border-emerald-700/30;
 }
 
 .badge-high-priority {
  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 
- bg-red-900/20 text-red-400 border border-red-700/30;
+    bg-red-900/20 text-red-400 border border-red-700/30;
 }
 ```
 
 ### Layout & Navigation
 
 #### **Dashboard Layout**
--**Sidebar Navigation**: Collapsible side navigation with role-based menu items
--**Header Bar**: User profile, notifications, and quick actions
--**Main Content**: Responsive grid system for dashboard widgets
--**Footer**: System information and links
+- **Sidebar Navigation**: Collapsible side navigation with role-based menu items
+- **Header Bar**: User profile, notifications, and quick actions
+- **Main Content**: Responsive grid system for dashboard widgets
+- **Footer**: System information and links
 
 #### **Responsive Breakpoints**
 ```css
@@ -1528,16 +1534,16 @@ Our **premium dark theme with cyan accents** creates a modern, professional aest
 ### Interactive Elements
 
 #### **Real-Time Components**
--**Progress Bars**: Animated ticket availability indicators
--**Live Counters**: Real-time ticket counts with smooth transitions
--**Status Indicators**: Color-coded status with pulse animations
--**Notification Badges**: Animated counter badges for unread items
+- **Progress Bars**: Animated ticket availability indicators
+- **Live Counters**: Real-time ticket counts with smooth transitions
+- **Status Indicators**: Color-coded status with pulse animations
+- **Notification Badges**: Animated counter badges for unread items
 
 #### **Micro-Interactions**
--**Hover Effects**: Subtle scale and glow effects
--**Loading States**: Skeleton screens and spinner animations
--**Form Validation**: Real-time validation with smooth error transitions
--**Success Feedback**: Celebration animations for successful actions
+- **Hover Effects**: Subtle scale and glow effects
+- **Loading States**: Skeleton screens and spinner animations
+- **Form Validation**: Real-time validation with smooth error transitions
+- **Success Feedback**: Celebration animations for successful actions
 
 ---
 
@@ -1554,10 +1560,10 @@ Core Infrastructure:
 -✅ Login tracking and audit trail system
 
 Completed Deliverables:
--Authentication system with secure password handling
--User roles with proper permission validation
--Database schema with proper relationships
--Security logging for user activities
+- Authentication system with secure password handling
+- User roles with proper permission validation
+- Database schema with proper relationships
+- Security logging for user activities
 
 ### 🎪 Sprint 3-4: Event Management System (Weeks 5-8)
 
@@ -1676,18 +1682,18 @@ Performance & Testing:
  'payment_reference' => $paymentReference,
  ]);
 
- return true;
+    return true;
  }
 
  /**
  * Refund a ticket
  * This changes the payment status from 'paid' to 'refunded'
  */
- public function refundTicket(Ticket $ticket, $refundReference = null)
+    public function refundTicket(Ticket $ticket, $refundReference = null)
  {
  // Only allow refund if ticket is paid
- if (!$ticket->isPaid()) {
- return false;
+    if (!$ticket->isPaid()) {
+    return false;
  }
 
  $ticket->update([
@@ -1695,7 +1701,7 @@ Performance & Testing:
  'payment_reference' => $refundReference ?? 'Refunded at ' . now(),
  ]);
 
- return true;
+    return true;
  }
 }
 ```
@@ -1704,20 +1710,20 @@ Performance & Testing:
 
 ```mermaid
 stateDiagram-v2
- [*] --> Pending: Create Ticket
+    [*] --> Pending: Create Ticket
  
- Pending --> Paid: markAsPaid()
- Pending --> Failed: markAsFailed()
+    Pending --> Paid: markAsPaid()
+    Pending --> Failed: markAsFailed()
  
- Paid --> Refunded: refundTicket()
- Failed --> Pending: retryPayment()
+    Paid --> Refunded: refundTicket()
+    Failed --> Pending: retryPayment()
  
- Refunded --> [*]
+    Refunded --> [*]
  
- note right of Pending: Initial state
- note right of Paid: Can only reach from Pending
- note right of Failed: Can retry payment
- note right of Refunded: Terminal state
+    note right of Pending: Initial state
+    note right of Paid: Can only reach from Pending
+    note right of Failed: Can retry payment
+    note right of Refunded: Terminal state
 ```
 
 **Why State Pattern?**
@@ -1750,17 +1756,17 @@ Usage Example:
 ```
 
 Display Components:
--Available tickets count (e.g., "45 / 100")
--Availability percentage with color-coded progress bar
--Purchase form with quantity selector
--Success/error messages
--Sold out status when no tickets left
+- Available tickets count (e.g., "45 / 100")
+- Availability percentage with color-coded progress bar
+- Purchase form with quantity selector
+- Success/error messages
+- Sold out status when no tickets left
 
 **Simple JavaScript Logic**:
 ```javascript
 // Updates every 10 seconds automatically
 setInterval(() => {
- fetch(`/api/events/${eventId}/availability`)
+    fetch(`/api/events/${eventId}/availability`)
  .then(response => response.json())
  .then(data => updateDisplay(data));
 }, 10000);
@@ -1771,39 +1777,39 @@ setInterval(() => {
 -✅ **Real-time updates** -Always shows current availability
 -✅ **User-friendly** -Clear visual feedback
 -✅ **Mobile responsive** -Works on phones and tablets
- public function getAvailableCount(Event $event): int;
+    public function getAvailableCount(Event $event): int;
 }
 
 // Simple Strategy -Basic calculation
 class SimpleTicketStrategy implements TicketUpdateStrategyInterface
 {
- public function updateAvailability(Event $event): bool
+    public function updateAvailability(Event $event): bool
  {
  $soldTickets = Ticket::where('event_id', $event->id)
  ->where('status', 'confirmed')
  ->sum('quantity');
  
  $event->update(['tickets_sold' => $soldTickets]);
- return true;
+    return true;
  }
 }
 
 // Advanced Strategy -Includes pending tickets and buffers
 class AdvancedTicketStrategy implements TicketUpdateStrategyInterface
 {
- private const BUFFER_PERCENTAGE = 0.05; // 5% buffer for high-demand events
+    private const BUFFER_PERCENTAGE = 0.05; // 5% buffer for high-demand events
  
- public function isAvailable(Event $event, int $requestedQuantity): bool
+    public function isAvailable(Event $event, int $requestedQuantity): bool
  {
  $availableCount = $this->getAvailableCount($event);
  
  // Apply buffer for high-demand events (>80% sold)
- if ($event->tickets_sold / $event->total_tickets > 0.8) {
+    if ($event->tickets_sold / $event->total_tickets > 0.8) {
  $buffer = (int) ($event->total_tickets * self::BUFFER_PERCENTAGE);
  $availableCount -= $buffer;
  }
  
- return $availableCount >= $requestedQuantity;
+    return $availableCount >= $requestedQuantity;
  }
 }
 ```
@@ -1811,36 +1817,36 @@ class AdvancedTicketStrategy implements TicketUpdateStrategyInterface
 **Strategy Selection Flow**:
 ```mermaid
 classDiagram
- class TicketAvailabilityService {
+    class TicketAvailabilityService {
  -strategy: TicketUpdateStrategyInterface
  +setStrategy(strategy) void
  +updateEventAvailability(eventId) bool
  +purchaseTickets(eventId, userId, quantity) array
  }
  
- class TicketUpdateStrategyInterface {
+    class TicketUpdateStrategyInterface {
  <<interface>>
  +updateAvailability(event) bool
  +isAvailable(event, quantity) bool
  +getAvailableCount(event) int
  }
  
- class SimpleTicketStrategy {
+    class SimpleTicketStrategy {
  +updateAvailability(event) bool
  +isAvailable(event, quantity) bool
  +getAvailableCount(event) int
  }
  
- class AdvancedTicketStrategy {
+    class AdvancedTicketStrategy {
  -BUFFER_PERCENTAGE: float
  +updateAvailability(event) bool
  +isAvailable(event, quantity) bool
  +getAvailableCount(event) int
  }
  
- TicketAvailabilityService --> TicketUpdateStrategyInterface : uses
- TicketUpdateStrategyInterface <|--SimpleTicketStrategy
- TicketUpdateStrategyInterface <|--AdvancedTicketStrategy
+    TicketAvailabilityService --> TicketUpdateStrategyInterface : uses
+    TicketUpdateStrategyInterface <|--SimpleTicketStrategy
+    TicketUpdateStrategyInterface <|--AdvancedTicketStrategy
 ```
 
 ### 11. **Real-time Component Pattern** -Ticket Availability Widget
@@ -1874,14 +1880,14 @@ classDiagram
 <script>
 // Real-time updates every 10 seconds
 setInterval(() => {
- updateAvailability(eventId);
+    updateAvailability(eventId);
 }, 10000);
 </script>
 ```
 
 **Features**:
--**Real-time Updates**: AJAX polling every 10 seconds
--**Visual Progress**: Animated progress bars and counters
+- **Real-time Updates**: AJAX polling every 10 seconds
+- **Visual Progress**: Animated progress bars and counters
 - Instant Feedback: Purchase confirmations and error handling
 - Responsive Design: Mobile-friendly interface
 - Caching: Optimized performance with intelligent caching
@@ -1912,7 +1918,7 @@ classDiagram
  +clearCache() void
  }
  
- class SimpleBookingController {
+    class SimpleBookingController {
  -bookingService: SimpleBookingService
  +index(request) View
  +show(id) View
@@ -1921,37 +1927,37 @@ classDiagram
  +getUserBookings(userId) JsonResponse
  }
  
- class TicketObserver {
+    class TicketObserver {
  -bookingService: SimpleBookingService
  +created(ticket) void
  +updated(ticket) void
  +deleted(ticket) void
  }
  
- SimpleBookingController --> SimpleBookingService : uses
- TicketObserver --> SimpleBookingService : clears cache
+    SimpleBookingController --> SimpleBookingService : uses
+    TicketObserver --> SimpleBookingService : clears cache
 ```
 
 **Observer Pattern Integration**:
 ```mermaid
 sequenceDiagram
- participant T as 🎫 Ticket
- participant O as 👁️ TicketObserver
- participant TS as 🎫 TicketService
- participant NS as 🔔 NotificationService
- participant BS as 📋 BookingService
- participant C as 📦 Cache
+    participant T as 🎫 Ticket
+    participant O as 👁️ TicketObserver
+    participant TS as 🎫 TicketService
+    participant NS as 🔔 NotificationService
+    participant BS as 📋 BookingService
+    participant C as 📦 Cache
 
- Note over T,C: Automatic Booking Cache Management
+    Note over T,C: Automatic Booking Cache Management
  
- T->>O: Ticket created/updated/deleted
- O->>TS: updateAvailability()
- O->>NS: sendNotification()
- O->>BS: clearCache()
- BS->>C: Clear booking statistics
- BS->>C: Clear booking data
+    T->>O: Ticket created/updated/deleted
+    O->>TS: updateAvailability()
+    O->>NS: sendNotification()
+    O->>BS: clearCache()
+    BS->>C: Clear booking statistics
+    BS->>C: Clear booking data
  
- Note over T,C: Next booking request gets fresh data
+    Note over T,C: Next booking request gets fresh data
 ```
 
 **Key Features**:
@@ -1960,8 +1966,8 @@ sequenceDiagram
 ```php
 public function getBookingStats()
 {
- return Cache::remember('booking_stats', 300, function () {
- return [
+    return Cache::remember('booking_stats', 300, function () {
+    return [
  'total_bookings' => Ticket::count(),
  'confirmed_bookings' => Ticket::where('status', 'confirmed')->count(),
  'cancelled_bookings' => Ticket::where('status', 'cancelled')->count(),
@@ -1975,11 +1981,11 @@ public function getBookingStats()
 ```
 
 **🔍 Advanced Filtering System**
--**Status Filtering**: All, Confirmed, Pending, Cancelled
--**Event Filtering**: Filter by specific events
--**Date Range Filtering**: Custom date ranges
--**User Filtering**: Filter by specific customers
--**Combined Filters**: Multiple filters work together
+- **Status Filtering**: All, Confirmed, Pending, Cancelled
+- **Event Filtering**: Filter by specific events
+- **Date Range Filtering**: Custom date ranges
+- **User Filtering**: Filter by specific customers
+- **Combined Filters**: Multiple filters work together
 
 **� CSV Export Functionality**
 ```php
@@ -1987,12 +1993,12 @@ public function export(Request $request)
 {
  $bookings = $this->bookingService->getAllBookings($filters, 999999);
  
- return response()->stream(function() use($bookings) {
+    return response()->stream(function() use($bookings) {
  $file = fopen('php://output', 'w');
- fputcsv($file, ['Booking ID', 'Event', 'Customer', 'Status', 'Revenue']);
+    fputcsv($file, ['Booking ID', 'Event', 'Customer', 'Status', 'Revenue']);
  
- foreach ($bookings as $booking) {
- fputcsv($file, [
+    foreach ($bookings as $booking) {
+    fputcsv($file, [
  $booking->id,
  $booking->event->title,
  $booking->user->name,
@@ -2000,7 +2006,7 @@ public function export(Request $request)
  $booking->total_price
  ]);
  }
- fclose($file);
+    fclose($file);
  }, 200, ['Content-Type' => 'text/csv']);
 }
 ```
@@ -2023,94 +2029,94 @@ Our simplified ticketing system with notifications, bookings, and password reset
 
 ```mermaid
 erDiagram
- USERS {
- bigint id PK
- string name
- string email UK
- string password
- enum role
- boolean email_verified
- string avatar_path
- timestamp created_at
- timestamp updated_at
+    USERS {
+    bigint id PK
+    string name
+    string email UK
+    string password
+    enum role
+    boolean email_verified
+    string avatar_path
+    timestamp created_at
+    timestamp updated_at
  }
  
- EVENTS {
- bigint id PK
- string title
- text description
- date event_date
- time start_time
- time end_time
- string venue
- string address
- string city
- int capacity
- decimal price
- enum status
- bigint organizer_id FK
- string image_path
- timestamp created_at
- timestamp updated_at
+    EVENTS {
+    bigint id PK
+    string title
+    text description
+    date event_date
+    time start_time
+    time end_time
+    string venue
+    string address
+    string city
+    int capacity
+    decimal price
+    enum status
+    bigint organizer_id FK
+    string image_path
+    timestamp created_at
+    timestamp updated_at
  }
  
- TICKETS {
- bigint id PK
- bigint event_id FK
- bigint user_id FK
- int quantity
- decimal total_price
- timestamp purchase_date
- enum status
- timestamp created_at
- timestamp updated_at
+    TICKETS {
+    bigint id PK
+    bigint event_id FK
+    bigint user_id FK
+    int quantity
+    decimal total_price
+    timestamp purchase_date
+    enum status
+    timestamp created_at
+    timestamp updated_at
  }
  
- NOTIFICATIONS {
- bigint id PK
- bigint user_id FK
- string title
- text message
- string type
- boolean is_read
- json data
- timestamp created_at
- timestamp updated_at
+    NOTIFICATIONS {
+    bigint id PK
+    bigint user_id FK
+    string title
+    text message
+    string type
+    boolean is_read
+    json data
+    timestamp created_at
+    timestamp updated_at
  }
  
- LOGIN_LOGS {
- bigint id PK
- bigint user_id FK
- string email
- boolean success
- string ip_address
- text user_agent
- timestamp created_at
+    LOGIN_LOGS {
+    bigint id PK
+    bigint user_id FK
+    string email
+    boolean success
+    string ip_address
+    text user_agent
+    timestamp created_at
  }
  
- PASSWORD_RESET_TOKENS {
- string email PK
- string token
- timestamp created_at
- timestamp expires_at
+    PASSWORD_RESET_TOKENS {
+    string email PK
+    string token
+    timestamp created_at
+    timestamp expires_at
  }
  
- USERS ||--o{ EVENTS : organizes
- USERS ||--o{ LOGIN_LOGS : generates
- USERS ||--o{ TICKETS : purchases
- USERS ||--o{ NOTIFICATIONS : receives
- USERS ||--o{ PASSWORD_RESET_TOKENS : requests
- EVENTS ||--o{ TICKETS : "has bookings"
+    USERS ||--o{ EVENTS : organizes
+    USERS ||--o{ LOGIN_LOGS : generates
+    USERS ||--o{ TICKETS : purchases
+    USERS ||--o{ NOTIFICATIONS : receives
+    USERS ||--o{ PASSWORD_RESET_TOKENS : requests
+    EVENTS ||--o{ TICKETS : "has bookings"
 ```
 
 ### Key Relationships & Observer Pattern Flow
 
--**Users** can organize multiple Events (organizer role)
--**Users** can purchase multiple **Tickets** for different events
--**Users** receive **Notifications** about their events (organizers) or purchases (customers)
--**Events** can have multiple Tickets (bookings) from different users
--**When tickets change** → **Observer automatically creates notifications** for organizers
--**Login Logs** track all login attempts for security
+- **Users** can organize multiple Events (organizer role)
+- **Users** can purchase multiple **Tickets** for different events
+- **Users** receive **Notifications** about their events (organizers) or purchases (customers)
+- **Events** can have multiple Tickets (bookings) from different users
+- **When tickets change** → **Observer automatically creates notifications** for organizers
+- **Login Logs** track all login attempts for security
 
 ### Notification Types
 
@@ -2151,64 +2157,64 @@ The system supports different notification types with rich data:
 
 ```mermaid
 erDiagram
- USERS {
- bigint id PK
- string name
- string email
- string password
- enum role
- boolean email_verified
- string avatar_path
- timestamp created_at
- timestamp updated_at
+    USERS {
+    bigint id PK
+    string name
+    string email
+    string password
+    enum role
+    boolean email_verified
+    string avatar_path
+    timestamp created_at
+    timestamp updated_at
  }
  
- EVENTS {
- bigint id PK
- string title
- text description
- date event_date
- time start_time
- time end_time
- string venue
- string address
- string city
- int total_tickets
- int tickets_sold
- decimal price
- enum status
- bigint organizer_id FK
- string image_path
- timestamp created_at
- timestamp updated_at
+    EVENTS {
+    bigint id PK
+    string title
+    text description
+    date event_date
+    time start_time
+    time end_time
+    string venue
+    string address
+    string city
+    int total_tickets
+    int tickets_sold
+    decimal price
+    enum status
+    bigint organizer_id FK
+    string image_path
+    timestamp created_at
+    timestamp updated_at
  }
  
- TICKETS {
- bigint id PK
- bigint event_id FK
- bigint user_id FK
- int quantity
- decimal total_price
- timestamp purchase_date
- enum status
- timestamp created_at
- timestamp updated_at
+    TICKETS {
+    bigint id PK
+    bigint event_id FK
+    bigint user_id FK
+    int quantity
+    decimal total_price
+    timestamp purchase_date
+    enum status
+    timestamp created_at
+    timestamp updated_at
  }
  
- LOGIN_LOGS {
- bigint id PK
- bigint user_id FK
- string email
- boolean success
- string ip
- text user_agent
- timestamp created_at
+    LOGIN_LOGS {
+    bigint id PK
+    bigint user_id FK
+    string email
+    boolean success
+    string ip
+    text user_agent
+    timestamp created_at
  }
  
- USERS ||--o{ EVENTS : organizes
- USERS ||--o{ LOGIN_LOGS : generates
- USERS ||--o{ TICKETS : purchases
- EVENTS ||--o{ TICKETS : "has bookings"
+    USERS ||--o{ EVENTS : organizes
+    USERS ||--o{ LOGIN_LOGS : generates
+    USERS ||--o{ TICKETS : purchases
+    EVENTS ||--o{ TICKETS : "has bookings"
 ```
 
 ---
@@ -2218,10 +2224,10 @@ erDiagram
 ### Design Philosophy
 Our design system follows a **dark theme with cyan accents** approach, emphasizing:
 
--**Consistency**: Unified color palette and component styling
--**Accessibility**: High contrast ratios and semantic HTML
--**Modern Aesthetics**: Glassmorphism effects and subtle animations
--**Professional Look**: Clean layouts with appropriate spacing
+- **Consistency**: Unified color palette and component styling
+- **Accessibility**: High contrast ratios and semantic HTML
+- **Modern Aesthetics**: Glassmorphism effects and subtle animations
+- **Professional Look**: Clean layouts with appropriate spacing
 
 ### Color Palette
 ```css
@@ -2249,7 +2255,7 @@ Our design system follows a **dark theme with cyan accents** approach, emphasizi
 ```css
 .form-input {
  @apply px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 
- text-slate-300 focus:border-cyan-400 focus:outline-none;
+    text-slate-300 focus:border-cyan-400 focus:outline-none;
 }
 ```
 
@@ -2257,12 +2263,12 @@ Our design system follows a **dark theme with cyan accents** approach, emphasizi
 ```css
 .btn-primary {
  @apply px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-sky-500 
- hover:from-cyan-400 hover:to-sky-400 text-white font-medium;
+    hover:from-cyan-400 hover:to-sky-400 text-white font-medium;
 }
 
 .btn-secondary {
  @apply px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 
- border border-cyan-400/20 text-sm transition;
+    border border-cyan-400/20 text-sm transition;
 }
 ```
 
@@ -2482,20 +2488,20 @@ database/
 ```php
 // app/Services/SimpleBookingService.php
 class SimpleBookingService {
- public function getAllBookings($filters = []) {
+    public function getAllBookings($filters = []) {
  $query = Ticket::with(['user', 'event']);
  
  // Apply filters with method chaining
- if (!empty($filters['status'])) {
+    if (!empty($filters['status'])) {
  $query->where('status', $filters['status']);
  }
  
- return $query->orderBy('created_at', 'desc')->paginate(10);
+    return $query->orderBy('created_at', 'desc')->paginate(10);
  }
  
- public function getBookingStats() {
- return Cache::remember('booking_stats', 60, function() {
- return [
+    public function getBookingStats() {
+    return Cache::remember('booking_stats', 60, function() {
+    return [
  'total_bookings' => Ticket::count(),
  'pending_bookings' => Ticket::where('status', 'pending')->count(),
  'confirmed_bookings' => Ticket::where('status', 'confirmed')->count(),
@@ -2510,18 +2516,18 @@ class SimpleBookingService {
 ```php
 // app/Observers/TicketObserver.php -Enhanced for booking management
 class TicketObserver {
- public function created(Ticket $ticket) {
+    public function created(Ticket $ticket) {
  // Clear booking cache for real-time updates
- Cache::forget('booking_stats');
- Cache::forget('recent_bookings');
+    Cache::forget('booking_stats');
+    Cache::forget('recent_bookings');
  
  // Existing notification logic
  $this->createOrganizerNotification($ticket);
  }
  
- public function updated(Ticket $ticket) {
+    public function updated(Ticket $ticket) {
  // Clear cache when booking status changes
- Cache::forget('booking_stats');
+    Cache::forget('booking_stats');
  }
 }
 ```
@@ -2529,13 +2535,13 @@ class TicketObserver {
 #### 3. MVC Pattern with Service Integration
 ```mermaid
 graph TD
- A[User Request] --> B[SimpleBookingController]
- B --> C[SimpleBookingService]
- C --> D[Ticket Model]
- C --> E[Cache Layer]
- D --> F[Database]
- E --> G[Redis/File Cache]
- B --> H[Booking Views]
+    A[User Request] --> B[SimpleBookingController]
+    B --> C[SimpleBookingService]
+    C --> D[Ticket Model]
+    C --> E[Cache Layer]
+    D --> F[Database]
+    E --> G[Redis/File Cache]
+    B --> H[Booking Views]
 ```
 
 ---
@@ -2543,10 +2549,10 @@ graph TD
 ## 🚀 Installation & Setup
 
 ### Prerequisites
--PHP 8.1+
--Composer
--Node.js & NPM
--SQLite/MySQL
+- PHP 8.1+
+- Composer
+- Node.js & NPM
+- SQLite/MySQL
 
 ### Installation Steps
 
@@ -2587,70 +2593,70 @@ php artisan serve
 ### Default Users
 After seeding, you can login with:
 
--**Admin**: admin@gmail.com / admin1234
+- **Admin**: admin@gmail.com / admin1234
  -Access to all features including user management
  -Can change user roles and access admin panel
--**User**: abcd@gmail.com / aaaa1234
+- **User**: abcd@gmail.com / aaaa1234
  -Basic user access for event browsing
  -Can be promoted to organizer by admin
 
 **Role Management Features**:
--Admin can access user management at `/users`
--Real-time role changes with dropdown selection
--Role transition validation (user→organizer, organizer→admin/user, admin→organizer)
--Comprehensive user statistics and analytics
+- Admin can access user management at `/users`
+- Real-time role changes with dropdown selection
+- Role transition validation (user→organizer, organizer→admin/user, admin→organizer)
+- Comprehensive user statistics and analytics
 
 ---
 
 ## 🧪 Testing Strategy
 
 ### Unit Testing
--**Repository Tests**: Data access layer validation
--**Service Tests**: Business logic verification
--**Factory Tests**: User creation scenarios
--**Role Management Tests**: Role transition validation and security
+- **Repository Tests**: Data access layer validation
+- **Service Tests**: Business logic verification
+- **Factory Tests**: User creation scenarios
+- **Role Management Tests**: Role transition validation and security
 
 ### Integration Testing
--**Authentication Flow**: Login, registration, password reset
--**Event Management**: CRUD operations with sorting
--**Role-based Access**: Dashboard routing and permissions
--**User Management**: Admin role management workflows
--**Component Testing**: Role selector and UI components
+- **Authentication Flow**: Login, registration, password reset
+- **Event Management**: CRUD operations with sorting
+- **Role-based Access**: Dashboard routing and permissions
+- **User Management**: Admin role management workflows
+- **Component Testing**: Role selector and UI components
 
 ### Feature Testing
--**End-to-End Workflows**: Complete user journeys
--**UI Component Testing**: Sorting controls and form interactions
--**Security Testing**: Authentication and authorization
+- **End-to-End Workflows**: Complete user journeys
+- **UI Component Testing**: Sorting controls and form interactions
+- **Security Testing**: Authentication and authorization
 
 ---
 
 ## 🔄 Design Pattern Benefits
 
 ### Factory Pattern Benefits
--**Flexibility**: Easy to add new user types
--**Maintainability**: Centralized user creation logic
--**Testability**: Mock different user creation scenarios
+- **Flexibility**: Easy to add new user types
+- **Maintainability**: Centralized user creation logic
+- **Testability**: Mock different user creation scenarios
 
 ### Repository Pattern Benefits
--**Separation of Concerns**: Data access isolated from business logic
--**Testability**: Easy to mock database operations
--**Flexibility**: Switch between different data sources
+- **Separation of Concerns**: Data access isolated from business logic
+- **Testability**: Easy to mock database operations
+- **Flexibility**: Switch between different data sources
 
 ### Service Layer Benefits
--**Business Logic Centralization**: Sorting rules in one place
--**Reusability**: Services can be used across controllers
--**Maintainability**: Easy to modify business rules
+- **Business Logic Centralization**: Sorting rules in one place
+- **Reusability**: Services can be used across controllers
+- **Maintainability**: Easy to modify business rules
 
 ### Component Pattern Benefits
--**Consistency**: Uniform UI across the application
--**Reusability**: Same component for different entity types
--**Maintainability**: Single source of truth for UI elements
+- **Consistency**: Uniform UI across the application
+- **Reusability**: Same component for different entity types
+- **Maintainability**: Single source of truth for UI elements
 
 ### Role Management Strategy Benefits
--**Security**: Controlled role transitions with validation rules
--**Flexibility**: Easy to modify role hierarchy and permissions
--**User Experience**: Real-time updates with smooth UI interactions
--**Maintainability**: Centralized role logic in dedicated service
+- **Security**: Controlled role transitions with validation rules
+- **Flexibility**: Easy to modify role hierarchy and permissions
+- **User Experience**: Real-time updates with smooth UI interactions
+- **Maintainability**: Centralized role logic in dedicated service
 
 ---
 
@@ -2844,11 +2850,11 @@ All API endpoints require authentication with the exception of public event data
 ```php
 // Example API authentication
 Route::middleware('auth:sanctum')->group(function () {
- Route::get('/notifications', [NotificationController::class, 'index']);
- Route::patch('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::patch('/notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
  // Admin-only routes
- Route::middleware('admin')->prefix('admin')->group(function () {
- Route::get('/support-messages', [SupportMessageController::class, 'index']);
+    Route::middleware('admin')->prefix('admin')->group(function () {
+    Route::get('/support-messages', [SupportMessageController::class, 'index']);
  });
 });
 ```
@@ -2857,10 +2863,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
 All API responses follow a consistent format:
 
--Success responses include a `success: true` field
--Error responses include a `success: false` field and an `errors` object
--Paginated responses include `total`, `per_page`, `current_page`, and `last_page` fields
--Timestamps are in ISO 8601 format
+- Success responses include a `success: true` field
+- Error responses include a `success: false` field and an `errors` object
+- Paginated responses include `total`, `per_page`, `current_page`, and `last_page` fields
+- Timestamps are in ISO 8601 format
 
 ---
 
@@ -2887,9 +2893,9 @@ Schema::table('tickets', function (Blueprint $table) {
 ```
 
 #### Query Optimization
--**Eager Loading**: All relationships are eagerly loaded to avoid N+1 query issues
--**Repository Pattern**: Centralized, optimized queries through repository classes
--**Chunk Processing**: Large datasets are processed in chunks for memory efficiency
+- **Eager Loading**: All relationships are eagerly loaded to avoid N+1 query issues
+- **Repository Pattern**: Centralized, optimized queries through repository classes
+- **Chunk Processing**: Large datasets are processed in chunks for memory efficiency
 
 ### 2. Caching Strategy
 
@@ -2900,8 +2906,8 @@ The application implements a multi-level caching system to minimize database loa
 // Example from BookingService
 public function getBookingStats()
 {
- return Cache::remember('booking_stats', 300, function () {
- return [
+    return Cache::remember('booking_stats', 300, function () {
+    return [
  'total_bookings' => Ticket::count(),
  'confirmed_bookings' => Ticket::where('status', 'confirmed')->count(),
  'cancelled_bookings' => Ticket::where('status', 'cancelled')->count(),
@@ -2920,62 +2926,61 @@ The Observer Pattern automatically clears relevant caches when data changes:
 public function created(Ticket $ticket)
 {
  // Clear availability cache
- Cache::forget("event_availability_{$ticket->event_id}");
+    Cache::forget("event_availability_{$ticket->event_id}");
  
  // Clear booking statistics
- Cache::forget('booking_stats');
+    Cache::forget('booking_stats');
  
  // Clear event statistics
- Cache::forget("event_stats_{$ticket->event_id}");
+    Cache::forget("event_stats_{$ticket->event_id}");
 }
 ```
 
 #### Tiered TTL Strategy
 Different types of data are cached with appropriate time-to-live values:
 
--**Real-time data**: 30-60 seconds (ticket availability)
--**Semi-dynamic data**: 5-15 minutes (dashboard statistics)
--**Static data**: 1 hour or more (event details, venue information)
+- **Real-time data**: 30-60 seconds (ticket availability)
+- **Semi-dynamic data**: 5-15 minutes (dashboard statistics)
+- **Static data**: 1 hour or more (event details, venue information)
 
 ### 3. Frontend Optimization
 
 #### Asset Management
--**CSS/JS Bundling**: Vite bundles assets to minimize HTTP requests
--**Code Splitting**: Only necessary JavaScript is loaded per page
--**Minification**: All production assets are minified and compressed
+- **CSS/JS Bundling**: Vite bundles assets to minimize HTTP requests
+- **Code Splitting**: Only necessary JavaScript is loaded per page
+- **Minification**: All production assets are minified and compressed
 
 #### Asynchronous Loading
 ```javascript
 // Example of asynchronous data loading
 function updateTicketAvailability(eventId) {
- fetch(`/api/events/${eventId}/availability`)
- .then(response => response.json())
- .then(data => {
- document.querySelector('.availability-count').textContent = data.available_tickets;
- document.querySelector('.availability-bar').style.width = data.availability_percentage + '%';
- });
+    fetch(`/api/events/${eventId}/availability`)
+        .then(response => response.json())
+        .then(data => {
+            document.querySelector('.availability-count').textContent = data.available_tickets;
+            document.querySelector('.availability-bar').style.width = data.availability_percentage + '%';
+        });
 }
 
 // Update every 10 seconds
 setInterval(() => {
- updateTicketAvailability(eventId);
+    updateTicketAvailability(eventId);
 }, 10000);
 ```
 
 #### Resource Hints
+
 ```html
-<!--Preload critical assets -->
+<!-- Preload critical assets -->
 <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://api.example.com">
-```
-
-### 4. Real-time Updates Optimization
+```### 4. Real-time Updates Optimization
 
 The system uses efficient AJAX polling instead of WebSockets for simplicity and broad compatibility:
 
--**Optimized Polling**: 10-second intervals for ticket availability
--**Conditional Requests**: ETag/If-None-Match headers to minimize transfer
--**Micro-Updates**: Only transmit changed data, not entire page content
+- **Optimized Polling**: 10-second intervals for ticket availability
+- **Conditional Requests**: ETag/If-None-Match headers to minimize transfer
+- **Micro-Updates**: Only transmit changed data, not entire page content
 
 ### 5. Performance Monitoring
 
@@ -2985,17 +2990,17 @@ The application includes built-in performance monitoring:
 // Example from AppServiceProvider
 public function boot()
 {
- // Track query performance in development
- if (app()->environment('local')) {
- DB::listen(function ($query) {
- if ($query->time > 100) {
- Log::channel('performance')->warning('Slow query: ' . $query->sql, [
- 'time' => $query->time,
- 'bindings' => $query->bindings
- ]);
- }
- });
- }
+    // Track query performance in development
+    if (app()->environment('local')) {
+        DB::listen(function ($query) {
+            if ($query->time > 100) {
+                Log::channel('performance')->warning('Slow query: ' . $query->sql, [
+                    'time' => $query->time,
+                    'bindings' => $query->bindings
+                ]);
+            }
+        });
+    }
 }
 ```
 
@@ -3007,18 +3012,18 @@ All large datasets are paginated for optimal performance:
 // Example from EventController
 public function index(Request $request)
 {
- $sortParams = $this->sortingService->validateEventSortParameters(
- $request->get('sort'),
- $request->get('direction')
- );
- 
- $events = $this->eventRepository->getPaginatedEventsWithSorting(
- $sortParams['sort_by'],
- $sortParams['direction'],
- 15 // Items per page
- );
- 
- return view('events.index', compact('events', 'sortParams'));
+    $sortParams = $this->sortingService->validateEventSortParameters(
+        $request->get('sort'),
+        $request->get('direction')
+    );
+    
+    $events = $this->eventRepository->getPaginatedEventsWithSorting(
+        $sortParams['sort_by'],
+        $sortParams['direction'],
+        15 // Items per page
+    );
+    
+    return view('events.index', compact('events', 'sortParams'));
 }
 ```
 
