@@ -955,14 +955,14 @@ classDiagram
 - **UX Optimized**: Silent error handling, no intrusive popups
 
 
-## 🧠 System Diagrams & Visual Models
+##  System Diagrams & Visual Models
 
 The following section presents the visual system documentation of the **Event Management & Ticketing System (EMTS)**.  
 It includes both **static** and **dynamic** modeling through UML and DFD representations to illustrate the complete workflow and architecture of the system.
 
 ---
 
-### 🎯 Use Case Diagram
+###  Use Case Diagram
 The use case diagram provides an overview of all actors and their interactions with the system.
 
 ![Use Case Diagram](docs/diagrams/use_case_diagram.png)  
@@ -976,13 +976,13 @@ Represents how Users, Organizers, and Admins interact with the EMTS through key 
 
 ---
 
-### 🔄 Sequence Diagrams
+###  Sequence Diagrams
 The following sequence diagrams illustrate the interaction between users, controllers, services, and the database in EMTS (Event Management & Ticketing System).  
 Each PNG is previewed below, and each SVG link opens a zoomable version.
 
 ---
 
-#### 🧩 Combined Overview
+####  Combined Overview
 A high-level sequence diagram combining all core flows (user registration, event creation, ticket booking, admin approval, and notification).
 
 ![Combined Overview](docs/diagrams/seq_0_combined_overview.png)  
@@ -993,7 +993,7 @@ A high-level sequence diagram combining all core flows (user registration, event
 
 ---
 
-#### 1️⃣ Registration & Login
+####  Registration & Login
 ![Registration & Login](docs/diagrams/seq_1_user_registration.png)  
 
 
@@ -1002,7 +1002,7 @@ Covers both registration and login flows — showing how the `RegisterController
 
 ---
 
-#### 2️⃣ Browse Events & View Details
+####  Browse Events & View Details
 ![Browse Events & View Details](docs/diagrams/seq_2_browse_events.png)  
 
 🔗 [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/seq_2_browse_events.svg)
@@ -1012,7 +1012,7 @@ Depicts how the `EventController` retrieves event lists and displays details thr
 
 ---
 
-#### 3️⃣ Ticket Purchase
+####  Ticket Purchase
 ![Ticket Purchase](docs/diagrams/seq_3_ticket_purchase.png)  
 
 🔗 [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/seq_3_ticket_purchase.svg)
@@ -1023,17 +1023,17 @@ Covers the entire purchase flow — checking availability, booking, marking paym
 
 ---
 
-#### 4️⃣ Admin Event Approval
+####  Admin Event Approval
 ![Admin Event Approval](docs/diagrams/seq_4_admin_approval.png)  
 
-🔗 [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/seq_4_admin_approval.svg)
+ [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/seq_4_admin_approval.svg)
 
 **Description:**  
 Demonstrates how the `SimpleEventApprovalController` handles admin decisions (approve/reject) and triggers notifications.
 
 ---
 
-#### 5️⃣ Ticket Cancellation
+#### Ticket Cancellation
 ![Ticket Cancellation](docs/diagrams/seq_5_ticket_cancellation.png)  
 
 
@@ -1042,7 +1042,7 @@ Explains how ticket cancellations are processed, events updated, and users notif
 
 ---
 
-#### 6️⃣ Password Reset Flow
+####  Password Reset Flow
 ![Password Reset Flow](docs/diagrams/seq_6_password_reset.png)  
 
 
@@ -1051,35 +1051,59 @@ Shows the full password reset lifecycle — from token generation and email disp
 
 ---
 
-### 🧾 Data Flow Diagrams (DFD)
+###  Data Flow Diagrams (DFD)
 These diagrams show how data moves between processes, entities, and data stores in EMTS.
 
-#### 🌐 Context Level DFD
+####  Context Level DFD
 ![Context Level DFD](docs/diagrams/dfd_context.png)  
 
 
 ---
 
-#### ⚙️ Level-0 DFD
+####  Level-0 DFD
 ![Level-0 DFD](docs/diagrams/dfd_level0.png)  
 
 
 ---
 
-#### 🔹 Level-1 DFDs
+####  Level-1 DFDs
 
-| Process | PNG | SVG |
-|----------|------|------|
-| 1. User Management | ![User DFD](docs/diagrams/dfd_level1_user.png) | [View SVG](docs/diagrams/dfd_level1_user.svg) |
-| 2. Event Management | ![Event DFD](docs/diagrams/dfd_level1_event.png) | [View SVG](docs/diagrams/dfd_level1_event.svg) |
-| 3. Ticket Management | ![Ticket DFD](docs/diagrams/dfd_level1_ticket.png) | [View SVG](docs/diagrams/dfd_level1_ticket.svg) |
-| 4. Notification Management | ![Notification DFD](docs/diagrams/dfd_level1_notification.png) | [View SVG](docs/diagrams/dfd_level1_notification.svg) |
-| 5. Admin Management | ![Admin DFD](docs/diagrams/dfd_level1_admin.png) | [View SVG](docs/diagrams/dfd_level1_admin.svg) |
-| 6. Support & Reports | ![Support DFD](docs/diagrams/dfd_level1_support.png) | [View SVG](docs/diagrams/dfd_level1_support.svg) |
+####  Level-1 DFD — User Management
+![Level-1 DFD – User Management](docs/diagrams/dfd_level1_user.png)  
+
 
 ---
 
-### ⚙️ Activity Diagram
+####  Level-1 DFD — Event Management
+![Level-1 DFD – Event Management](docs/diagrams/dfd_level1_event.png)  
+
+
+---
+
+####  Level-1 DFD — Ticket Management
+![Level-1 DFD – Ticket Management](docs/diagrams/dfd_level1_ticket.png)  
+
+---
+
+####  Level-1 DFD — Notification Management
+![Level-1 DFD – Notification Management](docs/diagrams/dfd_level1_notification.png)  
+
+
+---
+
+####  Level-1 DFD — Admin Management
+![Level-1 DFD – Admin Management](docs/diagrams/dfd_level1_admin.png)  
+
+
+---
+
+####  Level-1 DFD — Support & Reports
+![Level-1 DFD – Support & Reports](docs/diagrams/dfd_level1_support.png)  
+
+
+---
+
+###  Activity Diagram
 ![Activity Diagram](docs/diagrams/activity_diagram.png)  
 🔗 [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/activity_diagram.svg)
 
@@ -1088,7 +1112,7 @@ Describes the flow of control from login and event creation to ticket purchase, 
 
 ---
 
-### 🧩 Class Diagram
+###  Class Diagram
 ![Class Diagram](docs/diagrams/class_diagram.png)  
 
 🔗 [View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/class_diagram.svg)
@@ -1099,7 +1123,7 @@ Shows the structure of the EMTS architecture, including relationships between Co
 
 ---
 
-### ✅ Tips
+###  Tips
 - All PNGs will **display directly on GitHub**.  
 - Clicking any SVG link opens a **zoomable version** for clarity.  
 - Make sure your files are inside `docs/diagrams/` exactly as named above.
