@@ -983,7 +983,8 @@ Each PNG is previewed below, and each SVG link opens a zoomable version.
 A high-level sequence diagram combining all core flows (user registration, event creation, ticket booking, admin approval, and notification).
 
 ![Combined Overview](docs/diagrams/seq_0_combined_overview.png)  
-🔗 [View in SVG (Zoomable)](docs/diagrams/seq_0_combined_overview.svg)
+[View in SVG (Zoomable)](https://raw.githubusercontent.com/Event-Management-Ticketing-System-EMTS/Event-Management-Ticketing-System/main/docs/diagrams/seq_0_combined_overview.svg)
+
 
 ---
 
