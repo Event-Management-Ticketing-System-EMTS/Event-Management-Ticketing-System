@@ -3,91 +3,102 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class EventStatisticsController extends Controller
 {
-    /**
-     * Display event statistics for the organizer
-     */
     public function index()
     {
-        // Get current authenticated user
         $user = Auth::user();
 
-        // Get all events organized by the current user
-        $events = Event::where('organizer_id', $user->id)->get();
+        // 1) Try organizer scope
+        $scopedQuery = Event::query()->where('organizer_id', $user->id);
+        $scopedCount = (clone $scopedQuery)->count();
 
-        // Count events by status
+        // 2) If no rows for this organizer, FALL BACK to all events
+        //    (remove this fallback if you only want per-organizer stats)
+        $events = $scopedCount > 0
+            ? $scopedQuery->get()
+            : Event::query()->get();
+
+        $totalEvents = $events->count();
+
+        // --- Status counts (draft/published/cancelled) from events table ---
         $eventsByStatus = [
             'published' => $events->where('status', 'published')->count(),
-            'draft' => $events->where('status', 'draft')->count(),
+            'draft'     => $events->where('status', 'draft')->count(),
             'cancelled' => $events->where('status', 'cancelled')->count(),
         ];
 
-        // Calculate ticket statistics
-        $totalTickets = $events->sum('total_tickets');
-        $soldTickets = $events->sum('tickets_sold');
-        $availableTickets = $totalTickets - $soldTickets;
-        $ticketsData = [
-            'total' => $totalTickets,
-            'sold' => $soldTickets,
-            'available' => $availableTickets,
-            'percentageSold' => $totalTickets > 0 ? round(($soldTickets / $totalTickets) * 100) : 0
+        // --- Approval counts (pending/approved/rejected) from events.approval_status ---
+        $eventsByApproval = [
+            'pending'  => $events->where('approval_status', 'pending')->count(),
+            'approved' => $events->where('approval_status', 'approved')->count(),
+            'rejected' => $events->where('approval_status', 'rejected')->count(),
         ];
 
-        // Calculate revenue
-        $totalRevenue = $events->sum(function ($event) {
-            return $event->tickets_sold * $event->price;
+        // --- Tickets / Revenue from events table ---
+        $totalCapacity = (int) $events->sum('total_tickets');
+        $ticketsSold   = (int) $events->sum('tickets_sold');
+
+        // price is stored as string/decimal; cast to float for math
+        $totalRevenue  = (float) $events->sum(function ($e) {
+            $sold  = (int) ($e->tickets_sold ?? 0);
+            $price = (float) ($e->price ?? 0);
+            return $sold * $price;
         });
 
-        // Events by month (for the last 6 months)
+        $ticketsData = [
+            'total'          => $totalCapacity,
+            'sold'           => $ticketsSold,
+            'available'      => max(0, $totalCapacity - $ticketsSold),
+            'percentageSold' => $totalCapacity > 0 ? round(($ticketsSold / $totalCapacity) * 100) : 0,
+        ];
+
+        // --- Events by month (last 6 months) from created_at ---
         $sixMonthsAgo = Carbon::now()->subMonths(6);
-        $eventsByMonth = DB::table('events')
-            ->select(DB::raw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as count'))
-            ->where('organizer_id', $user->id)
-            ->where('created_at', '>=', $sixMonthsAgo)
-            ->groupBy('year', 'month')
-            ->orderBy('year', 'asc')
-            ->orderBy('month', 'asc')
-            ->get();
+        $byMonth = $events
+            ->filter(fn ($e) => $e->created_at && $e->created_at >= $sixMonthsAgo)
+            ->groupBy(fn ($e) => Carbon::parse($e->created_at)->format('Y-m'))
+            ->sortKeys();
 
-        // Format data for chart
-        $months = [];
-        $counts = [];
-        foreach ($eventsByMonth as $eventMonth) {
-            $date = Carbon::createFromDate($eventMonth->year, $eventMonth->month, 1);
-            $months[] = $date->format('M Y');
-            $counts[] = $eventMonth->count;
-        }
+        $months = $byMonth->keys()->values()->all();
+        $counts = $byMonth->map->count()->values()->all();
 
-        // Get upcoming events
-        $upcomingEvents = Event::where('organizer_id', $user->id)
-            ->where('event_date', '>=', Carbon::today())
-            ->where('status', 'published')
-            ->orderBy('event_date', 'asc')
+        // --- Upcoming events: published + future date (ignore approval to show data) ---
+        $upcomingEvents = $events
+            ->filter(function ($e) {
+                if (!$e->event_date) return false;
+                return ($e->status === 'published') &&
+                       (Carbon::parse($e->event_date)->isToday() || Carbon::parse($e->event_date)->isFuture());
+            })
+            ->sortBy('event_date')
             ->take(5)
-            ->get();
+            ->values();
 
-        // Best performing events (most tickets sold)
-        $topEvents = Event::where('organizer_id', $user->id)
-            ->where('status', 'published')
-            ->orderBy('tickets_sold', 'desc')
+        // --- Top events by tickets_sold ---
+        $topEvents = $events
+            ->sortByDesc('tickets_sold')
             ->take(5)
-            ->get();
+            ->values()
+            ->map(function ($e) {
+                // for the Blade: sold and price included
+                $e->sold  = (int) ($e->tickets_sold ?? 0);
+                $e->price = (float) ($e->price ?? 0);
+                return $e;
+            });
 
-        return view('events.statistics', compact(
-            'events',
-            'eventsByStatus',
-            'ticketsData',
-            'totalRevenue',
-            'months',
-            'counts',
-            'upcomingEvents',
-            'topEvents'
-        ));
+        return view('events.statistics', [
+            'totalEvents'      => $totalEvents,
+            'eventsByStatus'   => $eventsByStatus,
+            'eventsByApproval' => $eventsByApproval,
+            'ticketsData'      => $ticketsData,
+            'totalRevenue'     => $totalRevenue,
+            'months'           => $months,
+            'counts'           => $counts,
+            'upcomingEvents'   => $upcomingEvents,
+            'topEvents'        => $topEvents,
+        ]);
     }
 }
