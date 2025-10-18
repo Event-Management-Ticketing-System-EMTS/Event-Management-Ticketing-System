@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Services\SimpleNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
+
 
 /**
  * Simple Notification Controller
@@ -26,7 +28,7 @@ class SimpleNotificationController extends Controller
      */
     public function index()
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $notifications = $this->notificationService->getAllNotifications($user);
         $unreadCount = $this->notificationService->getUnreadCount($user);
 
@@ -38,7 +40,7 @@ class SimpleNotificationController extends Controller
      */
     public function getUnread(): JsonResponse
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $notifications = $this->notificationService->getUnreadNotifications($user);
         $count = $this->notificationService->getUnreadCount($user);
 
@@ -53,7 +55,7 @@ class SimpleNotificationController extends Controller
      */
     public function markAsRead(Request $request, $id): JsonResponse
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $success = $this->notificationService->markAsRead($id, $user);
 
         if ($success) {
@@ -74,7 +76,8 @@ class SimpleNotificationController extends Controller
      */
     public function getCount(): JsonResponse
     {
-        $user = auth()->user();
+        $user = Auth::user();
+
         $count = $this->notificationService->getUnreadCount($user);
 
         return response()->json(['count' => $count]);
